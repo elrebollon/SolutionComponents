@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>SolutionComponents</id>
+    <version>1.0.0</version>
+    <title>Solution Component Inspector for XrmToolBox</title>
+    <authors>El Rebollon</authors>
+    <owners>El Rebollon</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <projectUrl>https://github.com/elrebollon/SolutionComponents</projectUrl>
+    <description>A powerful XrmToolBox plugin to inspect solution component dependencies, identify cross-solution overlaps, and track component history across Dynamics 365 and Dataverse releases.</description>
+    <summary>Inspect solution component dependencies and historical releases in Dynamics 365 / Dataverse.</summary>
+    <releaseNotes>
+      1.0.0:
+      - Audit solution component overlaps across unmanaged/managed solutions (REC-1).
+      - Trace hierarchical component history across past releases (REC-2).
+      - Publisher filtering and multi-environment support.
+      - 100% English UI for community distribution.
+    </releaseNotes>
+    <copyright>Copyright 2026</copyright>
+    <tags>XrmToolBox Plugins SolutionComponents Dynamics365 PowerApps Dataverse Dependencies</tags>
+    <dependencies>
+      <dependency id="XrmToolBoxPackage" version="1.2023.10.67" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="bin\Debug\Plugins\SolutionComponents.dll" target="lib\net48\Plugins" />
+    <file src="bin\Debug\Plugins\SolutionComponents.pdb" target="lib\net48\Plugins" />
+  </files>
+</package>
