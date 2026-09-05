@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("SolutionComponents")]
-[assembly: AssemblyDescription("Show Solution components dependencies")]
+[assembly: AssemblyDescription("Solution Component Inspector for XrmToolBox - Analyze solution component dependencies and historical releases in Dynamics 365 / Dataverse")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("El Rebollon")]
 [assembly: AssemblyProduct("SolutionComponents")]
-[assembly: AssemblyCopyright("Copyright ©  2024")]
+[assembly: AssemblyCopyright("Copyright © 2026")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

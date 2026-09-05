@@ -2,6 +2,7 @@ using SolutionComponents.Models;
 using SolutionComponents.Services;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Linq;
 
 namespace SolutionComponents.Tests
@@ -16,6 +17,7 @@ namespace SolutionComponents.Tests
             Test_GetComponentTypeDetails_KnownAndUnknownTypes();
             Test_IsEntityDependentComponent_IdentifiesCorrectTypes();
             Test_ComponentHistoryOrdering();
+            Test_MefMetadata_ValidIconsAndProperties();
             Console.WriteLine("All SolutionAuditServiceTests passed successfully!");
         }
 
@@ -149,6 +151,22 @@ namespace SolutionComponents.Tests
 
             if (ordered[2].SolutionName != "Release 2024")
                 throw new Exception($"Expected Release 2024 as last item, got {ordered[2].SolutionName}");
+        }
+
+        public static void Test_MefMetadata_ValidIconsAndProperties()
+        {
+            var attributes = typeof(MyPlugin).GetCustomAttributes(typeof(ExportMetadataAttribute), false)
+                .Cast<ExportMetadataAttribute>()
+                .ToDictionary(a => a.Name, a => a.Value);
+
+            if (!attributes.ContainsKey("SmallImageBase64") || string.IsNullOrEmpty(attributes["SmallImageBase64"] as string))
+                throw new Exception("SmallImageBase64 MEF metadata must not be null or empty");
+
+            if (!attributes.ContainsKey("BigImageBase64") || string.IsNullOrEmpty(attributes["BigImageBase64"] as string))
+                throw new Exception("BigImageBase64 MEF metadata must not be null or empty");
+
+            if (!attributes.ContainsKey("Name") || (string)attributes["Name"] != "Solution Component Inspector")
+                throw new Exception("Name MEF metadata must be 'Solution Component Inspector'");
         }
     }
 }

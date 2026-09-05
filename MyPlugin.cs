@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
@@ -9,18 +9,15 @@ using XrmToolBox.Extensibility.Interfaces;
 
 namespace SolutionComponents
 {
-    // Do not forget to update version number and author (company attribute) in AssemblyInfo.cs class
-    // To generate Base64 string for Images below, you can use https://www.base64-image.de/
+    // MEF plugin metadata definition for XrmToolBox Tool Library (G-5)
     [Export(typeof(IXrmToolBoxPlugin)),
-        ExportMetadata("Name", "Solution components"),
-        ExportMetadata("Description", "Show Solution components dependencies"),
-        // Please specify the base64 content of a 32x32 pixels image
-        ExportMetadata("SmallImageBase64", null),
-        // Please specify the base64 content of a 80x80 pixels image
-        ExportMetadata("BigImageBase64", null),
+        ExportMetadata("Name", "Solution Component Inspector"),
+        ExportMetadata("Description", "Analyze solution component dependencies and historical releases in Dynamics 365 / Dataverse"),
+        ExportMetadata("SmallImageBase64", "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAC1SURBVFhHY2AYDEDdPd5B3TW+ge7YPd4B4gDX+AYNt/j/9MYge1EcYBiQ8d8yopDmGGQPVgeAJL2ym2iOQfaMOmDoOCCwsANDjBSMTT9JDgDhZx9+kY3RzaK6A1rnrscQo6sDiJFHx6MOGHUAWQ4o6lmIIY4Pg9RT1QG4MDHy6HjUAaMOoKoD4momYojR1QGEMLpZJDvAJ7cFQ4wUjE0/SQ6gBR51wOB1wID3jOiNEQ4YwN4xAF8t2xsDmXVAAAAAAElFTkSuQmCC"),
+        ExportMetadata("BigImageBase64", "iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAYAAACOEfKtAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAFjSURBVHhe7d0xSgNBGEDh3Ca2lnbbxAWx0M7KaQWxSGqLIAoWNh7AwhN4K+vUaSKDhWTHEHfeju7gG/iaf2H4eQeYnUw8/Ezb0ExnYame2tB8BpyF5cFx2Kif2G0r4OHZ1eboYq49YqdvA8aPJ9d32iN2MiBgQMiAkAEhA0IGhAwIGRAyIGRAyICQASEDQgaEDAgVDXg+f0xmYzLEfkUDRu+r9Wh1d81RVcCHl7dkRnR3zVFVwBL3UQaEDAgZEDIgZEDIgJABIQNCBoQMCBkQMiBkQMiAkAEhA0K/EnDx9JrM/1Lcp6qAQylxH2VAyICQASEDQgaEDAgZEDIgZEDIgJABIQNCBoQMCBkQMiBUVcDL2+dkRnR3zVFVwKF1d81RNODpzX0yG5Mh9isa8D8wIGRAyICQASEDQgaEDAgZEDIgZEDIgJABIQNCBoQMCO0M6EvmP7PzJXP18xXQvznkaUPzAWQnGlaDBCEkAAAAAElFTkSuQmCC"),
         ExportMetadata("BackgroundColor", "Lavender"),
         ExportMetadata("PrimaryFontColor", "Black"),
-        ExportMetadata("SecondaryFontColor", "Gray")]
+        ExportMetadata("SecondaryFontColor", "DarkSlateGray")]
     public class MyPlugin : PluginBase
     {
         public override IXrmToolBoxPluginControl GetControl()
@@ -28,57 +25,8 @@ namespace SolutionComponents
             return new MyPluginControl();
         }
 
-        /// <summary>
-        /// Constructor 
-        /// </summary>
         public MyPlugin()
         {
-            // If you have external assemblies that you need to load, uncomment the following to 
-            // hook into the event that will fire when an Assembly fails to resolve
-            // AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(AssemblyResolveEventHandler);
-        }
-
-        /// <summary>
-        /// Event fired by CLR when an assembly reference fails to load
-        /// Assumes that related assemblies will be loaded from a subfolder named the same as the Plugin
-        /// For example, a folder named Sample.XrmToolBox.MyPlugin 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="args"></param>
-        /// <returns></returns>
-        private Assembly AssemblyResolveEventHandler(object sender, ResolveEventArgs args)
-        {
-            Assembly loadAssembly = null;
-            Assembly currAssembly = Assembly.GetExecutingAssembly();
-
-            // base name of the assembly that failed to resolve
-            var argName = args.Name.Substring(0, args.Name.IndexOf(","));
-
-            // check to see if the failing assembly is one that we reference.
-            List<AssemblyName> refAssemblies = currAssembly.GetReferencedAssemblies().ToList();
-            var refAssembly = refAssemblies.Where(a => a.Name == argName).FirstOrDefault();
-
-            // if the current unresolved assembly is referenced by our plugin, attempt to load
-            if (refAssembly != null)
-            {
-                // load from the path to this plugin assembly, not host executable
-                string dir = Path.GetDirectoryName(currAssembly.Location).ToLower();
-                string folder = Path.GetFileNameWithoutExtension(currAssembly.Location);
-                dir = Path.Combine(dir, folder);
-
-                var assmbPath = Path.Combine(dir, $"{argName}.dll");
-
-                if (File.Exists(assmbPath))
-                {
-                    loadAssembly = Assembly.LoadFrom(assmbPath);
-                }
-                else
-                {
-                    throw new FileNotFoundException($"Unable to locate dependency: {assmbPath}");
-                }
-            }
-
-            return loadAssembly;
         }
     }
 }
