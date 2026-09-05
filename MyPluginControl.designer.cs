@@ -50,10 +50,27 @@ namespace SolutionComponents
             this.cbSolutionComponents = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.cbSolutions = new System.Windows.Forms.ComboBox();
+            this.pnComponent = new System.Windows.Forms.Panel();
+            this.lblComponentStatus = new System.Windows.Forms.Label();
+            this.dgvComponentHistory = new System.Windows.Forms.DataGridView();
+            this.colHistSolution = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colHistVersion = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colHistPublisher = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colHistManaged = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colHistCreatedOn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colHistInstalledOn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.cbComponents = new System.Windows.Forms.ComboBox();
+            this.lblComponent = new System.Windows.Forms.Label();
+            this.cbEntities = new System.Windows.Forms.ComboBox();
+            this.lblEntity = new System.Windows.Forms.Label();
+            this.cbComponentTypes = new System.Windows.Forms.ComboBox();
+            this.lblComponentType = new System.Windows.Forms.Label();
             this.toolStripMenu.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.pnSolution.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvRelatedSolutions)).BeginInit();
+            this.pnComponent.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvComponentHistory)).BeginInit();
             this.SuspendLayout();
             // 
             // toolStripMenu
@@ -86,8 +103,8 @@ namespace SolutionComponents
             // 
             this.tsbRefresh.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.tsbRefresh.Name = "tsbRefresh";
-            this.tsbRefresh.Size = new System.Drawing.Size(102, 22);
-            this.tsbRefresh.Text = "Refresh Solutions";
+            this.tsbRefresh.Size = new System.Drawing.Size(86, 22);
+            this.tsbRefresh.Text = "Refresh Data";
             this.tsbRefresh.Click += new System.EventHandler(this.tsbRefresh_Click);
             // 
             // groupBox1
@@ -96,7 +113,7 @@ namespace SolutionComponents
             this.groupBox1.Controls.Add(this.rbSolution);
             this.groupBox1.Location = new System.Drawing.Point(10, 32);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(280, 70);
+            this.groupBox1.Size = new System.Drawing.Size(280, 65);
             this.groupBox1.TabIndex = 5;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Analysis Mode";
@@ -104,7 +121,7 @@ namespace SolutionComponents
             // rbComponent
             // 
             this.rbComponent.AutoSize = true;
-            this.rbComponent.Location = new System.Drawing.Point(120, 30);
+            this.rbComponent.Location = new System.Drawing.Point(120, 28);
             this.rbComponent.Name = "rbComponent";
             this.rbComponent.Size = new System.Drawing.Size(96, 17);
             this.rbComponent.TabIndex = 1;
@@ -117,7 +134,7 @@ namespace SolutionComponents
             // 
             this.rbSolution.AutoSize = true;
             this.rbSolution.Checked = true;
-            this.rbSolution.Location = new System.Drawing.Point(16, 30);
+            this.rbSolution.Location = new System.Drawing.Point(16, 28);
             this.rbSolution.Name = "rbSolution";
             this.rbSolution.Size = new System.Drawing.Size(78, 17);
             this.rbSolution.TabIndex = 0;
@@ -137,9 +154,9 @@ namespace SolutionComponents
             this.pnSolution.Controls.Add(this.cbSolutionComponents);
             this.pnSolution.Controls.Add(this.label1);
             this.pnSolution.Controls.Add(this.cbSolutions);
-            this.pnSolution.Location = new System.Drawing.Point(10, 110);
+            this.pnSolution.Location = new System.Drawing.Point(10, 105);
             this.pnSolution.Name = "pnSolution";
-            this.pnSolution.Size = new System.Drawing.Size(940, 545);
+            this.pnSolution.Size = new System.Drawing.Size(940, 555);
             this.pnSolution.TabIndex = 6;
             // 
             // lblStatus
@@ -175,7 +192,7 @@ namespace SolutionComponents
             this.dgvRelatedSolutions.ReadOnly = true;
             this.dgvRelatedSolutions.RowHeadersVisible = false;
             this.dgvRelatedSolutions.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvRelatedSolutions.Size = new System.Drawing.Size(930, 465);
+            this.dgvRelatedSolutions.Size = new System.Drawing.Size(930, 475);
             this.dgvRelatedSolutions.TabIndex = 4;
             // 
             // colComponentName
@@ -264,10 +281,157 @@ namespace SolutionComponents
             this.cbSolutions.TabIndex = 0;
             this.cbSolutions.SelectedIndexChanged += new System.EventHandler(this.cbSolutions_SelectedIndexChanged);
             // 
+            // pnComponent
+            // 
+            this.pnComponent.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnComponent.Controls.Add(this.lblComponentStatus);
+            this.pnComponent.Controls.Add(this.dgvComponentHistory);
+            this.pnComponent.Controls.Add(this.cbComponents);
+            this.pnComponent.Controls.Add(this.lblComponent);
+            this.pnComponent.Controls.Add(this.cbEntities);
+            this.pnComponent.Controls.Add(this.lblEntity);
+            this.pnComponent.Controls.Add(this.cbComponentTypes);
+            this.pnComponent.Controls.Add(this.lblComponentType);
+            this.pnComponent.Location = new System.Drawing.Point(10, 105);
+            this.pnComponent.Name = "pnComponent";
+            this.pnComponent.Size = new System.Drawing.Size(940, 555);
+            this.pnComponent.TabIndex = 7;
+            this.pnComponent.Visible = false;
+            // 
+            // lblComponentStatus
+            // 
+            this.lblComponentStatus.AutoSize = true;
+            this.lblComponentStatus.ForeColor = System.Drawing.Color.DimGray;
+            this.lblComponentStatus.Location = new System.Drawing.Point(400, 45);
+            this.lblComponentStatus.Name = "lblComponentStatus";
+            this.lblComponentStatus.Size = new System.Drawing.Size(0, 13);
+            this.lblComponentStatus.TabIndex = 7;
+            // 
+            // dgvComponentHistory
+            // 
+            this.dgvComponentHistory.AllowUserToAddRows = false;
+            this.dgvComponentHistory.AllowUserToDeleteRows = false;
+            this.dgvComponentHistory.AllowUserToOrderColumns = true;
+            this.dgvComponentHistory.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dgvComponentHistory.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dgvComponentHistory.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvComponentHistory.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.colHistSolution,
+            this.colHistVersion,
+            this.colHistPublisher,
+            this.colHistManaged,
+            this.colHistCreatedOn,
+            this.colHistInstalledOn});
+            this.dgvComponentHistory.Location = new System.Drawing.Point(5, 75);
+            this.dgvComponentHistory.Name = "dgvComponentHistory";
+            this.dgvComponentHistory.ReadOnly = true;
+            this.dgvComponentHistory.RowHeadersVisible = false;
+            this.dgvComponentHistory.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dgvComponentHistory.Size = new System.Drawing.Size(930, 475);
+            this.dgvComponentHistory.TabIndex = 6;
+            // 
+            // colHistSolution
+            // 
+            this.colHistSolution.HeaderText = "Solution Name";
+            this.colHistSolution.Name = "colHistSolution";
+            this.colHistSolution.ReadOnly = true;
+            // 
+            // colHistVersion
+            // 
+            this.colHistVersion.HeaderText = "Version";
+            this.colHistVersion.Name = "colHistVersion";
+            this.colHistVersion.ReadOnly = true;
+            // 
+            // colHistPublisher
+            // 
+            this.colHistPublisher.HeaderText = "Publisher";
+            this.colHistPublisher.Name = "colHistPublisher";
+            this.colHistPublisher.ReadOnly = true;
+            // 
+            // colHistManaged
+            // 
+            this.colHistManaged.HeaderText = "Managed";
+            this.colHistManaged.Name = "colHistManaged";
+            this.colHistManaged.ReadOnly = true;
+            // 
+            // colHistCreatedOn
+            // 
+            this.colHistCreatedOn.HeaderText = "Created On";
+            this.colHistCreatedOn.Name = "colHistCreatedOn";
+            this.colHistCreatedOn.ReadOnly = true;
+            // 
+            // colHistInstalledOn
+            // 
+            this.colHistInstalledOn.HeaderText = "Installed On";
+            this.colHistInstalledOn.Name = "colHistInstalledOn";
+            this.colHistInstalledOn.ReadOnly = true;
+            // 
+            // cbComponents
+            // 
+            this.cbComponents.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbComponents.FormattingEnabled = true;
+            this.cbComponents.Location = new System.Drawing.Point(125, 42);
+            this.cbComponents.Name = "cbComponents";
+            this.cbComponents.Size = new System.Drawing.Size(260, 21);
+            this.cbComponents.TabIndex = 5;
+            this.cbComponents.SelectedIndexChanged += new System.EventHandler(this.cbComponents_SelectedIndexChanged);
+            // 
+            // lblComponent
+            // 
+            this.lblComponent.AutoSize = true;
+            this.lblComponent.Location = new System.Drawing.Point(5, 45);
+            this.lblComponent.Name = "lblComponent";
+            this.lblComponent.Size = new System.Drawing.Size(97, 13);
+            this.lblComponent.TabIndex = 4;
+            this.lblComponent.Text = "Select Component:";
+            // 
+            // cbEntities
+            // 
+            this.cbEntities.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbEntities.FormattingEnabled = true;
+            this.cbEntities.Location = new System.Drawing.Point(510, 12);
+            this.cbEntities.Name = "cbEntities";
+            this.cbEntities.Size = new System.Drawing.Size(260, 21);
+            this.cbEntities.TabIndex = 3;
+            this.cbEntities.SelectedIndexChanged += new System.EventHandler(this.cbEntities_SelectedIndexChanged);
+            // 
+            // lblEntity
+            // 
+            this.lblEntity.AutoSize = true;
+            this.lblEntity.Location = new System.Drawing.Point(400, 15);
+            this.lblEntity.Name = "lblEntity";
+            this.lblEntity.Size = new System.Drawing.Size(104, 13);
+            this.lblEntity.TabIndex = 2;
+            this.lblEntity.Text = "Select Entity / Table:";
+            // 
+            // cbComponentTypes
+            // 
+            this.cbComponentTypes.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbComponentTypes.FormattingEnabled = true;
+            this.cbComponentTypes.Location = new System.Drawing.Point(125, 12);
+            this.cbComponentTypes.Name = "cbComponentTypes";
+            this.cbComponentTypes.Size = new System.Drawing.Size(260, 21);
+            this.cbComponentTypes.TabIndex = 1;
+            this.cbComponentTypes.SelectedIndexChanged += new System.EventHandler(this.cbComponentTypes_SelectedIndexChanged);
+            // 
+            // lblComponentType
+            // 
+            this.lblComponentType.AutoSize = true;
+            this.lblComponentType.Location = new System.Drawing.Point(5, 15);
+            this.lblComponentType.Name = "lblComponentType";
+            this.lblComponentType.Size = new System.Drawing.Size(91, 13);
+            this.lblComponentType.TabIndex = 0;
+            this.lblComponentType.Text = "Component Type:";
+            // 
             // MyPluginControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.pnComponent);
             this.Controls.Add(this.pnSolution);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.toolStripMenu);
@@ -281,6 +445,9 @@ namespace SolutionComponents
             this.pnSolution.ResumeLayout(false);
             this.pnSolution.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvRelatedSolutions)).EndInit();
+            this.pnComponent.ResumeLayout(false);
+            this.pnComponent.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvComponentHistory)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -309,5 +476,20 @@ namespace SolutionComponents
         private System.Windows.Forms.DataGridViewTextBoxColumn colManaged;
         private System.Windows.Forms.DataGridViewTextBoxColumn colCreatedOn;
         private System.Windows.Forms.DataGridViewTextBoxColumn colInstalledOn;
+        private System.Windows.Forms.Panel pnComponent;
+        private System.Windows.Forms.ComboBox cbComponents;
+        private System.Windows.Forms.Label lblComponent;
+        private System.Windows.Forms.ComboBox cbEntities;
+        private System.Windows.Forms.Label lblEntity;
+        private System.Windows.Forms.ComboBox cbComponentTypes;
+        private System.Windows.Forms.Label lblComponentType;
+        private System.Windows.Forms.Label lblComponentStatus;
+        private System.Windows.Forms.DataGridView dgvComponentHistory;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colHistSolution;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colHistVersion;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colHistPublisher;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colHistManaged;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colHistCreatedOn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colHistInstalledOn;
     }
 }

@@ -14,6 +14,8 @@ namespace SolutionComponents.Tests
             Test_FilterByExcludedPublishers_CaseInsensitive();
             Test_FilterByExcludedPublishers_NullOrEmptyListReturnsAll();
             Test_GetComponentTypeDetails_KnownAndUnknownTypes();
+            Test_IsEntityDependentComponent_IdentifiesCorrectTypes();
+            Test_ComponentHistoryOrdering();
             Console.WriteLine("All SolutionAuditServiceTests passed successfully!");
         }
 
@@ -88,6 +90,65 @@ namespace SolutionComponents.Tests
             var unknownType = service.GetComponentTypeDetails(9999);
             if (unknownType.ComponentTypeName != "Unknown")
                 throw new Exception($"Expected Unknown, got {unknownType.ComponentTypeName}");
+        }
+
+        public static void Test_IsEntityDependentComponent_IdentifiesCorrectTypes()
+        {
+            // Dependientes de entidad (R-4, G-2)
+            if (!SolutionAuditService.IsEntityDependentComponent(24)) // Form
+                throw new Exception("Form (24) must be entity dependent");
+
+            if (!SolutionAuditService.IsEntityDependentComponent(26)) // View
+                throw new Exception("View (26) must be entity dependent");
+
+            if (!SolutionAuditService.IsEntityDependentComponent(2)) // Attribute/Field
+                throw new Exception("Attribute (2) must be entity dependent");
+
+            if (!SolutionAuditService.IsEntityDependentComponent(3)) // Relationship
+                throw new Exception("Relationship (3) must be entity dependent");
+
+            if (!SolutionAuditService.IsEntityDependentComponent(14)) // Entity Key
+                throw new Exception("Entity Key (14) must be entity dependent");
+
+            if (!SolutionAuditService.IsEntityDependentComponent(59)) // Chart
+                throw new Exception("Chart (59) must be entity dependent");
+
+            // Globales (R-4, G-2)
+            if (SolutionAuditService.IsEntityDependentComponent(29)) // Workflow / Cloud Flow
+                throw new Exception("Workflow (29) must be global");
+
+            if (SolutionAuditService.IsEntityDependentComponent(20)) // Role
+                throw new Exception("Role (20) must be global");
+
+            if (SolutionAuditService.IsEntityDependentComponent(61)) // Web Resource
+                throw new Exception("Web Resource (61) must be global");
+
+            if (SolutionAuditService.IsEntityDependentComponent(300)) // Canvas App
+                throw new Exception("Canvas App (300) must be global");
+
+            if (SolutionAuditService.IsEntityDependentComponent(380)) // Environment Variable
+                throw new Exception("Environment Variable (380) must be global");
+        }
+
+        public static void Test_ComponentHistoryOrdering()
+        {
+            var history = new List<ComponentHistoryItem>
+            {
+                new ComponentHistoryItem { SolutionName = "Release 2025", InstalledOn = new DateTime(2025, 1, 1), Version = "1.0.0.0" },
+                new ComponentHistoryItem { SolutionName = "Release 2026", InstalledOn = new DateTime(2026, 3, 1), Version = "2.0.0.0" },
+                new ComponentHistoryItem { SolutionName = "Release 2024", InstalledOn = new DateTime(2024, 6, 1), Version = "0.9.0.0" }
+            };
+
+            var ordered = history
+                .OrderByDescending(h => h.InstalledOn ?? h.CreatedOn ?? DateTime.MinValue)
+                .ThenByDescending(h => h.Version)
+                .ToList();
+
+            if (ordered[0].SolutionName != "Release 2026")
+                throw new Exception($"Expected Release 2026 as first item, got {ordered[0].SolutionName}");
+
+            if (ordered[2].SolutionName != "Release 2024")
+                throw new Exception($"Expected Release 2024 as last item, got {ordered[2].SolutionName}");
         }
     }
 }
