@@ -1,4 +1,6 @@
 using Microsoft.Xrm.Sdk;
+using Microsoft.Xrm.Sdk.Messages;
+using Microsoft.Xrm.Sdk.Metadata;
 using Microsoft.Xrm.Sdk.Query;
 using SolutionComponents.Models;
 using System;
@@ -35,7 +37,7 @@ namespace SolutionComponents.Services
             { 24, ("Form", "systemform") },
             { 25, ("Organization", "") },
             { 26, ("View", "savedquery") },
-            { 29, ("Workflow", "workflow") },
+            { 29, ("Workflow / Cloud Flow", "workflow") },
             { 31, ("Report", "") },
             { 32, ("Report Entity", "") },
             { 33, ("Report Category", "") },
@@ -103,6 +105,21 @@ namespace SolutionComponents.Services
             { 432, ("Entity Image Configuration", "") }
         };
 
+        public static bool IsEntityDependentComponent(int componentType)
+        {
+            // Tipos dependientes de una tabla/entidad (Forms, Views, Attributes, Relationships, Keys, Charts, etc.)
+            return componentType == 2   // Attribute
+                || componentType == 3   // Relationship
+                || componentType == 10  // Entity Relationship
+                || componentType == 14  // Entity Key
+                || componentType == 18  // Index
+                || componentType == 24  // Form (systemform)
+                || componentType == 26  // View (savedquery)
+                || componentType == 59  // Charts
+                || componentType == 60  // Entity Form (userquery)
+                || componentType == 65; // Hierarchy Rule
+        }
+
         public List<SolutionSummary> GetSolutions(IOrganizationService service)
         {
             if (service == null) throw new ArgumentNullException(nameof(service));
@@ -140,6 +157,60 @@ namespace SolutionComponents.Services
             return list;
         }
 
+        public List<EntityMetadataSummary> GetEntities(IOrganizationService service)
+        {
+            if (service == null) throw new ArgumentNullException(nameof(service));
+
+            try
+            {
+                var request = new RetrieveAllEntitiesRequest
+                {
+                    EntityFilters = EntityFilters.Entity,
+                    RetrieveAsIfPublished = true
+                };
+
+                var response = (RetrieveAllEntitiesResponse)service.Execute(request);
+                var list = new List<EntityMetadataSummary>();
+
+                foreach (var meta in response.EntityMetadata)
+                {
+                    string displayName = meta.DisplayName?.UserLocalizedLabel?.Label ?? meta.LogicalName;
+                    list.Add(new EntityMetadataSummary
+                    {
+                        LogicalName = meta.LogicalName,
+                        DisplayName = displayName,
+                        ObjectTypeCode = meta.ObjectTypeCode
+                    });
+                }
+
+                return list.OrderBy(e => e.DisplayName).ToList();
+            }
+            catch
+            {
+                // Fallback ligero mediante consulta a la entidad 'entity' si la llamada de metadatos falla
+                var query = new QueryExpression("entity")
+                {
+                    ColumnSet = new ColumnSet("name", "logicalname", "objecttypecode"),
+                    Orders = { new OrderExpression("name", OrderType.Ascending) }
+                };
+
+                try
+                {
+                    var result = service.RetrieveMultiple(query);
+                    return result.Entities.Select(e => new EntityMetadataSummary
+                    {
+                        LogicalName = e.GetAttributeValue<string>("logicalname") ?? e.GetAttributeValue<string>("name"),
+                        DisplayName = e.GetAttributeValue<string>("name"),
+                        ObjectTypeCode = e.GetAttributeValue<int?>("objecttypecode")
+                    }).ToList();
+                }
+                catch
+                {
+                    return new List<EntityMetadataSummary>();
+                }
+            }
+        }
+
         public (string ComponentTypeName, string EntityName) GetComponentTypeDetails(int componentType)
         {
             return ComponentTypes.ContainsKey(componentType)
@@ -162,7 +233,6 @@ namespace SolutionComponents.Services
             }
             catch
             {
-                // Fallback for entities with alternate primary name attributes
                 try
                 {
                     Entity entity = service.Retrieve(entityLogicalName, objectId, new ColumnSet(true));
@@ -177,11 +247,226 @@ namespace SolutionComponents.Services
                 }
                 catch
                 {
-                    // Ignore retrieval exceptions and return generic
+                    // Ignore exceptions
                 }
             }
 
             return "Unnamed";
+        }
+
+        public List<ComponentItem> GetComponentsByType(IOrganizationService service, int componentType, string entityLogicalName = null)
+        {
+            if (service == null) throw new ArgumentNullException(nameof(service));
+
+            var details = GetComponentTypeDetails(componentType);
+            var list = new List<ComponentItem>();
+
+            try
+            {
+                if (componentType == 24) // Form (systemform)
+                {
+                    var query = new QueryExpression("systemform")
+                    {
+                        ColumnSet = new ColumnSet("formid", "name", "objecttypecode", "type"),
+                        Orders = { new OrderExpression("name", OrderType.Ascending) }
+                    };
+                    if (!string.IsNullOrEmpty(entityLogicalName))
+                    {
+                        query.Criteria.AddCondition("objecttypecode", ConditionOperator.Equal, entityLogicalName);
+                    }
+                    var result = service.RetrieveMultiple(query);
+                    foreach (var e in result.Entities)
+                    {
+                        list.Add(new ComponentItem
+                        {
+                            Id = e.Id,
+                            Name = e.GetAttributeValue<string>("name") ?? "Unnamed Form",
+                            ComponentType = 24,
+                            ComponentTypeName = "Form",
+                            EntityLogicalName = e.GetAttributeValue<string>("objecttypecode")
+                        });
+                    }
+                }
+                else if (componentType == 26) // View (savedquery)
+                {
+                    var query = new QueryExpression("savedquery")
+                    {
+                        ColumnSet = new ColumnSet("savedqueryid", "name", "returnedtypecode"),
+                        Orders = { new OrderExpression("name", OrderType.Ascending) }
+                    };
+                    if (!string.IsNullOrEmpty(entityLogicalName))
+                    {
+                        query.Criteria.AddCondition("returnedtypecode", ConditionOperator.Equal, entityLogicalName);
+                    }
+                    var result = service.RetrieveMultiple(query);
+                    foreach (var e in result.Entities)
+                    {
+                        list.Add(new ComponentItem
+                        {
+                            Id = e.Id,
+                            Name = e.GetAttributeValue<string>("name") ?? "Unnamed View",
+                            ComponentType = 26,
+                            ComponentTypeName = "View",
+                            EntityLogicalName = e.GetAttributeValue<string>("returnedtypecode")
+                        });
+                    }
+                }
+                else if (componentType == 29) // Workflow / Cloud Flow
+                {
+                    var query = new QueryExpression("workflow")
+                    {
+                        ColumnSet = new ColumnSet("workflowid", "name", "category"),
+                        Orders = { new OrderExpression("name", OrderType.Ascending) }
+                    };
+                    query.Criteria.AddCondition("type", ConditionOperator.Equal, 1); // Definition
+                    var result = service.RetrieveMultiple(query);
+                    foreach (var e in result.Entities)
+                    {
+                        list.Add(new ComponentItem
+                        {
+                            Id = e.Id,
+                            Name = e.GetAttributeValue<string>("name") ?? "Unnamed Workflow",
+                            ComponentType = 29,
+                            ComponentTypeName = "Workflow / Flow",
+                            EntityLogicalName = null
+                        });
+                    }
+                }
+                else if (componentType == 20) // Role
+                {
+                    var query = new QueryExpression("role")
+                    {
+                        ColumnSet = new ColumnSet("roleid", "name"),
+                        Orders = { new OrderExpression("name", OrderType.Ascending) }
+                    };
+                    var result = service.RetrieveMultiple(query);
+                    foreach (var e in result.Entities)
+                    {
+                        list.Add(new ComponentItem
+                        {
+                            Id = e.Id,
+                            Name = e.GetAttributeValue<string>("name") ?? "Unnamed Role",
+                            ComponentType = 20,
+                            ComponentTypeName = "Role",
+                            EntityLogicalName = null
+                        });
+                    }
+                }
+                else if (componentType == 61) // Web Resource
+                {
+                    var query = new QueryExpression("webresource")
+                    {
+                        ColumnSet = new ColumnSet("webresourceid", "name", "displayname"),
+                        Orders = { new OrderExpression("name", OrderType.Ascending) }
+                    };
+                    var result = service.RetrieveMultiple(query);
+                    foreach (var e in result.Entities)
+                    {
+                        string name = e.GetAttributeValue<string>("displayname") ?? e.GetAttributeValue<string>("name");
+                        list.Add(new ComponentItem
+                        {
+                            Id = e.Id,
+                            Name = name ?? "Unnamed Web Resource",
+                            ComponentType = 61,
+                            ComponentTypeName = "Web Resource",
+                            EntityLogicalName = null
+                        });
+                    }
+                }
+                else if (!string.IsNullOrEmpty(details.EntityName))
+                {
+                    var query = new QueryExpression(details.EntityName)
+                    {
+                        ColumnSet = new ColumnSet(true),
+                        TopCount = 200
+                    };
+                    var result = service.RetrieveMultiple(query);
+                    foreach (var e in result.Entities)
+                    {
+                        string name = GetComponentName(service, details.EntityName, e.Id);
+                        list.Add(new ComponentItem
+                        {
+                            Id = e.Id,
+                            Name = name,
+                            ComponentType = componentType,
+                            ComponentTypeName = details.ComponentTypeName,
+                            EntityLogicalName = entityLogicalName
+                        });
+                    }
+                }
+            }
+            catch
+            {
+                // Fallback generic
+            }
+
+            return list;
+        }
+
+        public List<ComponentHistoryItem> GetSolutionsForComponent(IOrganizationService service, Guid objectId)
+        {
+            if (service == null) throw new ArgumentNullException(nameof(service));
+            if (objectId == Guid.Empty) return new List<ComponentHistoryItem>();
+
+            var query = new QueryExpression("solutioncomponent")
+            {
+                ColumnSet = new ColumnSet("solutionid")
+            };
+            query.Criteria.AddCondition("objectid", ConditionOperator.Equal, objectId);
+
+            var result = service.RetrieveMultiple(query);
+            if (result == null || result.Entities.Count == 0)
+                return new List<ComponentHistoryItem>();
+
+            var history = new List<ComponentHistoryItem>();
+
+            foreach (var entity in result.Entities)
+            {
+                Guid solutionId = entity.GetAttributeValue<Guid>("solutionid");
+
+                try
+                {
+                    var solQuery = new QueryExpression("solution")
+                    {
+                        ColumnSet = new ColumnSet("friendlyname", "uniquename", "version", "ismanaged", "createdon", "installedon", "publisherid")
+                    };
+                    solQuery.Criteria.AddCondition("solutionid", ConditionOperator.Equal, solutionId);
+
+                    var linkPub = solQuery.AddLink("publisher", "publisherid", "publisherid", JoinOperator.LeftOuter);
+                    linkPub.Columns = new ColumnSet("friendlyname");
+                    linkPub.EntityAlias = "pub";
+
+                    var solRecords = service.RetrieveMultiple(solQuery);
+                    if (solRecords != null && solRecords.Entities.Count > 0)
+                    {
+                        var sol = solRecords.Entities[0];
+                        string pubName = sol.Contains("pub.friendlyname")
+                            ? sol.GetAttributeValue<AliasedValue>("pub.friendlyname")?.Value as string
+                            : "Unknown";
+
+                        history.Add(new ComponentHistoryItem
+                        {
+                            SolutionName = sol.GetAttributeValue<string>("friendlyname") ?? sol.GetAttributeValue<string>("uniquename"),
+                            SolutionUniqueName = sol.GetAttributeValue<string>("uniquename"),
+                            Version = sol.GetAttributeValue<string>("version"),
+                            PublisherName = pubName ?? "Unknown",
+                            IsManaged = sol.GetAttributeValue<bool>("ismanaged"),
+                            CreatedOn = sol.GetAttributeValue<DateTime?>("createdon"),
+                            InstalledOn = sol.GetAttributeValue<DateTime?>("installedon")
+                        });
+                    }
+                }
+                catch
+                {
+                    // Ignore single solution errors
+                }
+            }
+
+            // Ordenar cronológicamente (más recientes primero)
+            return history
+                .OrderByDescending(h => h.InstalledOn ?? h.CreatedOn ?? DateTime.MinValue)
+                .ThenByDescending(h => h.Version)
+                .ToList();
         }
 
         public List<SolutionOverlapItem> GetOverlappingSolutions(
@@ -192,7 +477,6 @@ namespace SolutionComponents.Services
             if (service == null) throw new ArgumentNullException(nameof(service));
             if (selectedSolutionId == Guid.Empty) return new List<SolutionOverlapItem>();
 
-            // 1. Consultar todos los componentes de la solución seleccionada
             var compQuery = new QueryExpression("solutioncomponent")
             {
                 ColumnSet = new ColumnSet("componenttype", "objectid", "solutionid")
@@ -205,7 +489,6 @@ namespace SolutionComponents.Services
 
             var overlaps = new List<SolutionOverlapItem>();
 
-            // 2. Para cada componente, buscar otras soluciones que también lo contengan
             foreach (var comp in solutionComponents.Entities)
             {
                 Guid objectId = comp.GetAttributeValue<Guid>("objectid");
@@ -266,7 +549,7 @@ namespace SolutionComponents.Services
                     }
                     catch
                     {
-                        // Continuar con el resto de componentes en caso de excepción puntual
+                        // Ignore
                     }
                 }
             }
