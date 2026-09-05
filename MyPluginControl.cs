@@ -1,4 +1,4 @@
-﻿using McTools.Xrm.Connection;
+using McTools.Xrm.Connection;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Organization;
 using Microsoft.Xrm.Sdk.Query;
@@ -241,6 +241,11 @@ namespace SolutionComponents
             }
         }
 
+        private string GetEntityLogicalNameByTypeCode(IOrganizationService service, int entityTypeCode)
+        {
+            return entityTypeCode.ToString();
+        }
+
         private (string componentTypeName, string entityName) GetComponentTypeDetails(int componentType)
         {
             return ComponentTypes.ContainsKey(componentType)
@@ -271,7 +276,8 @@ namespace SolutionComponents
                 else
                 {
                     Guid componentId = selectedComponent.Id;
-                    LoadRelatedSolutionsForComponent(componentId);
+                    string componentName = selectedComponent.Name;
+                    LoadRelatedSolutionsForComponent(componentId, componentName);
                 }
 
             }
@@ -332,7 +338,7 @@ namespace SolutionComponents
             }
         }
 
-        private void LoadRelatedSolutionsForComponent(Guid componentId)
+        private void LoadRelatedSolutionsForComponent(Guid componentId, string componentName = "")
         {
             try
             {

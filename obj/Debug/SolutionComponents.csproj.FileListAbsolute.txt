@@ -1,4 +1,0 @@
-C:\Users\Alberto\source\repos\SolutionComponents\obj\Debug\SolutionComponents.csproj.AssemblyReference.cache
-C:\Users\Alberto\source\repos\SolutionComponents\obj\Debug\SolutionComponents.MyPluginControl.resources
-C:\Users\Alberto\source\repos\SolutionComponents\obj\Debug\SolutionComponents.csproj.GenerateResource.cache
-C:\Users\Alberto\source\repos\SolutionComponents\obj\Debug\SolutionComponents.csproj.CoreCompileInputs.cache
