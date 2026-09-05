@@ -1,8 +1,5 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SolutionComponents
 {
@@ -15,5 +12,11 @@ namespace SolutionComponents
     public class Settings
     {
         public string LastUsedOrganizationWebappUrl { get; set; }
+
+        public List<string> ExcludedPublishers { get; set; } = new List<string>
+        {
+            "MicrosoftCorporation",
+            "Microsoft"
+        };
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace SolutionComponents
+namespace SolutionComponents
 {
     partial class MyPluginControl
     {
@@ -10,7 +10,7 @@
         /// <summary> 
         /// Nettoyage des ressources utilisées.
         /// </summary>
-        /// <param name="disposing">true si les ressources managées doivent être supprimées ; sinon, false.</param>
+        /// <param name="disposing">true si les ressources managées doivent être supprimées ; sinon, false.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -31,16 +31,21 @@
             this.toolStripMenu = new System.Windows.Forms.ToolStrip();
             this.tsbClose = new System.Windows.Forms.ToolStripButton();
             this.tssSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.tsbSample = new System.Windows.Forms.ToolStripButton();
+            this.tsbRefresh = new System.Windows.Forms.ToolStripButton();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.rbComponent = new System.Windows.Forms.RadioButton();
             this.rbSolution = new System.Windows.Forms.RadioButton();
             this.pnSolution = new System.Windows.Forms.Panel();
+            this.lblStatus = new System.Windows.Forms.Label();
             this.dgvRelatedSolutions = new System.Windows.Forms.DataGridView();
-            this.colName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colComponentName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colComponentType = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colRelatedSolution = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colVersion = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colPublisher = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colManaged = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colCreatedOn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colInstalledOn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colManaged = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.label2 = new System.Windows.Forms.Label();
             this.cbSolutionComponents = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -57,10 +62,10 @@
             this.toolStripMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsbClose,
             this.tssSeparator1,
-            this.tsbSample});
+            this.tsbRefresh});
             this.toolStripMenu.Location = new System.Drawing.Point(0, 0);
             this.toolStripMenu.Name = "toolStripMenu";
-            this.toolStripMenu.Size = new System.Drawing.Size(943, 25);
+            this.toolStripMenu.Size = new System.Drawing.Size(960, 25);
             this.toolStripMenu.TabIndex = 4;
             this.toolStripMenu.Text = "toolStrip1";
             // 
@@ -77,93 +82,131 @@
             this.tssSeparator1.Name = "tssSeparator1";
             this.tssSeparator1.Size = new System.Drawing.Size(6, 25);
             // 
-            // tsbSample
+            // tsbRefresh
             // 
-            this.tsbSample.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.tsbSample.Name = "tsbSample";
-            this.tsbSample.Size = new System.Drawing.Size(46, 22);
-            this.tsbSample.Text = "Try me";
-            this.tsbSample.Click += new System.EventHandler(this.tsbSample_Click);
+            this.tsbRefresh.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tsbRefresh.Name = "tsbRefresh";
+            this.tsbRefresh.Size = new System.Drawing.Size(102, 22);
+            this.tsbRefresh.Text = "Refresh Solutions";
+            this.tsbRefresh.Click += new System.EventHandler(this.tsbRefresh_Click);
             // 
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.rbComponent);
             this.groupBox1.Controls.Add(this.rbSolution);
-            this.groupBox1.Location = new System.Drawing.Point(3, 28);
+            this.groupBox1.Location = new System.Drawing.Point(10, 32);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(282, 81);
+            this.groupBox1.Size = new System.Drawing.Size(280, 70);
             this.groupBox1.TabIndex = 5;
             this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Analysis Mode";
             // 
             // rbComponent
             // 
             this.rbComponent.AutoSize = true;
-            this.rbComponent.Location = new System.Drawing.Point(6, 42);
+            this.rbComponent.Location = new System.Drawing.Point(120, 30);
             this.rbComponent.Name = "rbComponent";
-            this.rbComponent.Size = new System.Drawing.Size(79, 17);
+            this.rbComponent.Size = new System.Drawing.Size(96, 17);
             this.rbComponent.TabIndex = 1;
             this.rbComponent.TabStop = true;
-            this.rbComponent.Text = "Component";
+            this.rbComponent.Text = "By Component";
             this.rbComponent.UseVisualStyleBackColor = true;
+            this.rbComponent.CheckedChanged += new System.EventHandler(this.rbMode_CheckedChanged);
             // 
             // rbSolution
             // 
             this.rbSolution.AutoSize = true;
             this.rbSolution.Checked = true;
-            this.rbSolution.Location = new System.Drawing.Point(6, 19);
+            this.rbSolution.Location = new System.Drawing.Point(16, 30);
             this.rbSolution.Name = "rbSolution";
-            this.rbSolution.Size = new System.Drawing.Size(63, 17);
+            this.rbSolution.Size = new System.Drawing.Size(78, 17);
             this.rbSolution.TabIndex = 0;
             this.rbSolution.TabStop = true;
-            this.rbSolution.Text = "Solution";
+            this.rbSolution.Text = "By Solution";
             this.rbSolution.UseVisualStyleBackColor = true;
+            this.rbSolution.CheckedChanged += new System.EventHandler(this.rbMode_CheckedChanged);
             // 
             // pnSolution
             // 
+            this.pnSolution.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnSolution.Controls.Add(this.lblStatus);
             this.pnSolution.Controls.Add(this.dgvRelatedSolutions);
             this.pnSolution.Controls.Add(this.label2);
             this.pnSolution.Controls.Add(this.cbSolutionComponents);
             this.pnSolution.Controls.Add(this.label1);
             this.pnSolution.Controls.Add(this.cbSolutions);
-            this.pnSolution.Location = new System.Drawing.Point(7, 115);
+            this.pnSolution.Location = new System.Drawing.Point(10, 110);
             this.pnSolution.Name = "pnSolution";
-            this.pnSolution.Size = new System.Drawing.Size(933, 550);
+            this.pnSolution.Size = new System.Drawing.Size(940, 545);
             this.pnSolution.TabIndex = 6;
+            // 
+            // lblStatus
+            // 
+            this.lblStatus.AutoSize = true;
+            this.lblStatus.ForeColor = System.Drawing.Color.DimGray;
+            this.lblStatus.Location = new System.Drawing.Point(400, 15);
+            this.lblStatus.Name = "lblStatus";
+            this.lblStatus.Size = new System.Drawing.Size(0, 13);
+            this.lblStatus.TabIndex = 5;
             // 
             // dgvRelatedSolutions
             // 
             this.dgvRelatedSolutions.AllowUserToAddRows = false;
             this.dgvRelatedSolutions.AllowUserToDeleteRows = false;
             this.dgvRelatedSolutions.AllowUserToOrderColumns = true;
+            this.dgvRelatedSolutions.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dgvRelatedSolutions.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dgvRelatedSolutions.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvRelatedSolutions.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.colName,
+            this.colComponentName,
+            this.colComponentType,
+            this.colRelatedSolution,
+            this.colVersion,
+            this.colPublisher,
+            this.colManaged,
             this.colCreatedOn,
-            this.colInstalledOn,
-            this.colManaged});
-            this.dgvRelatedSolutions.Location = new System.Drawing.Point(6, 57);
+            this.colInstalledOn});
+            this.dgvRelatedSolutions.Location = new System.Drawing.Point(5, 75);
             this.dgvRelatedSolutions.Name = "dgvRelatedSolutions";
             this.dgvRelatedSolutions.ReadOnly = true;
-            this.dgvRelatedSolutions.Size = new System.Drawing.Size(924, 490);
+            this.dgvRelatedSolutions.RowHeadersVisible = false;
+            this.dgvRelatedSolutions.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dgvRelatedSolutions.Size = new System.Drawing.Size(930, 465);
             this.dgvRelatedSolutions.TabIndex = 4;
             // 
-            // colName
+            // colComponentName
             // 
-            this.colName.HeaderText = "Name";
-            this.colName.Name = "colName";
-            this.colName.ReadOnly = true;
+            this.colComponentName.HeaderText = "Component Name";
+            this.colComponentName.Name = "colComponentName";
+            this.colComponentName.ReadOnly = true;
             // 
-            // colCreatedOn
+            // colComponentType
             // 
-            this.colCreatedOn.HeaderText = "Created on";
-            this.colCreatedOn.Name = "colCreatedOn";
-            this.colCreatedOn.ReadOnly = true;
+            this.colComponentType.HeaderText = "Component Type";
+            this.colComponentType.Name = "colComponentType";
+            this.colComponentType.ReadOnly = true;
             // 
-            // colInstalledOn
+            // colRelatedSolution
             // 
-            this.colInstalledOn.HeaderText = "Installed on";
-            this.colInstalledOn.Name = "colInstalledOn";
-            this.colInstalledOn.ReadOnly = true;
+            this.colRelatedSolution.HeaderText = "Related Solution";
+            this.colRelatedSolution.Name = "colRelatedSolution";
+            this.colRelatedSolution.ReadOnly = true;
+            // 
+            // colVersion
+            // 
+            this.colVersion.HeaderText = "Version";
+            this.colVersion.Name = "colVersion";
+            this.colVersion.ReadOnly = true;
+            // 
+            // colPublisher
+            // 
+            this.colPublisher.HeaderText = "Publisher";
+            this.colPublisher.Name = "colPublisher";
+            this.colPublisher.ReadOnly = true;
             // 
             // colManaged
             // 
@@ -171,39 +214,53 @@
             this.colManaged.Name = "colManaged";
             this.colManaged.ReadOnly = true;
             // 
+            // colCreatedOn
+            // 
+            this.colCreatedOn.HeaderText = "Created On";
+            this.colCreatedOn.Name = "colCreatedOn";
+            this.colCreatedOn.ReadOnly = true;
+            // 
+            // colInstalledOn
+            // 
+            this.colInstalledOn.HeaderText = "Installed On";
+            this.colInstalledOn.Name = "colInstalledOn";
+            this.colInstalledOn.ReadOnly = true;
+            // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(3, 35);
+            this.label2.Location = new System.Drawing.Point(5, 45);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(101, 13);
+            this.label2.Size = new System.Drawing.Size(92, 13);
             this.label2.TabIndex = 3;
-            this.label2.Text = "Solution component";
+            this.label2.Text = "Filter Component:";
             // 
             // cbSolutionComponents
             // 
+            this.cbSolutionComponents.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbSolutionComponents.FormattingEnabled = true;
-            this.cbSolutionComponents.Location = new System.Drawing.Point(114, 30);
+            this.cbSolutionComponents.Location = new System.Drawing.Point(125, 42);
             this.cbSolutionComponents.Name = "cbSolutionComponents";
-            this.cbSolutionComponents.Size = new System.Drawing.Size(224, 21);
+            this.cbSolutionComponents.Size = new System.Drawing.Size(260, 21);
             this.cbSolutionComponents.TabIndex = 2;
             this.cbSolutionComponents.SelectedIndexChanged += new System.EventHandler(this.cbSolutionComponents_SelectedIndexChanged);
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(3, 7);
+            this.label1.Location = new System.Drawing.Point(5, 15);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(45, 13);
+            this.label1.Size = new System.Drawing.Size(84, 13);
             this.label1.TabIndex = 1;
-            this.label1.Text = "Solution";
+            this.label1.Text = "Select Solution:";
             // 
             // cbSolutions
             // 
+            this.cbSolutions.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbSolutions.FormattingEnabled = true;
-            this.cbSolutions.Location = new System.Drawing.Point(114, 3);
+            this.cbSolutions.Location = new System.Drawing.Point(125, 12);
             this.cbSolutions.Name = "cbSolutions";
-            this.cbSolutions.Size = new System.Drawing.Size(224, 21);
+            this.cbSolutions.Size = new System.Drawing.Size(260, 21);
             this.cbSolutions.TabIndex = 0;
             this.cbSolutions.SelectedIndexChanged += new System.EventHandler(this.cbSolutions_SelectedIndexChanged);
             // 
@@ -215,7 +272,7 @@
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.toolStripMenu);
             this.Name = "MyPluginControl";
-            this.Size = new System.Drawing.Size(943, 668);
+            this.Size = new System.Drawing.Size(960, 670);
             this.Load += new System.EventHandler(this.MyPluginControl_Load);
             this.toolStripMenu.ResumeLayout(false);
             this.toolStripMenu.PerformLayout();
@@ -232,7 +289,7 @@
         #endregion
         private System.Windows.Forms.ToolStrip toolStripMenu;
         private System.Windows.Forms.ToolStripButton tsbClose;
-        private System.Windows.Forms.ToolStripButton tsbSample;
+        private System.Windows.Forms.ToolStripButton tsbRefresh;
         private System.Windows.Forms.ToolStripSeparator tssSeparator1;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.RadioButton rbComponent;
@@ -242,10 +299,15 @@
         private System.Windows.Forms.ComboBox cbSolutions;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.ComboBox cbSolutionComponents;
+        private System.Windows.Forms.Label lblStatus;
         private System.Windows.Forms.DataGridView dgvRelatedSolutions;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colComponentName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colComponentType;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colRelatedSolution;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colVersion;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colPublisher;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colManaged;
         private System.Windows.Forms.DataGridViewTextBoxColumn colCreatedOn;
         private System.Windows.Forms.DataGridViewTextBoxColumn colInstalledOn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colManaged;
     }
 }
