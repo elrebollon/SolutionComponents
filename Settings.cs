@@ -13,10 +13,6 @@ namespace SolutionComponents
     {
         public string LastUsedOrganizationWebappUrl { get; set; }
 
-        public List<string> ExcludedPublishers { get; set; } = new List<string>
-        {
-            "MicrosoftCorporation",
-            "Microsoft"
-        };
+        public List<string> ExcludedPublishers { get; set; } = new List<string>();
     }
 }
