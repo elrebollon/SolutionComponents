@@ -238,11 +238,11 @@ namespace SolutionComponents
                     item.ComponentType,
                     item.RelatedSolutionName,
                     item.Version,
-                    item.PublisherName,
-                    item.ManagedDisplay,
                     item.ModifiedBy,
                     item.CreatedOn?.ToString("yyyy-MM-dd HH:mm"),
-                    item.InstalledOn?.ToString("yyyy-MM-dd HH:mm")
+                    item.ModifiedOn?.ToString("yyyy-MM-dd HH:mm"),
+                    item.PublisherName,
+                    item.ManagedDisplay
                 );
             }
         }
@@ -452,11 +452,11 @@ namespace SolutionComponents
                 dgvComponentHistory.Rows.Add(
                     item.SolutionName,
                     item.Version,
-                    item.PublisherName,
-                    item.ManagedDisplay,
                     item.ModifiedBy,
                     item.CreatedOn?.ToString("yyyy-MM-dd HH:mm"),
-                    item.InstalledOn?.ToString("yyyy-MM-dd HH:mm")
+                    item.ModifiedOn?.ToString("yyyy-MM-dd HH:mm"),
+                    item.PublisherName,
+                    item.ManagedDisplay
                 );
             }
         }

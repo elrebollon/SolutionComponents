@@ -42,11 +42,11 @@ namespace SolutionComponents
             this.colComponentType = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colRelatedSolution = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colVersion = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colPublisher = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colModifiedBy = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colManaged = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colCreatedOn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colInstalledOn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colModifiedOn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colPublisher = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colManaged = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.label2 = new System.Windows.Forms.Label();
             this.cbSolutionComponents = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -56,11 +56,11 @@ namespace SolutionComponents
             this.dgvComponentHistory = new System.Windows.Forms.DataGridView();
             this.colHistSolution = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colHistVersion = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colHistPublisher = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colHistModifiedBy = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colHistManaged = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colHistCreatedOn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colHistInstalledOn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colHistModifiedOn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colHistPublisher = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colHistManaged = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cbComponents = new System.Windows.Forms.ComboBox();
             this.lblComponent = new System.Windows.Forms.Label();
             this.cbEntities = new System.Windows.Forms.ComboBox();
@@ -186,11 +186,11 @@ namespace SolutionComponents
             this.colComponentType,
             this.colRelatedSolution,
             this.colVersion,
-            this.colPublisher,
-            this.colManaged,
             this.colModifiedBy,
             this.colCreatedOn,
-            this.colInstalledOn});
+            this.colModifiedOn,
+            this.colPublisher,
+            this.colManaged});
             this.dgvRelatedSolutions.Location = new System.Drawing.Point(5, 75);
             this.dgvRelatedSolutions.MultiSelect = true;
             this.dgvRelatedSolutions.Name = "dgvRelatedSolutions";
@@ -202,57 +202,75 @@ namespace SolutionComponents
             // 
             // colComponentName
             // 
+            this.colComponentName.FillWeight = 180F;
+            this.colComponentName.MinimumWidth = 140;
             this.colComponentName.HeaderText = "Component Name";
             this.colComponentName.Name = "colComponentName";
             this.colComponentName.ReadOnly = true;
             // 
             // colComponentType
             // 
+            this.colComponentType.FillWeight = 120F;
+            this.colComponentType.MinimumWidth = 100;
             this.colComponentType.HeaderText = "Component Type";
             this.colComponentType.Name = "colComponentType";
             this.colComponentType.ReadOnly = true;
             // 
             // colRelatedSolution
             // 
+            this.colRelatedSolution.FillWeight = 160F;
+            this.colRelatedSolution.MinimumWidth = 130;
             this.colRelatedSolution.HeaderText = "Related Solution";
             this.colRelatedSolution.Name = "colRelatedSolution";
             this.colRelatedSolution.ReadOnly = true;
             // 
             // colVersion
             // 
+            this.colVersion.FillWeight = 70F;
+            this.colVersion.MinimumWidth = 65;
             this.colVersion.HeaderText = "Version";
             this.colVersion.Name = "colVersion";
             this.colVersion.ReadOnly = true;
             // 
-            // colPublisher
-            // 
-            this.colPublisher.HeaderText = "Publisher";
-            this.colPublisher.Name = "colPublisher";
-            this.colPublisher.ReadOnly = true;
-            // 
-            // colManaged
-            // 
-            this.colManaged.HeaderText = "Managed";
-            this.colManaged.Name = "colManaged";
-            this.colManaged.ReadOnly = true;
-            // 
             // colModifiedBy
             // 
+            this.colModifiedBy.FillWeight = 130F;
+            this.colModifiedBy.MinimumWidth = 100;
             this.colModifiedBy.HeaderText = "Modified By";
             this.colModifiedBy.Name = "colModifiedBy";
             this.colModifiedBy.ReadOnly = true;
             // 
             // colCreatedOn
             // 
+            this.colCreatedOn.FillWeight = 90F;
+            this.colCreatedOn.MinimumWidth = 85;
             this.colCreatedOn.HeaderText = "Created On";
             this.colCreatedOn.Name = "colCreatedOn";
             this.colCreatedOn.ReadOnly = true;
             // 
-            // colInstalledOn
+            // colModifiedOn
             // 
-            this.colInstalledOn.HeaderText = "Installed On";
-            this.colInstalledOn.Name = "colInstalledOn";
-            this.colInstalledOn.ReadOnly = true;
+            this.colModifiedOn.FillWeight = 90F;
+            this.colModifiedOn.MinimumWidth = 85;
+            this.colModifiedOn.HeaderText = "Modified On";
+            this.colModifiedOn.Name = "colModifiedOn";
+            this.colModifiedOn.ReadOnly = true;
+            // 
+            // colPublisher
+            // 
+            this.colPublisher.FillWeight = 110F;
+            this.colPublisher.MinimumWidth = 90;
+            this.colPublisher.HeaderText = "Publisher";
+            this.colPublisher.Name = "colPublisher";
+            this.colPublisher.ReadOnly = true;
+            // 
+            // colManaged
+            // 
+            this.colManaged.FillWeight = 50F;
+            this.colManaged.MinimumWidth = 50;
+            this.colManaged.HeaderText = "Managed";
+            this.colManaged.Name = "colManaged";
+            this.colManaged.ReadOnly = true;
             // 
             // label2
             // 
@@ -334,11 +352,11 @@ namespace SolutionComponents
             this.dgvComponentHistory.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.colHistSolution,
             this.colHistVersion,
-            this.colHistPublisher,
-            this.colHistManaged,
             this.colHistModifiedBy,
             this.colHistCreatedOn,
-            this.colHistInstalledOn});
+            this.colHistModifiedOn,
+            this.colHistPublisher,
+            this.colHistManaged});
             this.dgvComponentHistory.Location = new System.Drawing.Point(5, 75);
             this.dgvComponentHistory.MultiSelect = true;
             this.dgvComponentHistory.Name = "dgvComponentHistory";
@@ -350,45 +368,59 @@ namespace SolutionComponents
             // 
             // colHistSolution
             // 
+            this.colHistSolution.FillWeight = 240F;
+            this.colHistSolution.MinimumWidth = 160;
             this.colHistSolution.HeaderText = "Solution Name";
             this.colHistSolution.Name = "colHistSolution";
             this.colHistSolution.ReadOnly = true;
             // 
             // colHistVersion
             // 
+            this.colHistVersion.FillWeight = 80F;
+            this.colHistVersion.MinimumWidth = 65;
             this.colHistVersion.HeaderText = "Version";
             this.colHistVersion.Name = "colHistVersion";
             this.colHistVersion.ReadOnly = true;
             // 
-            // colHistPublisher
-            // 
-            this.colHistPublisher.HeaderText = "Publisher";
-            this.colHistPublisher.Name = "colHistPublisher";
-            this.colHistPublisher.ReadOnly = true;
-            // 
-            // colHistManaged
-            // 
-            this.colHistManaged.HeaderText = "Managed";
-            this.colHistManaged.Name = "colHistManaged";
-            this.colHistManaged.ReadOnly = true;
-            // 
             // colHistModifiedBy
             // 
+            this.colHistModifiedBy.FillWeight = 160F;
+            this.colHistModifiedBy.MinimumWidth = 110;
             this.colHistModifiedBy.HeaderText = "Modified By";
             this.colHistModifiedBy.Name = "colHistModifiedBy";
             this.colHistModifiedBy.ReadOnly = true;
             // 
             // colHistCreatedOn
             // 
+            this.colHistCreatedOn.FillWeight = 110F;
+            this.colHistCreatedOn.MinimumWidth = 90;
             this.colHistCreatedOn.HeaderText = "Created On";
             this.colHistCreatedOn.Name = "colHistCreatedOn";
             this.colHistCreatedOn.ReadOnly = true;
             // 
-            // colHistInstalledOn
+            // colHistModifiedOn
             // 
-            this.colHistInstalledOn.HeaderText = "Installed On";
-            this.colHistInstalledOn.Name = "colHistInstalledOn";
-            this.colHistInstalledOn.ReadOnly = true;
+            this.colHistModifiedOn.FillWeight = 110F;
+            this.colHistModifiedOn.MinimumWidth = 90;
+            this.colHistModifiedOn.HeaderText = "Modified On";
+            this.colHistModifiedOn.Name = "colHistModifiedOn";
+            this.colHistModifiedOn.ReadOnly = true;
+            // 
+            // colHistPublisher
+            // 
+            this.colHistPublisher.FillWeight = 140F;
+            this.colHistPublisher.MinimumWidth = 100;
+            this.colHistPublisher.HeaderText = "Publisher";
+            this.colHistPublisher.Name = "colHistPublisher";
+            this.colHistPublisher.ReadOnly = true;
+            // 
+            // colHistManaged
+            // 
+            this.colHistManaged.FillWeight = 60F;
+            this.colHistManaged.MinimumWidth = 50;
+            this.colHistManaged.HeaderText = "Managed";
+            this.colHistManaged.Name = "colHistManaged";
+            this.colHistManaged.ReadOnly = true;
             // 
             // cbComponents
             // 
@@ -492,11 +524,11 @@ namespace SolutionComponents
         private System.Windows.Forms.DataGridViewTextBoxColumn colComponentType;
         private System.Windows.Forms.DataGridViewTextBoxColumn colRelatedSolution;
         private System.Windows.Forms.DataGridViewTextBoxColumn colVersion;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colPublisher;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colManaged;
         private System.Windows.Forms.DataGridViewTextBoxColumn colModifiedBy;
         private System.Windows.Forms.DataGridViewTextBoxColumn colCreatedOn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colInstalledOn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colModifiedOn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colPublisher;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colManaged;
         private System.Windows.Forms.Panel pnComponent;
         private System.Windows.Forms.ComboBox cbComponents;
         private System.Windows.Forms.Label lblComponent;
@@ -508,10 +540,10 @@ namespace SolutionComponents
         private System.Windows.Forms.DataGridView dgvComponentHistory;
         private System.Windows.Forms.DataGridViewTextBoxColumn colHistSolution;
         private System.Windows.Forms.DataGridViewTextBoxColumn colHistVersion;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colHistPublisher;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colHistManaged;
         private System.Windows.Forms.DataGridViewTextBoxColumn colHistModifiedBy;
         private System.Windows.Forms.DataGridViewTextBoxColumn colHistCreatedOn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colHistInstalledOn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colHistModifiedOn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colHistPublisher;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colHistManaged;
     }
 }
