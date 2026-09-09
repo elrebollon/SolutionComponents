@@ -738,6 +738,88 @@ namespace SolutionComponents.Services
             return 0;
         }
 
+        private readonly Dictionary<Guid, string> _userCache = new Dictionary<Guid, string>();
+
+        public string GetModifiedByName(IOrganizationService service, Entity sol, Dictionary<Guid, string> localUserCache = null)
+        {
+            if (sol == null) return "System";
+
+            // 1. Check FormattedValues for modifiedby
+            if (sol.FormattedValues != null && sol.FormattedValues.TryGetValue("modifiedby", out string formattedModBy) && !string.IsNullOrWhiteSpace(formattedModBy))
+            {
+                return formattedModBy;
+            }
+
+            // 2. Check AliasedValue from usr.fullname
+            if (sol.Contains("usr.fullname"))
+            {
+                var aliased = sol.GetAttributeValue<AliasedValue>("usr.fullname");
+                if (aliased != null && aliased.Value != null)
+                {
+                    string val = aliased.Value.ToString();
+                    if (!string.IsNullOrWhiteSpace(val))
+                        return val;
+                }
+            }
+
+            // 3. Check EntityReference Name
+            var modByRef = sol.GetAttributeValue<EntityReference>("modifiedby");
+            if (modByRef != null)
+            {
+                if (!string.IsNullOrWhiteSpace(modByRef.Name))
+                    return modByRef.Name;
+
+                // 4. Resolve via cache or service.Retrieve from systemuser
+                if (modByRef.Id != Guid.Empty)
+                {
+                    if (localUserCache != null && localUserCache.TryGetValue(modByRef.Id, out string cachedName) && !string.IsNullOrWhiteSpace(cachedName))
+                    {
+                        return cachedName;
+                    }
+                    if (_userCache.TryGetValue(modByRef.Id, out string globalCachedName) && !string.IsNullOrWhiteSpace(globalCachedName))
+                    {
+                        return globalCachedName;
+                    }
+
+                    if (service != null)
+                    {
+                        try
+                        {
+                            var userEntity = service.Retrieve(modByRef.LogicalName ?? "systemuser", modByRef.Id, new ColumnSet("fullname"));
+                            if (userEntity != null && userEntity.Contains("fullname"))
+                            {
+                                string fullName = userEntity.GetAttributeValue<string>("fullname");
+                                if (!string.IsNullOrWhiteSpace(fullName))
+                                {
+                                    if (localUserCache != null) localUserCache[modByRef.Id] = fullName;
+                                    _userCache[modByRef.Id] = fullName;
+                                    return fullName;
+                                }
+                            }
+                        }
+                        catch
+                        {
+                            // Fallback if user cannot be retrieved
+                        }
+                    }
+                }
+            }
+
+            // 5. Check createdby formatted value or reference as secondary fallback
+            if (sol.FormattedValues != null && sol.FormattedValues.TryGetValue("createdby", out string formattedCreatedBy) && !string.IsNullOrWhiteSpace(formattedCreatedBy))
+            {
+                return formattedCreatedBy;
+            }
+
+            var createdByRef = sol.GetAttributeValue<EntityReference>("createdby");
+            if (createdByRef != null && !string.IsNullOrWhiteSpace(createdByRef.Name))
+            {
+                return createdByRef.Name;
+            }
+
+            return "System";
+        }
+
         public List<ComponentHistoryItem> GetSolutionsForComponent(IOrganizationService service, Guid objectId)
         {
             if (service == null) throw new ArgumentNullException(nameof(service));
@@ -754,6 +836,7 @@ namespace SolutionComponents.Services
                 return new List<ComponentHistoryItem>();
 
             var history = new List<ComponentHistoryItem>();
+            var userCache = new Dictionary<Guid, string>();
 
             foreach (var entity in result.Entities)
             {
@@ -763,7 +846,7 @@ namespace SolutionComponents.Services
                 {
                     var solQuery = new QueryExpression("solution")
                     {
-                        ColumnSet = new ColumnSet("friendlyname", "uniquename", "version", "ismanaged", "createdon", "modifiedon", "installedon", "publisherid", "modifiedby")
+                        ColumnSet = new ColumnSet("friendlyname", "uniquename", "version", "ismanaged", "createdon", "modifiedon", "installedon", "publisherid", "modifiedby", "createdby")
                     };
                     solQuery.Criteria.AddCondition("solutionid", ConditionOperator.Equal, solutionId);
 
@@ -779,13 +862,25 @@ namespace SolutionComponents.Services
                     if (solRecords != null && solRecords.Entities.Count > 0)
                     {
                         var sol = solRecords.Entities[0];
-                        string pubName = sol.Contains("pub.friendlyname")
-                            ? sol.GetAttributeValue<AliasedValue>("pub.friendlyname")?.Value as string
-                            : "Unknown";
+                        string pubName = null;
+                        if (sol.Contains("pub.friendlyname"))
+                        {
+                            var aliasedPub = sol.GetAttributeValue<AliasedValue>("pub.friendlyname");
+                            if (aliasedPub != null && aliasedPub.Value != null)
+                            {
+                                pubName = aliasedPub.Value.ToString();
+                            }
+                        }
+                        if (string.IsNullOrWhiteSpace(pubName) && sol.FormattedValues != null && sol.FormattedValues.TryGetValue("publisherid", out string formattedPub) && !string.IsNullOrWhiteSpace(formattedPub))
+                        {
+                            pubName = formattedPub;
+                        }
+                        if (string.IsNullOrWhiteSpace(pubName))
+                        {
+                            pubName = sol.GetAttributeValue<EntityReference>("publisherid")?.Name ?? "Unknown";
+                        }
 
-                        string modUser = sol.Contains("usr.fullname")
-                            ? sol.GetAttributeValue<AliasedValue>("usr.fullname")?.Value as string
-                            : (sol.Contains("modifiedby") ? sol.GetAttributeValue<EntityReference>("modifiedby")?.Name : "System");
+                        string modUser = GetModifiedByName(service, sol, userCache);
 
                         history.Add(new ComponentHistoryItem
                         {
@@ -834,6 +929,7 @@ namespace SolutionComponents.Services
 
             var overlaps = new List<SolutionOverlapItem>();
             var compNameCache = new Dictionary<Guid, string>();
+            var userCache = new Dictionary<Guid, string>();
 
             foreach (var comp in solutionComponents.Entities)
             {
@@ -866,7 +962,7 @@ namespace SolutionComponents.Services
                     {
                         var solQuery = new QueryExpression("solution")
                         {
-                            ColumnSet = new ColumnSet("friendlyname", "uniquename", "version", "ismanaged", "createdon", "modifiedon", "installedon", "publisherid", "modifiedby")
+                            ColumnSet = new ColumnSet("friendlyname", "uniquename", "version", "ismanaged", "createdon", "modifiedon", "installedon", "publisherid", "modifiedby", "createdby")
                         };
                         solQuery.Criteria.AddCondition("solutionid", ConditionOperator.Equal, otherSolutionId);
 
@@ -882,13 +978,25 @@ namespace SolutionComponents.Services
                         if (solRecords != null && solRecords.Entities.Count > 0)
                         {
                             var sol = solRecords.Entities[0];
-                            string pubName = sol.Contains("pub.friendlyname")
-                                ? sol.GetAttributeValue<AliasedValue>("pub.friendlyname")?.Value as string
-                                : "Unknown";
+                            string pubName = null;
+                            if (sol.Contains("pub.friendlyname"))
+                            {
+                                var aliasedPub = sol.GetAttributeValue<AliasedValue>("pub.friendlyname");
+                                if (aliasedPub != null && aliasedPub.Value != null)
+                                {
+                                    pubName = aliasedPub.Value.ToString();
+                                }
+                            }
+                            if (string.IsNullOrWhiteSpace(pubName) && sol.FormattedValues != null && sol.FormattedValues.TryGetValue("publisherid", out string formattedPub) && !string.IsNullOrWhiteSpace(formattedPub))
+                            {
+                                pubName = formattedPub;
+                            }
+                            if (string.IsNullOrWhiteSpace(pubName))
+                            {
+                                pubName = sol.GetAttributeValue<EntityReference>("publisherid")?.Name ?? "Unknown";
+                            }
 
-                            string modUser = sol.Contains("usr.fullname")
-                                ? sol.GetAttributeValue<AliasedValue>("usr.fullname")?.Value as string
-                                : (sol.Contains("modifiedby") ? sol.GetAttributeValue<EntityReference>("modifiedby")?.Name : "System");
+                            string modUser = GetModifiedByName(service, sol, userCache);
 
                             overlaps.Add(new SolutionOverlapItem
                             {

@@ -1,3 +1,4 @@
+using Microsoft.Xrm.Sdk;
 using SolutionComponents.Models;
 using SolutionComponents.Services;
 using System;
@@ -20,6 +21,7 @@ namespace SolutionComponents.Tests
             Test_ComponentHistoryOrdering();
             Test_MefMetadata_ValidIconsAndProperties();
             Test_ModifiedByFieldSupport();
+            Test_GetModifiedByName_ResolutionOrder();
             Console.WriteLine("All SolutionAuditServiceTests passed successfully!");
         }
 
@@ -53,6 +55,44 @@ namespace SolutionComponents.Tests
             var hist = new ComponentHistoryItem { ModifiedBy = "Alberto Perez" };
             if (hist.ModifiedBy != "Alberto Perez")
                 throw new Exception("ComponentHistoryItem.ModifiedBy not set");
+        }
+
+        public static void Test_GetModifiedByName_ResolutionOrder()
+        {
+            var service = new SolutionAuditService();
+
+            // Case 1: FormattedValues takes precedence
+            var sol1 = new Entity("solution");
+            sol1.FormattedValues["modifiedby"] = "Formatted User";
+            sol1.Attributes["usr.fullname"] = new AliasedValue("usr", "fullname", "Aliased User");
+            if (service.GetModifiedByName(null, sol1) != "Formatted User")
+                throw new Exception("FormattedValues should take precedence");
+
+            // Case 2: AliasedValue usr.fullname when FormattedValues not present
+            var sol2 = new Entity("solution");
+            sol2.Attributes["usr.fullname"] = new AliasedValue("usr", "fullname", "Aliased User");
+            if (service.GetModifiedByName(null, sol2) != "Aliased User")
+                throw new Exception("AliasedValue usr.fullname should be used");
+
+            // Case 3: EntityReference.Name when AliasedValue is null/missing
+            var sol3 = new Entity("solution");
+            sol3.Attributes["usr.fullname"] = new AliasedValue("usr", "fullname", null);
+            sol3.Attributes["modifiedby"] = new EntityReference("systemuser", Guid.NewGuid()) { Name = "Reference User" };
+            if (service.GetModifiedByName(null, sol3) != "Reference User")
+                throw new Exception("EntityReference.Name should be used when aliased value is null");
+
+            // Case 4: Cache lookup by Guid
+            var userId = Guid.NewGuid();
+            var sol4 = new Entity("solution");
+            sol4.Attributes["modifiedby"] = new EntityReference("systemuser", userId);
+            var cache = new Dictionary<Guid, string> { { userId, "Cached User" } };
+            if (service.GetModifiedByName(null, sol4, cache) != "Cached User")
+                throw new Exception("Cached user should be used");
+
+            // Case 5: Fallback to System
+            var sol5 = new Entity("solution");
+            if (service.GetModifiedByName(null, sol5) != "System")
+                throw new Exception("Fallback should be System");
         }
 
         public static void Test_FilterByExcludedPublishers_RemovesMatchingPublishers()
