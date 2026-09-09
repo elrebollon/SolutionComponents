@@ -255,25 +255,21 @@ namespace SolutionComponents
         {
             cbComponentTypes.Items.Clear();
 
-            var supportedTypes = new[]
-            {
-                new { Type = 24, Name = "Form (systemform)" },
-                new { Type = 26, Name = "View (savedquery)" },
-                new { Type = 29, Name = "Workflow / Cloud Flow (workflow)" },
-                new { Type = 20, Name = "Role (role)" },
-                new { Type = 61, Name = "Web Resource (webresource)" },
-                new { Type = 300, Name = "Canvas App (canvasapp)" },
-                new { Type = 380, Name = "Environment Variable (environmentvariabledefinition)" },
-                new { Type = 1, Name = "Entity / Table (entity)" },
-                new { Type = 9, Name = "Option Set (optionset)" },
-                new { Type = 62, Name = "Site Map (sitemap)" },
-                new { Type = 91, Name = "Plugin Assembly (pluginassembly)" },
-                new { Type = 92, Name = "SDK Message Step (sdkmessageprocessingstep)" }
-            };
+            var availableTypes = SolutionAuditService.ComponentTypes
+                .Where(kvp => !string.IsNullOrEmpty(kvp.Value.ComponentTypeName) && !string.IsNullOrEmpty(kvp.Value.EntityName))
+                .GroupBy(kvp => $"{kvp.Value.ComponentTypeName} ({kvp.Value.EntityName})", StringComparer.OrdinalIgnoreCase)
+                .Select(g => new ComboBoxTypeItem(g.Key, g.First().Key))
+                .OrderBy(item => item.Name)
+                .ToList();
 
-            foreach (var item in supportedTypes)
+            foreach (var item in availableTypes)
             {
-                cbComponentTypes.Items.Add(new ComboBoxTypeItem(item.Name, item.Type));
+                cbComponentTypes.Items.Add(item);
+            }
+
+            if (cbComponentTypes.Items.Count > 0 && cbComponentTypes.SelectedIndex < 0)
+            {
+                cbComponentTypes.SelectedIndex = 0;
             }
         }
 
