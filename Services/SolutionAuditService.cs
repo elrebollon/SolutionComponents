@@ -171,59 +171,119 @@ namespace SolutionComponents.Services
             return list;
         }
 
+        private List<EntityMetadataSummary> _entitiesCache;
+
         public List<EntityMetadataSummary> GetEntities(IOrganizationService service)
         {
             if (service == null) throw new ArgumentNullException(nameof(service));
+            if (_entitiesCache != null && _entitiesCache.Count > 0)
+                return _entitiesCache;
 
             try
             {
-                var request = new RetrieveAllEntitiesRequest
-                {
-                    EntityFilters = EntityFilters.Entity,
-                    RetrieveAsIfPublished = true
-                };
-
-                var response = (RetrieveAllEntitiesResponse)service.Execute(request);
-                var list = new List<EntityMetadataSummary>();
-
-                foreach (var meta in response.EntityMetadata)
-                {
-                    string displayName = meta.DisplayName?.UserLocalizedLabel?.Label ?? meta.LogicalName;
-                    list.Add(new EntityMetadataSummary
-                    {
-                        MetadataId = meta.MetadataId,
-                        LogicalName = meta.LogicalName,
-                        DisplayName = displayName,
-                        ObjectTypeCode = meta.ObjectTypeCode
-                    });
-                }
-
-                return list.OrderBy(e => e.DisplayName).ToList();
-            }
-            catch
-            {
-                // Fallback ligero mediante consulta a la entidad 'entity' si la llamada de metadatos falla
-                var query = new QueryExpression("entity")
-                {
-                    ColumnSet = new ColumnSet("name", "logicalname", "objecttypecode"),
-                    Orders = { new OrderExpression("name", OrderType.Ascending) }
-                };
-
+                RetrieveAllEntitiesResponse response = null;
                 try
                 {
-                    var result = service.RetrieveMultiple(query);
-                    return result.Entities.Select(e => new EntityMetadataSummary
+                    var request = new RetrieveAllEntitiesRequest
                     {
-                        MetadataId = e.Id,
-                        LogicalName = e.GetAttributeValue<string>("logicalname") ?? e.GetAttributeValue<string>("name"),
-                        DisplayName = e.GetAttributeValue<string>("name"),
-                        ObjectTypeCode = e.GetAttributeValue<int?>("objecttypecode")
-                    }).ToList();
+                        EntityFilters = EntityFilters.Entity,
+                        RetrieveAsIfPublished = true
+                    };
+                    response = (RetrieveAllEntitiesResponse)service.Execute(request);
                 }
                 catch
                 {
-                    return new List<EntityMetadataSummary>();
+                    var request = new RetrieveAllEntitiesRequest
+                    {
+                        EntityFilters = EntityFilters.Entity,
+                        RetrieveAsIfPublished = false
+                    };
+                    response = (RetrieveAllEntitiesResponse)service.Execute(request);
                 }
+
+                if (response?.EntityMetadata != null && response.EntityMetadata.Length > 0)
+                {
+                    var list = new List<EntityMetadataSummary>();
+                    foreach (var meta in response.EntityMetadata)
+                    {
+                        string displayName = meta.DisplayName?.UserLocalizedLabel?.Label;
+                        if (string.IsNullOrWhiteSpace(displayName) && meta.DisplayName?.LocalizedLabels != null && meta.DisplayName.LocalizedLabels.Count > 0)
+                        {
+                            displayName = meta.DisplayName.LocalizedLabels[0].Label;
+                        }
+                        if (string.IsNullOrWhiteSpace(displayName))
+                        {
+                            displayName = meta.SchemaName ?? meta.LogicalName;
+                        }
+
+                        list.Add(new EntityMetadataSummary
+                        {
+                            MetadataId = meta.MetadataId,
+                            LogicalName = meta.LogicalName,
+                            DisplayName = displayName,
+                            ObjectTypeCode = meta.ObjectTypeCode
+                        });
+                    }
+
+                    _entitiesCache = list.OrderBy(e => e.ToString()).ToList();
+                    return _entitiesCache;
+                }
+            }
+            catch
+            {
+                // Fallback paginado completo mediante consulta a la entidad 'entity' si la llamada de metadatos falla
+            }
+
+            try
+            {
+                var list = new List<EntityMetadataSummary>();
+                var query = new QueryExpression("entity")
+                {
+                    ColumnSet = new ColumnSet("name", "logicalname", "physicalname", "objecttypecode"),
+                    Orders = { new OrderExpression("name", OrderType.Ascending) },
+                    PageInfo = new PagingInfo { Count = 5000, PageNumber = 1 }
+                };
+
+                while (true)
+                {
+                    var result = service.RetrieveMultiple(query);
+                    if (result?.Entities != null && result.Entities.Count > 0)
+                    {
+                        foreach (var e in result.Entities)
+                        {
+                            string logName = e.GetAttributeValue<string>("logicalname") ?? e.GetAttributeValue<string>("name");
+                            string dispName = e.GetAttributeValue<string>("name") ?? logName;
+                            list.Add(new EntityMetadataSummary
+                            {
+                                MetadataId = e.Id,
+                                LogicalName = logName,
+                                DisplayName = dispName,
+                                ObjectTypeCode = e.GetAttributeValue<int?>("objecttypecode")
+                            });
+                        }
+
+                        if (result.MoreRecords)
+                        {
+                            query.PageInfo.PageNumber++;
+                            query.PageInfo.PagingCookie = result.PagingCookie;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
+                _entitiesCache = list.OrderBy(e => e.ToString()).ToList();
+                return _entitiesCache;
+            }
+            catch
+            {
+                return new List<EntityMetadataSummary>();
             }
         }
 
@@ -457,12 +517,13 @@ namespace SolutionComponents.Services
                         list.Add(new ComponentItem
                         {
                             Id = ent.MetadataId ?? Guid.Empty,
-                            Name = $"{ent.DisplayName} ({ent.LogicalName})",
+                            Name = ent.ToString(),
                             ComponentType = 1,
                             ComponentTypeName = "Entity",
                             EntityLogicalName = ent.LogicalName
                         });
                     }
+                    return list.OrderBy(c => c.Name).ToList();
                 }
                 else if (componentType == 2) // Entity field (attribute)
                 {

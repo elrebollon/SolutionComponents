@@ -26,7 +26,10 @@ namespace SolutionComponents.Models
 
         public override string ToString()
         {
-            return string.IsNullOrEmpty(DisplayName) ? LogicalName : $"{DisplayName} ({LogicalName})";
+            if (string.IsNullOrWhiteSpace(DisplayName) || string.Equals(DisplayName, LogicalName, StringComparison.OrdinalIgnoreCase))
+                return LogicalName;
+
+            return $"{DisplayName} ({LogicalName})";
         }
     }
 
