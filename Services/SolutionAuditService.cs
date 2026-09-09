@@ -27,7 +27,7 @@ namespace SolutionComponents.Services
             { 12, ("Entity Relationship Relationships", "") },
             { 13, ("Managed Property", "") },
             { 14, ("Entity Key", "entitykey") },
-            { 16, ("Privilege", "") },
+            { 16, ("Privilege", "privilege") },
             { 17, ("PrivilegeObjectTypeCode", "") },
             { 18, ("Index", "entityindex") },
             { 20, ("Role", "role") },
@@ -35,66 +35,68 @@ namespace SolutionComponents.Services
             { 22, ("Display String", "") },
             { 23, ("Display String Map", "") },
             { 24, ("Form", "systemform") },
-            { 25, ("Organization", "") },
+            { 25, ("Organization", "organization") },
             { 26, ("View", "savedquery") },
             { 29, ("Workflow / Cloud Flow", "workflow") },
-            { 31, ("Report", "") },
+            { 31, ("Report", "report") },
             { 32, ("Report Entity", "") },
             { 33, ("Report Category", "") },
             { 34, ("Report Visibility", "") },
             { 35, ("Attachment", "") },
-            { 36, ("Email Template", "") },
-            { 37, ("Contract Template", "") },
-            { 38, ("KB Article Template", "") },
-            { 39, ("Mail Merge Template", "") },
-            { 44, ("Duplicate Rule", "") },
+            { 36, ("Email Template", "template") },
+            { 37, ("Contract Template", "contracttemplate") },
+            { 38, ("KB Article Template", "kbarticletemplate") },
+            { 39, ("Mail Merge Template", "mailmergetemplate") },
+            { 44, ("Duplicate Rule", "duplicaterule") },
             { 45, ("Duplicate Rule Condition", "") },
             { 46, ("Entity Map", "") },
             { 47, ("Attribute Map", "") },
             { 48, ("Ribbon Command", "") },
             { 49, ("Ribbon Context Group", "") },
-            { 50, ("Ribbon Customization", "") },
+            { 50, ("Ribbon Customization", "ribboncustomization") },
             { 52, ("Ribbon Rule", "") },
             { 53, ("Ribbon Tab To Command Map", "") },
             { 55, ("Ribbon Diff", "") },
-            { 59, ("Charts", "") },
-            { 60, ("Entity Form", "userquery") },
+            { 59, ("Charts", "savedqueryvisualization") },
+            { 60, ("System Form", "systemform") },
             { 61, ("Web Resource", "webresource") },
             { 62, ("Site Map", "sitemap") },
-            { 63, ("Connection Role", "") },
+            { 63, ("Connection Role", "connectionrole") },
             { 64, ("Complex Control", "") },
-            { 65, ("Hierarchy Rule", "") },
-            { 66, ("Custom Control", "") },
-            { 68, ("Custom Control Default Config", "") },
-            { 70, ("Field Security Profile", "") },
-            { 71, ("Field Permission", "") },
+            { 65, ("Hierarchy Rule", "hierarchyrule") },
+            { 66, ("Custom Control", "customcontrol") },
+            { 68, ("Custom Control Default Config", "customcontroldefaultconfig") },
+            { 70, ("Field Security Profile", "fieldsecurityprofile") },
+            { 71, ("Field Permission", "fieldpermission") },
+            { 80, ("Model-Driven App", "appmodule") },
+            { 81, ("App Module Component", "appmodulecomponent") },
             { 90, ("Plugin Type", "plugintype") },
             { 91, ("Plugin Assembly", "pluginassembly") },
             { 92, ("SDK Message Processing Step", "sdkmessageprocessingstep") },
             { 93, ("SDK Message Processing Step Image", "sdkmessageprocessingstepimage") },
             { 95, ("Service Endpoint", "serviceendpoint") },
-            { 150, ("Routing Rule", "") },
-            { 151, ("Routing Rule Item", "") },
-            { 152, ("SLA", "") },
-            { 153, ("SLA Item", "") },
-            { 154, ("Convert Rule", "") },
-            { 155, ("Convert Rule Item", "") },
-            { 161, ("Mobile Offline Profile", "") },
-            { 162, ("Mobile Offline Profile Item", "") },
-            { 165, ("Similarity Rule", "") },
+            { 150, ("Routing Rule", "routingrule") },
+            { 151, ("Routing Rule Item", "routingruleitem") },
+            { 152, ("SLA", "sla") },
+            { 153, ("SLA Item", "slaitem") },
+            { 154, ("Convert Rule", "convertrule") },
+            { 155, ("Convert Rule Item", "convertruleitem") },
+            { 161, ("Mobile Offline Profile", "mobileofflineprofile") },
+            { 162, ("Mobile Offline Profile Item", "mobileofflineprofileitem") },
+            { 165, ("Similarity Rule", "similarityrule") },
             { 166, ("Data Source Mapping", "") },
-            { 201, ("SDKMessage", "") },
-            { 202, ("SDKMessageFilter", "") },
-            { 203, ("SdkMessagePair", "") },
-            { 204, ("SdkMessageRequest", "") },
-            { 205, ("SdkMessageRequestField", "") },
-            { 206, ("SdkMessageResponse", "") },
-            { 207, ("SdkMessageResponseField", "") },
-            { 208, ("Import Map", "") },
-            { 210, ("WebWizard", "") },
+            { 201, ("SDK Message", "sdkmessage") },
+            { 202, ("SDK Message Filter", "sdkmessagefilter") },
+            { 203, ("SDK Message Pair", "sdkmessagepair") },
+            { 204, ("SDK Message Request", "") },
+            { 205, ("SDK Message Request Field", "") },
+            { 206, ("SDK Message Response", "") },
+            { 207, ("SDK Message Response Field", "") },
+            { 208, ("Import Map", "importmap") },
+            { 210, ("WebWizard", "webwizard") },
             { 300, ("Canvas App", "canvasapp") },
-            { 371, ("Connector", "") },
-            { 372, ("Connector", "") },
+            { 371, ("Connector", "connector") },
+            { 372, ("Connection Reference", "connectionreference") },
             { 380, ("Environment Variable Definition", "environmentvariabledefinition") },
             { 381, ("Environment Variable Value", "environmentvariablevalue") },
             { 400, ("AI Project Type", "") },
@@ -102,7 +104,19 @@ namespace SolutionComponents.Services
             { 402, ("AI Configuration", "") },
             { 430, ("Entity Analytics Configuration", "") },
             { 431, ("Attribute Image Configuration", "") },
-            { 432, ("Entity Image Configuration", "") }
+            { 432, ("Entity Image Configuration", "") },
+            { 973, ("Copilot / Bot", "bot") },
+            { 974, ("Bot Component", "botcomponent") },
+            { 10020, ("Custom API", "customapi") },
+            { 10021, ("Custom API Request Parameter", "customapirequestparameter") },
+            { 10022, ("Custom API Response Property", "customapiresponseproperty") },
+            { 10080, ("Plugin Package", "pluginpackage") },
+            { 10091, ("Plugin Package", "pluginpackage") },
+            { 10097, ("Desktop Flow", "workflow") },
+            { 10098, ("Connection Reference", "connectionreference") },
+            { 10110, ("Power Pages Site", "powerpagesite") },
+            { 10111, ("Power Pages Component", "powerpagescomponent") },
+            { 10200, ("AI Model / Prompt", "msdyn_aimodel") }
         };
 
         public static bool IsEntityDependentComponent(int componentType)
@@ -116,7 +130,7 @@ namespace SolutionComponents.Services
                 || componentType == 24  // Form (systemform)
                 || componentType == 26  // View (savedquery)
                 || componentType == 59  // Charts
-                || componentType == 60  // Entity Form (userquery)
+                || componentType == 60  // Entity Form (systemform)
                 || componentType == 65; // Hierarchy Rule
         }
 
@@ -177,6 +191,7 @@ namespace SolutionComponents.Services
                     string displayName = meta.DisplayName?.UserLocalizedLabel?.Label ?? meta.LogicalName;
                     list.Add(new EntityMetadataSummary
                     {
+                        MetadataId = meta.MetadataId,
                         LogicalName = meta.LogicalName,
                         DisplayName = displayName,
                         ObjectTypeCode = meta.ObjectTypeCode
@@ -199,6 +214,7 @@ namespace SolutionComponents.Services
                     var result = service.RetrieveMultiple(query);
                     return result.Entities.Select(e => new EntityMetadataSummary
                     {
+                        MetadataId = e.Id,
                         LogicalName = e.GetAttributeValue<string>("logicalname") ?? e.GetAttributeValue<string>("name"),
                         DisplayName = e.GetAttributeValue<string>("name"),
                         ObjectTypeCode = e.GetAttributeValue<int?>("objecttypecode")
@@ -218,40 +234,210 @@ namespace SolutionComponents.Services
                 : ("Unknown", string.Empty);
         }
 
-        public string GetComponentName(IOrganizationService service, string entityLogicalName, Guid objectId)
+        private Dictionary<Guid, (string DisplayName, string LogicalName)> _entityMetadataCache = null;
+        private Dictionary<Guid, string> _attributeMetadataCache = null;
+        private Dictionary<Guid, string> _relationshipMetadataCache = null;
+
+        private void EnsureMetadataCaches(IOrganizationService service)
         {
-            if (service == null || string.IsNullOrEmpty(entityLogicalName) || objectId == Guid.Empty)
-                return "Unknown";
+            if (_entityMetadataCache != null) return;
+            _entityMetadataCache = new Dictionary<Guid, (string, string)>();
+            _attributeMetadataCache = new Dictionary<Guid, string>();
+            _relationshipMetadataCache = new Dictionary<Guid, string>();
 
             try
             {
-                Entity entity = service.Retrieve(entityLogicalName, objectId, new ColumnSet("name"));
-                if (entity != null && entity.Contains("name"))
+                var req = new RetrieveAllEntitiesRequest
                 {
-                    return entity.GetAttributeValue<string>("name");
+                    EntityFilters = EntityFilters.Entity,
+                    RetrieveAsIfPublished = true
+                };
+                var resp = (RetrieveAllEntitiesResponse)service.Execute(req);
+                if (resp?.EntityMetadata != null)
+                {
+                    foreach (var meta in resp.EntityMetadata)
+                    {
+                        if (meta.MetadataId.HasValue)
+                        {
+                            string disp = meta.DisplayName?.UserLocalizedLabel?.Label ?? meta.LogicalName;
+                            _entityMetadataCache[meta.MetadataId.Value] = (disp, meta.LogicalName);
+                        }
+                    }
                 }
             }
             catch
             {
+                // Fallback
+            }
+        }
+
+        public string GetComponentName(IOrganizationService service, string entityLogicalName, Guid objectId, int componentType = 0)
+        {
+            if (service == null || objectId == Guid.Empty)
+                return "Unknown";
+
+            // 1. Entity / Table (componentType 1)
+            if (componentType == 1 || entityLogicalName == "entity")
+            {
+                EnsureMetadataCaches(service);
+                if (_entityMetadataCache != null && _entityMetadataCache.TryGetValue(objectId, out var entInfo))
+                {
+                    return $"{entInfo.DisplayName} ({entInfo.LogicalName})";
+                }
                 try
                 {
-                    Entity entity = service.Retrieve(entityLogicalName, objectId, new ColumnSet(true));
-                    if (entity != null)
+                    var req = new RetrieveEntityRequest
                     {
-                        foreach (var attr in new[] { "friendlyname", "displayname", "schemaname", "uniquename" })
+                        MetadataId = objectId,
+                        EntityFilters = EntityFilters.Entity,
+                        RetrieveAsIfPublished = true
+                    };
+                    var resp = (RetrieveEntityResponse)service.Execute(req);
+                    if (resp?.EntityMetadata != null)
+                    {
+                        string disp = resp.EntityMetadata.DisplayName?.UserLocalizedLabel?.Label ?? resp.EntityMetadata.LogicalName;
+                        string log = resp.EntityMetadata.LogicalName;
+                        if (_entityMetadataCache != null) _entityMetadataCache[objectId] = (disp, log);
+                        return $"{disp} ({log})";
+                    }
+                }
+                catch { }
+            }
+
+            // 2. Entity field / Attribute (componentType 2)
+            if (componentType == 2 || entityLogicalName == "attribute")
+            {
+                if (_attributeMetadataCache != null && _attributeMetadataCache.TryGetValue(objectId, out var cachedAttr))
+                {
+                    return cachedAttr;
+                }
+                try
+                {
+                    var req = new RetrieveAttributeRequest
+                    {
+                        MetadataId = objectId,
+                        RetrieveAsIfPublished = true
+                    };
+                    var resp = (RetrieveAttributeResponse)service.Execute(req);
+                    if (resp?.AttributeMetadata != null)
+                    {
+                        string disp = resp.AttributeMetadata.DisplayName?.UserLocalizedLabel?.Label;
+                        string logName = resp.AttributeMetadata.LogicalName;
+                        string entityName = resp.AttributeMetadata.EntityLogicalName;
+                        string resolved = string.IsNullOrEmpty(disp) ? logName : $"{disp} ({logName})";
+                        if (!string.IsNullOrEmpty(entityName))
                         {
-                            if (entity.Contains(attr))
-                                return entity.GetAttributeValue<string>(attr);
+                            resolved = $"{resolved} [{entityName}]";
+                        }
+                        if (_attributeMetadataCache != null) _attributeMetadataCache[objectId] = resolved;
+                        return resolved;
+                    }
+                }
+                catch { }
+            }
+
+            // 3. Relationships (componentType 3 o 10)
+            if (componentType == 3 || componentType == 10 || entityLogicalName == "relationship" || entityLogicalName == "entityrelationship")
+            {
+                if (_relationshipMetadataCache != null && _relationshipMetadataCache.TryGetValue(objectId, out var cachedRel))
+                {
+                    return cachedRel;
+                }
+                try
+                {
+                    var req = new RetrieveRelationshipRequest
+                    {
+                        MetadataId = objectId,
+                        RetrieveAsIfPublished = true
+                    };
+                    var resp = (RetrieveRelationshipResponse)service.Execute(req);
+                    if (resp?.RelationshipMetadata != null)
+                    {
+                        string schemaName = resp.RelationshipMetadata.SchemaName;
+                        if (!string.IsNullOrEmpty(schemaName))
+                        {
+                            if (_relationshipMetadataCache != null) _relationshipMetadataCache[objectId] = schemaName;
+                            return schemaName;
                         }
                     }
                 }
-                catch
-                {
-                    // Ignore exceptions
-                }
+                catch { }
             }
 
-            return "Unnamed";
+            // 4. OptionSet (componentType 9)
+            if (componentType == 9 || entityLogicalName == "optionset")
+            {
+                try
+                {
+                    var req = new RetrieveOptionSetRequest
+                    {
+                        MetadataId = objectId,
+                        RetrieveAsIfPublished = true
+                    };
+                    var resp = (RetrieveOptionSetResponse)service.Execute(req);
+                    if (resp?.OptionSetMetadata != null)
+                    {
+                        string disp = resp.OptionSetMetadata.DisplayName?.UserLocalizedLabel?.Label ?? resp.OptionSetMetadata.Name;
+                        return disp;
+                    }
+                }
+                catch { }
+            }
+
+            // 5. Form / Entity Form (componentType 24, 60)
+            if (componentType == 24 || componentType == 60 || entityLogicalName == "systemform")
+            {
+                try
+                {
+                    Entity form = service.Retrieve("systemform", objectId, new ColumnSet("name", "objecttypecode"));
+                    if (form != null)
+                    {
+                        string name = form.GetAttributeValue<string>("name");
+                        string otc = form.GetAttributeValue<string>("objecttypecode");
+                        return !string.IsNullOrEmpty(otc) ? $"{name} ({otc})" : name;
+                    }
+                }
+                catch { }
+            }
+
+            // 6. View (componentType 26)
+            if (componentType == 26 || entityLogicalName == "savedquery")
+            {
+                try
+                {
+                    Entity view = service.Retrieve("savedquery", objectId, new ColumnSet("name", "returnedtypecode"));
+                    if (view != null)
+                    {
+                        string name = view.GetAttributeValue<string>("name");
+                        string rtc = view.GetAttributeValue<string>("returnedtypecode");
+                        return !string.IsNullOrEmpty(rtc) ? $"{name} ({rtc})" : name;
+                    }
+                }
+                catch { }
+            }
+
+            // 7. Generic CRM Table lookup
+            string targetEntity = !string.IsNullOrEmpty(entityLogicalName) ? entityLogicalName : GetComponentTypeDetails(componentType).EntityName;
+            if (!string.IsNullOrEmpty(targetEntity) && targetEntity != "entity" && targetEntity != "attribute" && targetEntity != "relationship" && targetEntity != "entityrelationship")
+            {
+                try
+                {
+                    Entity entity = service.Retrieve(targetEntity, objectId, new ColumnSet(true));
+                    if (entity != null)
+                    {
+                        foreach (var attr in new[] { "displayname", "name", "title", "subject", "friendlyname", "schemaname", "uniquename", "typename", "connectionreferencedisplayname", "connectionreferencename", "filename" })
+                        {
+                            if (entity.Contains(attr) && entity[attr] is string strVal && !string.IsNullOrEmpty(strVal))
+                            {
+                                return strVal;
+                            }
+                        }
+                    }
+                }
+                catch { }
+            }
+
+            return $"Unnamed ({objectId})";
         }
 
         public List<ComponentItem> GetComponentsByType(IOrganizationService service, int componentType, string entityLogicalName = null)
@@ -263,7 +449,54 @@ namespace SolutionComponents.Services
 
             try
             {
-                if (componentType == 24) // Form (systemform)
+                if (componentType == 1) // Entity / Table: Cargar todas las tablas con formato homogéneo
+                {
+                    var allEntities = GetEntities(service);
+                    foreach (var ent in allEntities)
+                    {
+                        list.Add(new ComponentItem
+                        {
+                            Id = ent.MetadataId ?? Guid.Empty,
+                            Name = $"{ent.DisplayName} ({ent.LogicalName})",
+                            ComponentType = 1,
+                            ComponentTypeName = "Entity",
+                            EntityLogicalName = ent.LogicalName
+                        });
+                    }
+                }
+                else if (componentType == 2) // Entity field (attribute)
+                {
+                    if (!string.IsNullOrEmpty(entityLogicalName))
+                    {
+                        var req = new RetrieveEntityRequest
+                        {
+                            LogicalName = entityLogicalName,
+                            EntityFilters = EntityFilters.Attributes,
+                            RetrieveAsIfPublished = true
+                        };
+                        var resp = (RetrieveEntityResponse)service.Execute(req);
+                        if (resp?.EntityMetadata?.Attributes != null)
+                        {
+                            foreach (var attr in resp.EntityMetadata.Attributes.OrderBy(a => a.DisplayName?.UserLocalizedLabel?.Label ?? a.LogicalName))
+                            {
+                                string displayName = attr.DisplayName?.UserLocalizedLabel?.Label;
+                                string name = string.IsNullOrEmpty(displayName)
+                                    ? attr.LogicalName
+                                    : $"{displayName} ({attr.LogicalName})";
+
+                                list.Add(new ComponentItem
+                                {
+                                    Id = attr.MetadataId ?? Guid.Empty,
+                                    Name = name,
+                                    ComponentType = 2,
+                                    ComponentTypeName = "Entity field",
+                                    EntityLogicalName = entityLogicalName
+                                });
+                            }
+                        }
+                    }
+                }
+                else if (componentType == 24 || componentType == 60) // Form (systemform)
                 {
                     var query = new QueryExpression("systemform")
                     {
@@ -281,8 +514,8 @@ namespace SolutionComponents.Services
                         {
                             Id = e.Id,
                             Name = e.GetAttributeValue<string>("name") ?? "Unnamed Form",
-                            ComponentType = 24,
-                            ComponentTypeName = "Form",
+                            ComponentType = componentType,
+                            ComponentTypeName = details.ComponentTypeName,
                             EntityLogicalName = e.GetAttributeValue<string>("objecttypecode")
                         });
                     }
@@ -332,13 +565,14 @@ namespace SolutionComponents.Services
                         });
                     }
                 }
-                else if (componentType == 20) // Role
+                else if (componentType == 20) // Role (Filtrar roles raíz para no duplicar por Business Unit)
                 {
                     var query = new QueryExpression("role")
                     {
                         ColumnSet = new ColumnSet("roleid", "name"),
                         Orders = { new OrderExpression("name", OrderType.Ascending) }
                     };
+                    query.Criteria.AddCondition("parentrootroleid", ConditionOperator.Null);
                     var result = service.RetrieveMultiple(query);
                     foreach (var e in result.Entities)
                     {
@@ -378,16 +612,25 @@ namespace SolutionComponents.Services
                     var query = new QueryExpression(details.EntityName)
                     {
                         ColumnSet = new ColumnSet(true),
-                        TopCount = 200
+                        TopCount = 500
                     };
                     var result = service.RetrieveMultiple(query);
                     foreach (var e in result.Entities)
                     {
-                        string name = GetComponentName(service, details.EntityName, e.Id);
+                        string name = null;
+                        foreach (var attr in new[] { "title", "subject", "displayname", "name", "friendlyname", "schemaname", "uniquename", "typename", "connectionreferencedisplayname", "connectionreferencename", "filename" })
+                        {
+                            if (e.Contains(attr))
+                            {
+                                name = e.GetAttributeValue<string>(attr);
+                                if (!string.IsNullOrEmpty(name)) break;
+                            }
+                        }
+
                         list.Add(new ComponentItem
                         {
                             Id = e.Id,
-                            Name = name,
+                            Name = name ?? $"Item {e.Id}",
                             ComponentType = componentType,
                             ComponentTypeName = details.ComponentTypeName,
                             EntityLogicalName = entityLogicalName
@@ -401,6 +644,25 @@ namespace SolutionComponents.Services
             }
 
             return list;
+        }
+
+        private static Guid GetGuidAttribute(Entity entity, string attributeName)
+        {
+            if (entity == null || !entity.Contains(attributeName)) return Guid.Empty;
+            var val = entity[attributeName];
+            if (val is Guid g) return g;
+            if (val is EntityReference er) return er.Id;
+            if (val is string s && Guid.TryParse(s, out Guid parsed)) return parsed;
+            return Guid.Empty;
+        }
+
+        private static int GetOptionSetAttribute(Entity entity, string attributeName)
+        {
+            if (entity == null || !entity.Contains(attributeName)) return 0;
+            var val = entity[attributeName];
+            if (val is OptionSetValue osv) return osv.Value;
+            if (val is int i) return i;
+            return 0;
         }
 
         public List<ComponentHistoryItem> GetSolutionsForComponent(IOrganizationService service, Guid objectId)
@@ -422,19 +684,23 @@ namespace SolutionComponents.Services
 
             foreach (var entity in result.Entities)
             {
-                Guid solutionId = entity.GetAttributeValue<Guid>("solutionid");
+                Guid solutionId = GetGuidAttribute(entity, "solutionid");
 
                 try
                 {
                     var solQuery = new QueryExpression("solution")
                     {
-                        ColumnSet = new ColumnSet("friendlyname", "uniquename", "version", "ismanaged", "createdon", "installedon", "publisherid")
+                        ColumnSet = new ColumnSet("friendlyname", "uniquename", "version", "ismanaged", "createdon", "modifiedon", "installedon", "publisherid", "modifiedby")
                     };
                     solQuery.Criteria.AddCondition("solutionid", ConditionOperator.Equal, solutionId);
 
                     var linkPub = solQuery.AddLink("publisher", "publisherid", "publisherid", JoinOperator.LeftOuter);
                     linkPub.Columns = new ColumnSet("friendlyname");
                     linkPub.EntityAlias = "pub";
+
+                    var linkUser = solQuery.AddLink("systemuser", "modifiedby", "systemuserid", JoinOperator.LeftOuter);
+                    linkUser.Columns = new ColumnSet("fullname");
+                    linkUser.EntityAlias = "usr";
 
                     var solRecords = service.RetrieveMultiple(solQuery);
                     if (solRecords != null && solRecords.Entities.Count > 0)
@@ -444,14 +710,20 @@ namespace SolutionComponents.Services
                             ? sol.GetAttributeValue<AliasedValue>("pub.friendlyname")?.Value as string
                             : "Unknown";
 
+                        string modUser = sol.Contains("usr.fullname")
+                            ? sol.GetAttributeValue<AliasedValue>("usr.fullname")?.Value as string
+                            : (sol.Contains("modifiedby") ? sol.GetAttributeValue<EntityReference>("modifiedby")?.Name : "System");
+
                         history.Add(new ComponentHistoryItem
                         {
                             SolutionName = sol.GetAttributeValue<string>("friendlyname") ?? sol.GetAttributeValue<string>("uniquename"),
                             SolutionUniqueName = sol.GetAttributeValue<string>("uniquename"),
                             Version = sol.GetAttributeValue<string>("version"),
                             PublisherName = pubName ?? "Unknown",
+                            ModifiedBy = modUser ?? "System",
                             IsManaged = sol.GetAttributeValue<bool>("ismanaged"),
                             CreatedOn = sol.GetAttributeValue<DateTime?>("createdon"),
+                            ModifiedOn = sol.GetAttributeValue<DateTime?>("modifiedon"),
                             InstalledOn = sol.GetAttributeValue<DateTime?>("installedon")
                         });
                     }
@@ -464,7 +736,7 @@ namespace SolutionComponents.Services
 
             // Ordenar cronológicamente (más recientes primero)
             return history
-                .OrderByDescending(h => h.InstalledOn ?? h.CreatedOn ?? DateTime.MinValue)
+                .OrderByDescending(h => h.InstalledOn ?? h.ModifiedOn ?? h.CreatedOn ?? DateTime.MinValue)
                 .ThenByDescending(h => h.Version)
                 .ToList();
         }
@@ -488,14 +760,19 @@ namespace SolutionComponents.Services
                 return new List<SolutionOverlapItem>();
 
             var overlaps = new List<SolutionOverlapItem>();
+            var compNameCache = new Dictionary<Guid, string>();
 
             foreach (var comp in solutionComponents.Entities)
             {
-                Guid objectId = comp.GetAttributeValue<Guid>("objectid");
-                int compType = comp.GetAttributeValue<int>("componenttype");
+                Guid objectId = GetGuidAttribute(comp, "objectid");
+                int compType = GetOptionSetAttribute(comp, "componenttype");
 
                 var details = GetComponentTypeDetails(compType);
-                string compName = GetComponentName(service, details.EntityName, objectId);
+                if (!compNameCache.TryGetValue(objectId, out string compName))
+                {
+                    compName = GetComponentName(service, details.EntityName, objectId, compType);
+                    compNameCache[objectId] = compName;
+                }
 
                 var relatedQuery = new QueryExpression("solutioncomponent")
                 {
@@ -510,19 +787,23 @@ namespace SolutionComponents.Services
 
                 foreach (var relComp in relatedResult.Entities)
                 {
-                    Guid otherSolutionId = relComp.GetAttributeValue<Guid>("solutionid");
+                    Guid otherSolutionId = GetGuidAttribute(relComp, "solutionid");
 
                     try
                     {
                         var solQuery = new QueryExpression("solution")
                         {
-                            ColumnSet = new ColumnSet("friendlyname", "uniquename", "version", "ismanaged", "createdon", "installedon", "publisherid")
+                            ColumnSet = new ColumnSet("friendlyname", "uniquename", "version", "ismanaged", "createdon", "modifiedon", "installedon", "publisherid", "modifiedby")
                         };
                         solQuery.Criteria.AddCondition("solutionid", ConditionOperator.Equal, otherSolutionId);
 
                         var linkPub = solQuery.AddLink("publisher", "publisherid", "publisherid", JoinOperator.LeftOuter);
                         linkPub.Columns = new ColumnSet("friendlyname");
                         linkPub.EntityAlias = "pub";
+
+                        var linkUser = solQuery.AddLink("systemuser", "modifiedby", "systemuserid", JoinOperator.LeftOuter);
+                        linkUser.Columns = new ColumnSet("fullname");
+                        linkUser.EntityAlias = "usr";
 
                         var solRecords = service.RetrieveMultiple(solQuery);
                         if (solRecords != null && solRecords.Entities.Count > 0)
@@ -531,6 +812,10 @@ namespace SolutionComponents.Services
                             string pubName = sol.Contains("pub.friendlyname")
                                 ? sol.GetAttributeValue<AliasedValue>("pub.friendlyname")?.Value as string
                                 : "Unknown";
+
+                            string modUser = sol.Contains("usr.fullname")
+                                ? sol.GetAttributeValue<AliasedValue>("usr.fullname")?.Value as string
+                                : (sol.Contains("modifiedby") ? sol.GetAttributeValue<EntityReference>("modifiedby")?.Name : "System");
 
                             overlaps.Add(new SolutionOverlapItem
                             {
@@ -541,8 +826,10 @@ namespace SolutionComponents.Services
                                 RelatedSolutionUniqueName = sol.GetAttributeValue<string>("uniquename"),
                                 Version = sol.GetAttributeValue<string>("version"),
                                 PublisherName = pubName ?? "Unknown",
+                                ModifiedBy = modUser ?? "System",
                                 IsManaged = sol.GetAttributeValue<bool>("ismanaged"),
                                 CreatedOn = sol.GetAttributeValue<DateTime?>("createdon"),
+                                ModifiedOn = sol.GetAttributeValue<DateTime?>("modifiedon"),
                                 InstalledOn = sol.GetAttributeValue<DateTime?>("installedon")
                             });
                         }

@@ -240,6 +240,7 @@ namespace SolutionComponents
                     item.Version,
                     item.PublisherName,
                     item.ManagedDisplay,
+                    item.ModifiedBy,
                     item.CreatedOn?.ToString("yyyy-MM-dd HH:mm"),
                     item.InstalledOn?.ToString("yyyy-MM-dd HH:mm")
                 );
@@ -457,6 +458,7 @@ namespace SolutionComponents
                     item.Version,
                     item.PublisherName,
                     item.ManagedDisplay,
+                    item.ModifiedBy,
                     item.CreatedOn?.ToString("yyyy-MM-dd HH:mm"),
                     item.InstalledOn?.ToString("yyyy-MM-dd HH:mm")
                 );

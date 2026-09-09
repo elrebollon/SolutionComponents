@@ -43,6 +43,7 @@ namespace SolutionComponents
             this.colRelatedSolution = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colVersion = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colPublisher = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colModifiedBy = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colManaged = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colCreatedOn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colInstalledOn = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -56,6 +57,7 @@ namespace SolutionComponents
             this.colHistSolution = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colHistVersion = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colHistPublisher = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colHistModifiedBy = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colHistManaged = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colHistCreatedOn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colHistInstalledOn = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -177,6 +179,7 @@ namespace SolutionComponents
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dgvRelatedSolutions.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dgvRelatedSolutions.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.EnableWithoutHeaderText;
             this.dgvRelatedSolutions.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvRelatedSolutions.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.colComponentName,
@@ -185,13 +188,15 @@ namespace SolutionComponents
             this.colVersion,
             this.colPublisher,
             this.colManaged,
+            this.colModifiedBy,
             this.colCreatedOn,
             this.colInstalledOn});
             this.dgvRelatedSolutions.Location = new System.Drawing.Point(5, 75);
+            this.dgvRelatedSolutions.MultiSelect = true;
             this.dgvRelatedSolutions.Name = "dgvRelatedSolutions";
             this.dgvRelatedSolutions.ReadOnly = true;
             this.dgvRelatedSolutions.RowHeadersVisible = false;
-            this.dgvRelatedSolutions.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dgvRelatedSolutions.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
             this.dgvRelatedSolutions.Size = new System.Drawing.Size(930, 475);
             this.dgvRelatedSolutions.TabIndex = 4;
             // 
@@ -230,6 +235,12 @@ namespace SolutionComponents
             this.colManaged.HeaderText = "Managed";
             this.colManaged.Name = "colManaged";
             this.colManaged.ReadOnly = true;
+            // 
+            // colModifiedBy
+            // 
+            this.colModifiedBy.HeaderText = "Modified By";
+            this.colModifiedBy.Name = "colModifiedBy";
+            this.colModifiedBy.ReadOnly = true;
             // 
             // colCreatedOn
             // 
@@ -318,19 +329,22 @@ namespace SolutionComponents
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dgvComponentHistory.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dgvComponentHistory.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.EnableWithoutHeaderText;
             this.dgvComponentHistory.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvComponentHistory.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.colHistSolution,
             this.colHistVersion,
             this.colHistPublisher,
             this.colHistManaged,
+            this.colHistModifiedBy,
             this.colHistCreatedOn,
             this.colHistInstalledOn});
             this.dgvComponentHistory.Location = new System.Drawing.Point(5, 75);
+            this.dgvComponentHistory.MultiSelect = true;
             this.dgvComponentHistory.Name = "dgvComponentHistory";
             this.dgvComponentHistory.ReadOnly = true;
             this.dgvComponentHistory.RowHeadersVisible = false;
-            this.dgvComponentHistory.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dgvComponentHistory.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
             this.dgvComponentHistory.Size = new System.Drawing.Size(930, 475);
             this.dgvComponentHistory.TabIndex = 6;
             // 
@@ -357,6 +371,12 @@ namespace SolutionComponents
             this.colHistManaged.HeaderText = "Managed";
             this.colHistManaged.Name = "colHistManaged";
             this.colHistManaged.ReadOnly = true;
+            // 
+            // colHistModifiedBy
+            // 
+            this.colHistModifiedBy.HeaderText = "Modified By";
+            this.colHistModifiedBy.Name = "colHistModifiedBy";
+            this.colHistModifiedBy.ReadOnly = true;
             // 
             // colHistCreatedOn
             // 
@@ -474,6 +494,7 @@ namespace SolutionComponents
         private System.Windows.Forms.DataGridViewTextBoxColumn colVersion;
         private System.Windows.Forms.DataGridViewTextBoxColumn colPublisher;
         private System.Windows.Forms.DataGridViewTextBoxColumn colManaged;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colModifiedBy;
         private System.Windows.Forms.DataGridViewTextBoxColumn colCreatedOn;
         private System.Windows.Forms.DataGridViewTextBoxColumn colInstalledOn;
         private System.Windows.Forms.Panel pnComponent;
@@ -489,6 +510,7 @@ namespace SolutionComponents
         private System.Windows.Forms.DataGridViewTextBoxColumn colHistVersion;
         private System.Windows.Forms.DataGridViewTextBoxColumn colHistPublisher;
         private System.Windows.Forms.DataGridViewTextBoxColumn colHistManaged;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colHistModifiedBy;
         private System.Windows.Forms.DataGridViewTextBoxColumn colHistCreatedOn;
         private System.Windows.Forms.DataGridViewTextBoxColumn colHistInstalledOn;
     }

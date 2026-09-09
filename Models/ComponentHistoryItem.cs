@@ -8,8 +8,10 @@ namespace SolutionComponents.Models
         public string SolutionUniqueName { get; set; }
         public string Version { get; set; }
         public string PublisherName { get; set; }
+        public string ModifiedBy { get; set; }
         public bool IsManaged { get; set; }
         public DateTime? CreatedOn { get; set; }
+        public DateTime? ModifiedOn { get; set; }
         public DateTime? InstalledOn { get; set; }
 
         public string ManagedDisplay => IsManaged ? "Yes" : "No";
@@ -17,6 +19,7 @@ namespace SolutionComponents.Models
 
     public class EntityMetadataSummary
     {
+        public Guid? MetadataId { get; set; }
         public string LogicalName { get; set; }
         public string DisplayName { get; set; }
         public int? ObjectTypeCode { get; set; }

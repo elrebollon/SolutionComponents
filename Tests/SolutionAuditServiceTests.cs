@@ -15,10 +15,44 @@ namespace SolutionComponents.Tests
             Test_FilterByExcludedPublishers_CaseInsensitive();
             Test_FilterByExcludedPublishers_NullOrEmptyListReturnsAll();
             Test_GetComponentTypeDetails_KnownAndUnknownTypes();
+            Test_GetComponentTypeDetails_ModernDataverseTypes();
             Test_IsEntityDependentComponent_IdentifiesCorrectTypes();
             Test_ComponentHistoryOrdering();
             Test_MefMetadata_ValidIconsAndProperties();
+            Test_ModifiedByFieldSupport();
             Console.WriteLine("All SolutionAuditServiceTests passed successfully!");
+        }
+
+        public static void Test_GetComponentTypeDetails_ModernDataverseTypes()
+        {
+            var service = new SolutionAuditService();
+
+            var appModule = service.GetComponentTypeDetails(80);
+            if (appModule.ComponentTypeName != "Model-Driven App" || appModule.EntityName != "appmodule")
+                throw new Exception($"Expected Model-Driven App/appmodule for type 80, got {appModule.ComponentTypeName}/{appModule.EntityName}");
+
+            var connRef = service.GetComponentTypeDetails(10098);
+            if (connRef.ComponentTypeName != "Connection Reference")
+                throw new Exception($"Expected Connection Reference for type 10098, got {connRef.ComponentTypeName}");
+
+            var customApi = service.GetComponentTypeDetails(10020);
+            if (customApi.ComponentTypeName != "Custom API")
+                throw new Exception($"Expected Custom API for type 10020, got {customApi.ComponentTypeName}");
+
+            var bot = service.GetComponentTypeDetails(973);
+            if (bot.ComponentTypeName != "Copilot / Bot")
+                throw new Exception($"Expected Copilot / Bot for type 973, got {bot.ComponentTypeName}");
+        }
+
+        public static void Test_ModifiedByFieldSupport()
+        {
+            var item = new SolutionOverlapItem { ModifiedBy = "Alberto Perez" };
+            if (item.ModifiedBy != "Alberto Perez")
+                throw new Exception("SolutionOverlapItem.ModifiedBy not set");
+
+            var hist = new ComponentHistoryItem { ModifiedBy = "Alberto Perez" };
+            if (hist.ModifiedBy != "Alberto Perez")
+                throw new Exception("ComponentHistoryItem.ModifiedBy not set");
         }
 
         public static void Test_FilterByExcludedPublishers_RemovesMatchingPublishers()
