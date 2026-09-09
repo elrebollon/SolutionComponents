@@ -256,8 +256,10 @@ namespace SolutionComponents
             cbComponentTypes.Items.Clear();
 
             var availableTypes = SolutionAuditService.ComponentTypes
-                .Where(kvp => !string.IsNullOrEmpty(kvp.Value.ComponentTypeName) && !string.IsNullOrEmpty(kvp.Value.EntityName))
-                .GroupBy(kvp => $"{kvp.Value.ComponentTypeName} ({kvp.Value.EntityName})", StringComparer.OrdinalIgnoreCase)
+                .Where(kvp => !string.IsNullOrEmpty(kvp.Value.ComponentTypeName))
+                .GroupBy(kvp => !string.IsNullOrEmpty(kvp.Value.EntityName)
+                    ? $"{kvp.Value.ComponentTypeName} ({kvp.Value.EntityName})"
+                    : kvp.Value.ComponentTypeName, StringComparer.OrdinalIgnoreCase)
                 .Select(g => new ComboBoxTypeItem(g.Key, g.First().Key))
                 .OrderBy(item => item.Name)
                 .ToList();

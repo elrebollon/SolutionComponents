@@ -17,12 +17,119 @@ namespace SolutionComponents.Tests
             Test_FilterByExcludedPublishers_NullOrEmptyListReturnsAll();
             Test_GetComponentTypeDetails_KnownAndUnknownTypes();
             Test_GetComponentTypeDetails_ModernDataverseTypes();
+            Test_GetComponentTypeDetails_EntityComponents();
             Test_IsEntityDependentComponent_IdentifiesCorrectTypes();
             Test_ComponentHistoryOrdering();
             Test_MefMetadata_ValidIconsAndProperties();
             Test_ModifiedByFieldSupport();
             Test_GetModifiedByName_ResolutionOrder();
             Console.WriteLine("All SolutionAuditServiceTests passed successfully!");
+        }
+
+        public static void Test_GetComponentTypeDetails_EntityComponents()
+        {
+            var service = new SolutionAuditService();
+
+            var attr = service.GetComponentTypeDetails(2);
+            if (attr.ComponentTypeName != "Entity field" || attr.EntityName != "attribute")
+                throw new Exception($"Expected Entity field/attribute for type 2, got {attr.ComponentTypeName}/{attr.EntityName}");
+
+            var rel = service.GetComponentTypeDetails(3);
+            if (rel.ComponentTypeName != "Relationship" || rel.EntityName != "relationship")
+                throw new Exception($"Expected Relationship/relationship for type 3, got {rel.ComponentTypeName}/{rel.EntityName}");
+
+            var entRel = service.GetComponentTypeDetails(10);
+            if (entRel.ComponentTypeName != "Entity Relationship" || entRel.EntityName != "entityrelationship")
+                throw new Exception($"Expected Entity Relationship/entityrelationship for type 10, got {entRel.ComponentTypeName}/{entRel.EntityName}");
+
+            var key = service.GetComponentTypeDetails(14);
+            if (key.ComponentTypeName != "Entity Key" || key.EntityName != "entitykey")
+                throw new Exception($"Expected Entity Key/entitykey for type 14, got {key.ComponentTypeName}/{key.EntityName}");
+
+            var chart = service.GetComponentTypeDetails(59);
+            if (chart.ComponentTypeName != "Charts" || chart.EntityName != "savedqueryvisualization")
+                throw new Exception($"Expected Charts/savedqueryvisualization for type 59, got {chart.ComponentTypeName}/{chart.EntityName}");
+
+            var hRule = service.GetComponentTypeDetails(65);
+            if (hRule.ComponentTypeName != "Hierarchy Rule" || hRule.EntityName != "hierarchyrule")
+                throw new Exception($"Expected Hierarchy Rule/hierarchyrule for type 65, got {hRule.ComponentTypeName}/{hRule.EntityName}");
+
+            var entMap = service.GetComponentTypeDetails(46);
+            if (entMap.ComponentTypeName != "Entity Map" || entMap.EntityName != "entitymap")
+                throw new Exception($"Expected Entity Map/entitymap for type 46, got {entMap.ComponentTypeName}/{entMap.EntityName}");
+
+            var attrMap = service.GetComponentTypeDetails(47);
+            if (attrMap.ComponentTypeName != "Attribute Map" || attrMap.EntityName != "attributemap")
+                throw new Exception($"Expected Attribute Map/attributemap for type 47, got {attrMap.ComponentTypeName}/{attrMap.EntityName}");
+
+            var fPerm = service.GetComponentTypeDetails(71);
+            if (fPerm.ComponentTypeName != "Field Permission" || fPerm.EntityName != "fieldpermission")
+                throw new Exception($"Expected Field Permission/fieldpermission for type 71, got {fPerm.ComponentTypeName}/{fPerm.EntityName}");
+        }
+
+        public static void Test_IsEntityDependentComponent_IdentifiesCorrectTypes()
+        {
+            // Dependientes de entidad (R-4, G-2)
+            if (!SolutionAuditService.IsEntityDependentComponent(2)) // Attribute/Field
+                throw new Exception("Attribute (2) must be entity dependent");
+
+            if (!SolutionAuditService.IsEntityDependentComponent(3)) // Relationship
+                throw new Exception("Relationship (3) must be entity dependent");
+
+            if (!SolutionAuditService.IsEntityDependentComponent(10)) // Entity Relationship (N:N)
+                throw new Exception("Entity Relationship (10) must be entity dependent");
+
+            if (!SolutionAuditService.IsEntityDependentComponent(14)) // Entity Key
+                throw new Exception("Entity Key (14) must be entity dependent");
+
+            if (!SolutionAuditService.IsEntityDependentComponent(24)) // Form
+                throw new Exception("Form (24) must be entity dependent");
+
+            if (!SolutionAuditService.IsEntityDependentComponent(26)) // View
+                throw new Exception("View (26) must be entity dependent");
+
+            if (!SolutionAuditService.IsEntityDependentComponent(46)) // Entity Map
+                throw new Exception("Entity Map (46) must be entity dependent");
+
+            if (!SolutionAuditService.IsEntityDependentComponent(47)) // Attribute Map
+                throw new Exception("Attribute Map (47) must be entity dependent");
+
+            if (!SolutionAuditService.IsEntityDependentComponent(59)) // Chart
+                throw new Exception("Chart (59) must be entity dependent");
+
+            if (!SolutionAuditService.IsEntityDependentComponent(60)) // System Form
+                throw new Exception("System Form (60) must be entity dependent");
+
+            if (!SolutionAuditService.IsEntityDependentComponent(65)) // Hierarchy Rule
+                throw new Exception("Hierarchy Rule (65) must be entity dependent");
+
+            if (!SolutionAuditService.IsEntityDependentComponent(71)) // Field Permission
+                throw new Exception("Field Permission (71) must be entity dependent");
+
+            // Globales (R-4, G-2)
+            if (SolutionAuditService.IsEntityDependentComponent(20)) // Role
+                throw new Exception("Role (20) must be global");
+
+            if (SolutionAuditService.IsEntityDependentComponent(29)) // Workflow / Cloud Flow
+                throw new Exception("Workflow (29) must be global");
+
+            if (SolutionAuditService.IsEntityDependentComponent(61)) // Web Resource
+                throw new Exception("Web Resource (61) must be global");
+
+            if (SolutionAuditService.IsEntityDependentComponent(80)) // Model-Driven App
+                throw new Exception("Model-Driven App (80) must be global");
+
+            if (SolutionAuditService.IsEntityDependentComponent(300)) // Canvas App
+                throw new Exception("Canvas App (300) must be global");
+
+            if (SolutionAuditService.IsEntityDependentComponent(380)) // Environment Variable
+                throw new Exception("Environment Variable (380) must be global");
+
+            if (SolutionAuditService.IsEntityDependentComponent(973)) // Bot
+                throw new Exception("Bot (973) must be global");
+
+            if (SolutionAuditService.IsEntityDependentComponent(10020)) // Custom API
+                throw new Exception("Custom API (10020) must be global");
         }
 
         public static void Test_GetComponentTypeDetails_ModernDataverseTypes()
@@ -168,43 +275,7 @@ namespace SolutionComponents.Tests
                 throw new Exception($"Expected Unknown, got {unknownType.ComponentTypeName}");
         }
 
-        public static void Test_IsEntityDependentComponent_IdentifiesCorrectTypes()
-        {
-            // Dependientes de entidad (R-4, G-2)
-            if (!SolutionAuditService.IsEntityDependentComponent(24)) // Form
-                throw new Exception("Form (24) must be entity dependent");
 
-            if (!SolutionAuditService.IsEntityDependentComponent(26)) // View
-                throw new Exception("View (26) must be entity dependent");
-
-            if (!SolutionAuditService.IsEntityDependentComponent(2)) // Attribute/Field
-                throw new Exception("Attribute (2) must be entity dependent");
-
-            if (!SolutionAuditService.IsEntityDependentComponent(3)) // Relationship
-                throw new Exception("Relationship (3) must be entity dependent");
-
-            if (!SolutionAuditService.IsEntityDependentComponent(14)) // Entity Key
-                throw new Exception("Entity Key (14) must be entity dependent");
-
-            if (!SolutionAuditService.IsEntityDependentComponent(59)) // Chart
-                throw new Exception("Chart (59) must be entity dependent");
-
-            // Globales (R-4, G-2)
-            if (SolutionAuditService.IsEntityDependentComponent(29)) // Workflow / Cloud Flow
-                throw new Exception("Workflow (29) must be global");
-
-            if (SolutionAuditService.IsEntityDependentComponent(20)) // Role
-                throw new Exception("Role (20) must be global");
-
-            if (SolutionAuditService.IsEntityDependentComponent(61)) // Web Resource
-                throw new Exception("Web Resource (61) must be global");
-
-            if (SolutionAuditService.IsEntityDependentComponent(300)) // Canvas App
-                throw new Exception("Canvas App (300) must be global");
-
-            if (SolutionAuditService.IsEntityDependentComponent(380)) // Environment Variable
-                throw new Exception("Environment Variable (380) must be global");
-        }
 
         public static void Test_ComponentHistoryOrdering()
         {

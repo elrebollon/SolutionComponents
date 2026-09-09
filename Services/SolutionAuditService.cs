@@ -16,53 +16,53 @@ namespace SolutionComponents.Services
             { 1, ("Entity", "entity") },
             { 2, ("Entity field", "attribute") },
             { 3, ("Relationship", "relationship") },
-            { 4, ("Attribute Picklist Value", "") },
-            { 5, ("Attribute Lookup Value", "") },
-            { 6, ("View Attribute", "") },
-            { 7, ("Localized Label", "") },
-            { 8, ("Relationship Extra Condition", "") },
-            { 9, ("Option Set", "optionset") },
+            { 4, ("Attribute Picklist Value", "attributepicklistvalue") },
+            { 5, ("Attribute Lookup Value", "attributelookupvalue") },
+            { 6, ("View Attribute", "viewattribute") },
+            { 7, ("Localized Label", "localizedlabel") },
+            { 8, ("Relationship Extra Condition", "relationshipextracondition") },
+            { 9, ("Option Set / Choice", "optionset") },
             { 10, ("Entity Relationship", "entityrelationship") },
-            { 11, ("Entity Relationship Role", "") },
-            { 12, ("Entity Relationship Relationships", "") },
-            { 13, ("Managed Property", "") },
+            { 11, ("Entity Relationship Role", "entityrelationshiprole") },
+            { 12, ("Entity Relationship Relationships", "entityrelationshiprelationships") },
+            { 13, ("Managed Property", "managedproperty") },
             { 14, ("Entity Key", "entitykey") },
             { 16, ("Privilege", "privilege") },
-            { 17, ("PrivilegeObjectTypeCode", "") },
+            { 17, ("PrivilegeObjectTypeCode", "privilegeobjecttypecode") },
             { 18, ("Index", "entityindex") },
             { 20, ("Role", "role") },
-            { 21, ("Role Privilege", "") },
-            { 22, ("Display String", "") },
-            { 23, ("Display String Map", "") },
+            { 21, ("Role Privilege", "roleprivileges") },
+            { 22, ("Display String", "displaystring") },
+            { 23, ("Display String Map", "displaystringmap") },
             { 24, ("Form", "systemform") },
             { 25, ("Organization", "organization") },
             { 26, ("View", "savedquery") },
             { 29, ("Workflow / Cloud Flow", "workflow") },
             { 31, ("Report", "report") },
-            { 32, ("Report Entity", "") },
-            { 33, ("Report Category", "") },
-            { 34, ("Report Visibility", "") },
-            { 35, ("Attachment", "") },
+            { 32, ("Report Entity", "reportentity") },
+            { 33, ("Report Category", "reportcategory") },
+            { 34, ("Report Visibility", "reportvisibility") },
+            { 35, ("Attachment", "attachment") },
             { 36, ("Email Template", "template") },
             { 37, ("Contract Template", "contracttemplate") },
             { 38, ("KB Article Template", "kbarticletemplate") },
             { 39, ("Mail Merge Template", "mailmergetemplate") },
             { 44, ("Duplicate Rule", "duplicaterule") },
-            { 45, ("Duplicate Rule Condition", "") },
-            { 46, ("Entity Map", "") },
-            { 47, ("Attribute Map", "") },
-            { 48, ("Ribbon Command", "") },
-            { 49, ("Ribbon Context Group", "") },
+            { 45, ("Duplicate Rule Condition", "duplicaterulecondition") },
+            { 46, ("Entity Map", "entitymap") },
+            { 47, ("Attribute Map", "attributemap") },
+            { 48, ("Ribbon Command", "ribboncommand") },
+            { 49, ("Ribbon Context Group", "ribboncontextgroup") },
             { 50, ("Ribbon Customization", "ribboncustomization") },
-            { 52, ("Ribbon Rule", "") },
-            { 53, ("Ribbon Tab To Command Map", "") },
-            { 55, ("Ribbon Diff", "") },
+            { 52, ("Ribbon Rule", "ribbonrule") },
+            { 53, ("Ribbon Tab To Command Map", "ribbontabtocommandmap") },
+            { 55, ("Ribbon Diff", "ribbondiff") },
             { 59, ("Charts", "savedqueryvisualization") },
             { 60, ("System Form", "systemform") },
             { 61, ("Web Resource", "webresource") },
             { 62, ("Site Map", "sitemap") },
             { 63, ("Connection Role", "connectionrole") },
-            { 64, ("Complex Control", "") },
+            { 64, ("Complex Control", "complexcontrol") },
             { 65, ("Hierarchy Rule", "hierarchyrule") },
             { 66, ("Custom Control", "customcontrol") },
             { 68, ("Custom Control Default Config", "customcontroldefaultconfig") },
@@ -84,14 +84,14 @@ namespace SolutionComponents.Services
             { 161, ("Mobile Offline Profile", "mobileofflineprofile") },
             { 162, ("Mobile Offline Profile Item", "mobileofflineprofileitem") },
             { 165, ("Similarity Rule", "similarityrule") },
-            { 166, ("Data Source Mapping", "") },
+            { 166, ("Data Source Mapping", "datasourcemapping") },
             { 201, ("SDK Message", "sdkmessage") },
             { 202, ("SDK Message Filter", "sdkmessagefilter") },
             { 203, ("SDK Message Pair", "sdkmessagepair") },
-            { 204, ("SDK Message Request", "") },
-            { 205, ("SDK Message Request Field", "") },
-            { 206, ("SDK Message Response", "") },
-            { 207, ("SDK Message Response Field", "") },
+            { 204, ("SDK Message Request", "sdkmessagerequest") },
+            { 205, ("SDK Message Request Field", "sdkmessagerequestfield") },
+            { 206, ("SDK Message Response", "sdkmessageresponse") },
+            { 207, ("SDK Message Response Field", "sdkmessageresponsefield") },
             { 208, ("Import Map", "importmap") },
             { 210, ("WebWizard", "webwizard") },
             { 300, ("Canvas App", "canvasapp") },
@@ -99,17 +99,20 @@ namespace SolutionComponents.Services
             { 372, ("Connection Reference", "connectionreference") },
             { 380, ("Environment Variable Definition", "environmentvariabledefinition") },
             { 381, ("Environment Variable Value", "environmentvariablevalue") },
-            { 400, ("AI Project Type", "") },
-            { 401, ("AI Project", "") },
-            { 402, ("AI Configuration", "") },
-            { 430, ("Entity Analytics Configuration", "") },
-            { 431, ("Attribute Image Configuration", "") },
-            { 432, ("Entity Image Configuration", "") },
+            { 400, ("AI Project Type", "msdyn_aiprojecttype") },
+            { 401, ("AI Project", "msdyn_aiproject") },
+            { 402, ("AI Configuration", "msdyn_aiconfiguration") },
+            { 430, ("Entity Analytics Configuration", "entityanalyticsconfig") },
+            { 431, ("Attribute Image Configuration", "attributeimageconfig") },
+            { 432, ("Entity Image Configuration", "entityimageconfig") },
             { 973, ("Copilot / Bot", "bot") },
             { 974, ("Bot Component", "botcomponent") },
             { 10020, ("Custom API", "customapi") },
             { 10021, ("Custom API Request Parameter", "customapirequestparameter") },
             { 10022, ("Custom API Response Property", "customapiresponseproperty") },
+            { 10040, ("Dataflow", "msdyn_dataflow") },
+            { 10060, ("Catalog", "catalog") },
+            { 10061, ("Catalog Assignment", "catalogassignment") },
             { 10080, ("Plugin Package", "pluginpackage") },
             { 10091, ("Plugin Package", "pluginpackage") },
             { 10097, ("Desktop Flow", "workflow") },
@@ -121,17 +124,34 @@ namespace SolutionComponents.Services
 
         public static bool IsEntityDependentComponent(int componentType)
         {
-            // Tipos dependientes de una tabla/entidad (Forms, Views, Attributes, Relationships, Keys, Charts, etc.)
-            return componentType == 2   // Attribute
-                || componentType == 3   // Relationship
-                || componentType == 10  // Entity Relationship
-                || componentType == 14  // Entity Key
+            // Tipos dependientes de una tabla/entidad (Forms, Views, Attributes, Relationships, Keys, Charts, Maps, Rules, etc.)
+            return componentType == 2   // Attribute / Column
+                || componentType == 3   // Relationship (1:N, N:1)
+                || componentType == 4   // Attribute Picklist Value
+                || componentType == 5   // Attribute Lookup Value
+                || componentType == 6   // View Attribute
+                || componentType == 7   // Localized Label
+                || componentType == 8   // Relationship Extra Condition
+                || componentType == 10  // Entity Relationship (N:N)
+                || componentType == 11  // Entity Relationship Role
+                || componentType == 12  // Entity Relationship Relationships
+                || componentType == 14  // Entity Key / Alternate Key
                 || componentType == 18  // Index
+                || componentType == 22  // Display String
+                || componentType == 23  // Display String Map
                 || componentType == 24  // Form (systemform)
                 || componentType == 26  // View (savedquery)
-                || componentType == 59  // Charts
-                || componentType == 60  // Entity Form (systemform)
-                || componentType == 65; // Hierarchy Rule
+                || componentType == 46  // Entity Map
+                || componentType == 47  // Attribute Map
+                || componentType == 50  // Ribbon Customization
+                || componentType == 59  // Charts (savedqueryvisualization)
+                || componentType == 60  // System Form (systemform)
+                || componentType == 65  // Hierarchy Rule (hierarchyrule)
+                || componentType == 68  // Custom Control Default Config
+                || componentType == 71  // Field Permission
+                || componentType == 430 // Entity Analytics Configuration
+                || componentType == 431 // Attribute Image Configuration
+                || componentType == 432; // Entity Image Configuration
         }
 
         public List<SolutionSummary> GetSolutions(IOrganizationService service)
@@ -436,7 +456,7 @@ namespace SolutionComponents.Services
                 catch { }
             }
 
-            // 4. OptionSet (componentType 9)
+            // 4. OptionSet / Choice (componentType 9)
             if (componentType == 9 || entityLogicalName == "optionset")
             {
                 try
@@ -456,7 +476,30 @@ namespace SolutionComponents.Services
                 catch { }
             }
 
-            // 5. Form / Entity Form (componentType 24, 60)
+            // 5. Entity Key / Alternate Key (componentType 14)
+            if (componentType == 14 || entityLogicalName == "entitykey")
+            {
+                try
+                {
+                    var req = new RetrieveEntityKeyRequest
+                    {
+                        MetadataId = objectId,
+                        RetrieveAsIfPublished = true
+                    };
+                    var resp = (RetrieveEntityKeyResponse)service.Execute(req);
+                    if (resp?.EntityKeyMetadata != null)
+                    {
+                        string disp = resp.EntityKeyMetadata.DisplayName?.UserLocalizedLabel?.Label ?? resp.EntityKeyMetadata.SchemaName ?? resp.EntityKeyMetadata.LogicalName;
+                        string keyCols = resp.EntityKeyMetadata.KeyAttributes != null ? string.Join(", ", resp.EntityKeyMetadata.KeyAttributes) : "";
+                        string entName = resp.EntityKeyMetadata.EntityLogicalName;
+                        string res = !string.IsNullOrEmpty(keyCols) ? $"{disp} [{keyCols}]" : disp;
+                        return !string.IsNullOrEmpty(entName) ? $"{res} [{entName}]" : res;
+                    }
+                }
+                catch { }
+            }
+
+            // 6. Form / Entity Form (componentType 24, 60)
             if (componentType == 24 || componentType == 60 || entityLogicalName == "systemform")
             {
                 try
@@ -472,7 +515,7 @@ namespace SolutionComponents.Services
                 catch { }
             }
 
-            // 6. View (componentType 26)
+            // 7. View (componentType 26)
             if (componentType == 26 || entityLogicalName == "savedquery")
             {
                 try
@@ -488,9 +531,89 @@ namespace SolutionComponents.Services
                 catch { }
             }
 
-            // 7. Generic CRM Table lookup
+            // 8. Charts / Visualizations (componentType 59)
+            if (componentType == 59 || entityLogicalName == "savedqueryvisualization")
+            {
+                try
+                {
+                    Entity chart = service.Retrieve("savedqueryvisualization", objectId, new ColumnSet("name", "primaryentitytypecode"));
+                    if (chart != null)
+                    {
+                        string name = chart.GetAttributeValue<string>("name");
+                        string petc = chart.GetAttributeValue<string>("primaryentitytypecode");
+                        return !string.IsNullOrEmpty(petc) ? $"{name} ({petc})" : name;
+                    }
+                }
+                catch { }
+            }
+
+            // 9. Hierarchy Rule (componentType 65)
+            if (componentType == 65 || entityLogicalName == "hierarchyrule")
+            {
+                try
+                {
+                    Entity rule = service.Retrieve("hierarchyrule", objectId, new ColumnSet("name", "primaryentityname"));
+                    if (rule != null)
+                    {
+                        string name = rule.GetAttributeValue<string>("name");
+                        string pen = rule.GetAttributeValue<string>("primaryentityname");
+                        return !string.IsNullOrEmpty(pen) ? $"{name} ({pen})" : name;
+                    }
+                }
+                catch { }
+            }
+
+            // 10. Entity Map (componentType 46)
+            if (componentType == 46 || entityLogicalName == "entitymap")
+            {
+                try
+                {
+                    Entity em = service.Retrieve("entitymap", objectId, new ColumnSet("sourceentityname", "targetentityname"));
+                    if (em != null)
+                    {
+                        string src = em.GetAttributeValue<string>("sourceentityname");
+                        string tgt = em.GetAttributeValue<string>("targetentityname");
+                        return $"{src} -> {tgt}";
+                    }
+                }
+                catch { }
+            }
+
+            // 11. Attribute Map (componentType 47)
+            if (componentType == 47 || entityLogicalName == "attributemap")
+            {
+                try
+                {
+                    Entity am = service.Retrieve("attributemap", objectId, new ColumnSet("sourceattributename", "targetattributename"));
+                    if (am != null)
+                    {
+                        string src = am.GetAttributeValue<string>("sourceattributename");
+                        string tgt = am.GetAttributeValue<string>("targetattributename");
+                        return $"{src} -> {tgt}";
+                    }
+                }
+                catch { }
+            }
+
+            // 12. Field Permission (componentType 71)
+            if (componentType == 71 || entityLogicalName == "fieldpermission")
+            {
+                try
+                {
+                    Entity fp = service.Retrieve("fieldpermission", objectId, new ColumnSet("entityname", "attributelogicalname"));
+                    if (fp != null)
+                    {
+                        string ent = fp.GetAttributeValue<string>("entityname");
+                        string attr = fp.GetAttributeValue<string>("attributelogicalname");
+                        return $"{attr} [{ent}]";
+                    }
+                }
+                catch { }
+            }
+
+            // 13. Generic CRM Table lookup
             string targetEntity = !string.IsNullOrEmpty(entityLogicalName) ? entityLogicalName : GetComponentTypeDetails(componentType).EntityName;
-            if (!string.IsNullOrEmpty(targetEntity) && targetEntity != "entity" && targetEntity != "attribute" && targetEntity != "relationship" && targetEntity != "entityrelationship")
+            if (!string.IsNullOrEmpty(targetEntity) && targetEntity != "entity" && targetEntity != "attribute" && targetEntity != "relationship" && targetEntity != "entityrelationship" && targetEntity != "entitykey")
             {
                 try
                 {
@@ -569,6 +692,117 @@ namespace SolutionComponents.Services
                         }
                     }
                 }
+                else if (componentType == 3) // Relationship (1:N, N:1)
+                {
+                    if (!string.IsNullOrEmpty(entityLogicalName))
+                    {
+                        var req = new RetrieveEntityRequest
+                        {
+                            LogicalName = entityLogicalName,
+                            EntityFilters = EntityFilters.Relationships,
+                            RetrieveAsIfPublished = true
+                        };
+                        var resp = (RetrieveEntityResponse)service.Execute(req);
+                        var seenIds = new HashSet<Guid>();
+
+                        if (resp?.EntityMetadata?.OneToManyRelationships != null)
+                        {
+                            foreach (var rel in resp.EntityMetadata.OneToManyRelationships.OrderBy(r => r.SchemaName))
+                            {
+                                Guid relId = rel.MetadataId ?? Guid.Empty;
+                                if (relId != Guid.Empty && !seenIds.Add(relId)) continue;
+
+                                string name = $"{rel.SchemaName} (1:N: {rel.ReferencedEntity} -> {rel.ReferencingEntity}.{rel.ReferencingAttribute})";
+                                list.Add(new ComponentItem
+                                {
+                                    Id = relId,
+                                    Name = name,
+                                    ComponentType = 3,
+                                    ComponentTypeName = "Relationship",
+                                    EntityLogicalName = entityLogicalName
+                                });
+                            }
+                        }
+
+                        if (resp?.EntityMetadata?.ManyToOneRelationships != null)
+                        {
+                            foreach (var rel in resp.EntityMetadata.ManyToOneRelationships.OrderBy(r => r.SchemaName))
+                            {
+                                Guid relId = rel.MetadataId ?? Guid.Empty;
+                                if (relId != Guid.Empty && !seenIds.Add(relId)) continue;
+
+                                string name = $"{rel.SchemaName} (N:1: {rel.ReferencingEntity}.{rel.ReferencingAttribute} -> {rel.ReferencedEntity})";
+                                list.Add(new ComponentItem
+                                {
+                                    Id = relId,
+                                    Name = name,
+                                    ComponentType = 3,
+                                    ComponentTypeName = "Relationship",
+                                    EntityLogicalName = entityLogicalName
+                                });
+                            }
+                        }
+                    }
+                }
+                else if (componentType == 10) // Entity Relationship (N:N)
+                {
+                    if (!string.IsNullOrEmpty(entityLogicalName))
+                    {
+                        var req = new RetrieveEntityRequest
+                        {
+                            LogicalName = entityLogicalName,
+                            EntityFilters = EntityFilters.Relationships,
+                            RetrieveAsIfPublished = true
+                        };
+                        var resp = (RetrieveEntityResponse)service.Execute(req);
+                        if (resp?.EntityMetadata?.ManyToManyRelationships != null)
+                        {
+                            foreach (var rel in resp.EntityMetadata.ManyToManyRelationships.OrderBy(r => r.SchemaName))
+                            {
+                                string name = $"{rel.SchemaName} (N:N: {rel.Entity1LogicalName} <-> {rel.Entity2LogicalName})";
+                                list.Add(new ComponentItem
+                                {
+                                    Id = rel.MetadataId ?? Guid.Empty,
+                                    Name = name,
+                                    ComponentType = 10,
+                                    ComponentTypeName = "Entity Relationship",
+                                    EntityLogicalName = entityLogicalName
+                                });
+                            }
+                        }
+                    }
+                }
+                else if (componentType == 14) // Entity Key / Alternate Key
+                {
+                    if (!string.IsNullOrEmpty(entityLogicalName))
+                    {
+                        var req = new RetrieveEntityRequest
+                        {
+                            LogicalName = entityLogicalName,
+                            EntityFilters = EntityFilters.Entity,
+                            RetrieveAsIfPublished = true
+                        };
+                        var resp = (RetrieveEntityResponse)service.Execute(req);
+                        if (resp?.EntityMetadata?.Keys != null)
+                        {
+                            foreach (var key in resp.EntityMetadata.Keys.OrderBy(k => k.SchemaName ?? k.LogicalName))
+                            {
+                                string disp = key.DisplayName?.UserLocalizedLabel?.Label ?? key.SchemaName ?? key.LogicalName;
+                                string keyCols = key.KeyAttributes != null ? string.Join(", ", key.KeyAttributes) : "";
+                                string name = !string.IsNullOrEmpty(keyCols) ? $"{disp} [{keyCols}]" : disp;
+
+                                list.Add(new ComponentItem
+                                {
+                                    Id = key.MetadataId ?? Guid.Empty,
+                                    Name = name,
+                                    ComponentType = 14,
+                                    ComponentTypeName = "Entity Key",
+                                    EntityLogicalName = entityLogicalName
+                                });
+                            }
+                        }
+                    }
+                }
                 else if (componentType == 24 || componentType == 60) // Form (systemform)
                 {
                     var query = new QueryExpression("systemform")
@@ -583,13 +817,15 @@ namespace SolutionComponents.Services
                     var result = service.RetrieveMultiple(query);
                     foreach (var e in result.Entities)
                     {
+                        string name = e.GetAttributeValue<string>("name") ?? "Unnamed Form";
+                        string otc = e.GetAttributeValue<string>("objecttypecode");
                         list.Add(new ComponentItem
                         {
                             Id = e.Id,
-                            Name = e.GetAttributeValue<string>("name") ?? "Unnamed Form",
+                            Name = !string.IsNullOrEmpty(otc) ? $"{name} ({otc})" : name,
                             ComponentType = componentType,
                             ComponentTypeName = details.ComponentTypeName,
-                            EntityLogicalName = e.GetAttributeValue<string>("objecttypecode")
+                            EntityLogicalName = otc
                         });
                     }
                 }
@@ -607,15 +843,173 @@ namespace SolutionComponents.Services
                     var result = service.RetrieveMultiple(query);
                     foreach (var e in result.Entities)
                     {
+                        string name = e.GetAttributeValue<string>("name") ?? "Unnamed View";
+                        string rtc = e.GetAttributeValue<string>("returnedtypecode");
                         list.Add(new ComponentItem
                         {
                             Id = e.Id,
-                            Name = e.GetAttributeValue<string>("name") ?? "Unnamed View",
+                            Name = !string.IsNullOrEmpty(rtc) ? $"{name} ({rtc})" : name,
                             ComponentType = 26,
                             ComponentTypeName = "View",
-                            EntityLogicalName = e.GetAttributeValue<string>("returnedtypecode")
+                            EntityLogicalName = rtc
                         });
                     }
+                }
+                else if (componentType == 59) // Charts (savedqueryvisualization)
+                {
+                    var query = new QueryExpression("savedqueryvisualization")
+                    {
+                        ColumnSet = new ColumnSet("savedqueryvisualizationid", "name", "primaryentitytypecode"),
+                        Orders = { new OrderExpression("name", OrderType.Ascending) }
+                    };
+                    if (!string.IsNullOrEmpty(entityLogicalName))
+                    {
+                        query.Criteria.AddCondition("primaryentitytypecode", ConditionOperator.Equal, entityLogicalName);
+                    }
+                    var result = service.RetrieveMultiple(query);
+                    foreach (var e in result.Entities)
+                    {
+                        string name = e.GetAttributeValue<string>("name") ?? "Unnamed Chart";
+                        string petc = e.GetAttributeValue<string>("primaryentitytypecode");
+                        list.Add(new ComponentItem
+                        {
+                            Id = e.Id,
+                            Name = !string.IsNullOrEmpty(petc) ? $"{name} ({petc})" : name,
+                            ComponentType = 59,
+                            ComponentTypeName = "Charts",
+                            EntityLogicalName = petc
+                        });
+                    }
+                }
+                else if (componentType == 65) // Hierarchy Rule (hierarchyrule)
+                {
+                    var query = new QueryExpression("hierarchyrule")
+                    {
+                        ColumnSet = new ColumnSet("hierarchyruleid", "name", "primaryentityname"),
+                        Orders = { new OrderExpression("name", OrderType.Ascending) }
+                    };
+                    if (!string.IsNullOrEmpty(entityLogicalName))
+                    {
+                        query.Criteria.AddCondition("primaryentityname", ConditionOperator.Equal, entityLogicalName);
+                    }
+                    var result = service.RetrieveMultiple(query);
+                    foreach (var e in result.Entities)
+                    {
+                        string name = e.GetAttributeValue<string>("name") ?? "Unnamed Hierarchy Rule";
+                        string pen = e.GetAttributeValue<string>("primaryentityname");
+                        list.Add(new ComponentItem
+                        {
+                            Id = e.Id,
+                            Name = !string.IsNullOrEmpty(pen) ? $"{name} ({pen})" : name,
+                            ComponentType = 65,
+                            ComponentTypeName = "Hierarchy Rule",
+                            EntityLogicalName = pen
+                        });
+                    }
+                }
+                else if (componentType == 46) // Entity Map (entitymap)
+                {
+                    var query = new QueryExpression("entitymap")
+                    {
+                        ColumnSet = new ColumnSet("entitymapid", "sourceentityname", "targetentityname"),
+                        Orders = { new OrderExpression("sourceentityname", OrderType.Ascending) }
+                    };
+                    if (!string.IsNullOrEmpty(entityLogicalName))
+                    {
+                        var filter = query.Criteria.AddFilter(LogicalOperator.Or);
+                        filter.AddCondition("sourceentityname", ConditionOperator.Equal, entityLogicalName);
+                        filter.AddCondition("targetentityname", ConditionOperator.Equal, entityLogicalName);
+                    }
+                    var result = service.RetrieveMultiple(query);
+                    foreach (var e in result.Entities)
+                    {
+                        string src = e.GetAttributeValue<string>("sourceentityname");
+                        string tgt = e.GetAttributeValue<string>("targetentityname");
+                        list.Add(new ComponentItem
+                        {
+                            Id = e.Id,
+                            Name = $"{src} -> {tgt}",
+                            ComponentType = 46,
+                            ComponentTypeName = "Entity Map",
+                            EntityLogicalName = entityLogicalName
+                        });
+                    }
+                }
+                else if (componentType == 47) // Attribute Map (attributemap)
+                {
+                    var query = new QueryExpression("attributemap")
+                    {
+                        ColumnSet = new ColumnSet("attributemapid", "sourceattributename", "targetattributename", "entitymapid"),
+                        TopCount = 500
+                    };
+                    var result = service.RetrieveMultiple(query);
+                    foreach (var e in result.Entities)
+                    {
+                        string src = e.GetAttributeValue<string>("sourceattributename");
+                        string tgt = e.GetAttributeValue<string>("targetattributename");
+                        list.Add(new ComponentItem
+                        {
+                            Id = e.Id,
+                            Name = $"{src} -> {tgt}",
+                            ComponentType = 47,
+                            ComponentTypeName = "Attribute Map",
+                            EntityLogicalName = entityLogicalName
+                        });
+                    }
+                }
+                else if (componentType == 71) // Field Permission (fieldpermission)
+                {
+                    var query = new QueryExpression("fieldpermission")
+                    {
+                        ColumnSet = new ColumnSet("fieldpermissionid", "entityname", "attributelogicalname"),
+                        Orders = { new OrderExpression("attributelogicalname", OrderType.Ascending) }
+                    };
+                    if (!string.IsNullOrEmpty(entityLogicalName))
+                    {
+                        query.Criteria.AddCondition("entityname", ConditionOperator.Equal, entityLogicalName);
+                    }
+                    var result = service.RetrieveMultiple(query);
+                    foreach (var e in result.Entities)
+                    {
+                        string ent = e.GetAttributeValue<string>("entityname");
+                        string attr = e.GetAttributeValue<string>("attributelogicalname");
+                        list.Add(new ComponentItem
+                        {
+                            Id = e.Id,
+                            Name = $"{attr} ({ent})",
+                            ComponentType = 71,
+                            ComponentTypeName = "Field Permission",
+                            EntityLogicalName = ent
+                        });
+                    }
+                }
+                else if (componentType == 9) // Option Set / Choice (global optionsets)
+                {
+                    try
+                    {
+                        var req = new RetrieveAllOptionSetsRequest
+                        {
+                            RetrieveAsIfPublished = true
+                        };
+                        var resp = (RetrieveAllOptionSetsResponse)service.Execute(req);
+                        if (resp?.OptionSetMetadata != null)
+                        {
+                            foreach (var os in resp.OptionSetMetadata.OrderBy(o => o.DisplayName?.UserLocalizedLabel?.Label ?? o.Name))
+                            {
+                                string disp = os.DisplayName?.UserLocalizedLabel?.Label;
+                                string name = string.IsNullOrEmpty(disp) ? os.Name : $"{disp} ({os.Name})";
+                                list.Add(new ComponentItem
+                                {
+                                    Id = os.MetadataId ?? Guid.Empty,
+                                    Name = name,
+                                    ComponentType = 9,
+                                    ComponentTypeName = "Option Set / Choice",
+                                    EntityLogicalName = null
+                                });
+                            }
+                        }
+                    }
+                    catch { }
                 }
                 else if (componentType == 29) // Workflow / Cloud Flow
                 {
