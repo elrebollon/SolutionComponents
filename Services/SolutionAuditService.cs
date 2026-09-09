@@ -565,25 +565,37 @@ namespace SolutionComponents.Services
                         });
                     }
                 }
-                else if (componentType == 20) // Role (Filtrar roles raíz para no duplicar por Business Unit)
+                else if (componentType == 20) // Role (Filtrar por unidad de negocio principal y deduplicar por nombre)
                 {
                     var query = new QueryExpression("role")
                     {
-                        ColumnSet = new ColumnSet("roleid", "name"),
+                        ColumnSet = new ColumnSet("roleid", "name", "businessunitid"),
                         Orders = { new OrderExpression("name", OrderType.Ascending) }
                     };
-                    query.Criteria.AddCondition("parentrootroleid", ConditionOperator.Null);
+
+                    // Filtrar por la unidad de negocio principal (donde parentbusinessunitid es null)
+                    var linkBu = query.AddLink("businessunit", "businessunitid", "businessunitid", JoinOperator.Inner);
+                    linkBu.LinkCriteria.AddCondition("parentbusinessunitid", ConditionOperator.Null);
+
                     var result = service.RetrieveMultiple(query);
+                    var seenNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
                     foreach (var e in result.Entities)
                     {
-                        list.Add(new ComponentItem
+                        string roleName = e.GetAttributeValue<string>("name");
+                        if (string.IsNullOrEmpty(roleName)) continue;
+
+                        if (seenNames.Add(roleName))
                         {
-                            Id = e.Id,
-                            Name = e.GetAttributeValue<string>("name") ?? "Unnamed Role",
-                            ComponentType = 20,
-                            ComponentTypeName = "Role",
-                            EntityLogicalName = null
-                        });
+                            list.Add(new ComponentItem
+                            {
+                                Id = e.Id,
+                                Name = roleName,
+                                ComponentType = 20,
+                                ComponentTypeName = "Role",
+                                EntityLogicalName = null
+                            });
+                        }
                     }
                 }
                 else if (componentType == 61) // Web Resource
