@@ -145,7 +145,7 @@ namespace SolutionComponents.Services
             };
 
             var linkPublisher = query.AddLink("publisher", "publisherid", "publisherid", JoinOperator.LeftOuter);
-            linkPublisher.Columns = new ColumnSet("friendlyname", "customprefix");
+            linkPublisher.Columns = new ColumnSet("friendlyname");
             linkPublisher.EntityAlias = "pub";
 
             var result = service.RetrieveMultiple(query);
@@ -153,9 +153,21 @@ namespace SolutionComponents.Services
 
             foreach (var entity in result.Entities)
             {
-                string publisherName = entity.Contains("pub.friendlyname")
-                    ? entity.GetAttributeValue<AliasedValue>("pub.friendlyname")?.Value as string
-                    : null;
+                string publisherName = null;
+                if (entity.Contains("pub.friendlyname"))
+                {
+                    var aliased = entity.GetAttributeValue<AliasedValue>("pub.friendlyname");
+                    if (aliased != null && aliased.Value != null)
+                        publisherName = aliased.Value.ToString();
+                }
+                if (string.IsNullOrWhiteSpace(publisherName) && entity.FormattedValues != null && entity.FormattedValues.TryGetValue("publisherid", out string formattedPub) && !string.IsNullOrWhiteSpace(formattedPub))
+                {
+                    publisherName = formattedPub;
+                }
+                if (string.IsNullOrWhiteSpace(publisherName))
+                {
+                    publisherName = entity.GetAttributeValue<EntityReference>("publisherid")?.Name;
+                }
 
                 list.Add(new SolutionSummary
                 {

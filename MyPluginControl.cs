@@ -159,7 +159,7 @@ namespace SolutionComponents
 
         private void LoadSolutionComponentsAndOverlapsAsync(Guid solutionId)
         {
-            var excludedPublishers = mySettings?.ExcludedPublishers ?? new List<string> { "MicrosoftCorporation", "Microsoft" };
+            var excludedPublishers = mySettings?.ExcludedPublishers ?? new List<string>();
 
             WorkAsync(new WorkAsyncInfo
             {
