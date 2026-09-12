@@ -283,13 +283,17 @@ namespace SolutionComponents
             // 
             // cbSolutionComponents
             // 
-            this.cbSolutionComponents.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbSolutionComponents.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
+            this.cbSolutionComponents.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
+            this.cbSolutionComponents.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDown;
             this.cbSolutionComponents.FormattingEnabled = true;
             this.cbSolutionComponents.Location = new System.Drawing.Point(125, 42);
             this.cbSolutionComponents.Name = "cbSolutionComponents";
             this.cbSolutionComponents.Size = new System.Drawing.Size(260, 21);
             this.cbSolutionComponents.TabIndex = 2;
             this.cbSolutionComponents.SelectedIndexChanged += new System.EventHandler(this.cbSolutionComponents_SelectedIndexChanged);
+            this.cbSolutionComponents.KeyDown += new System.Windows.Forms.KeyEventHandler(this.cbSolutionComponents_KeyDown);
+            this.cbSolutionComponents.Leave += new System.EventHandler(this.cbSolutionComponents_Leave);
             // 
             // label1
             // 
@@ -302,13 +306,17 @@ namespace SolutionComponents
             // 
             // cbSolutions
             // 
-            this.cbSolutions.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbSolutions.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
+            this.cbSolutions.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
+            this.cbSolutions.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDown;
             this.cbSolutions.FormattingEnabled = true;
             this.cbSolutions.Location = new System.Drawing.Point(125, 12);
             this.cbSolutions.Name = "cbSolutions";
             this.cbSolutions.Size = new System.Drawing.Size(260, 21);
             this.cbSolutions.TabIndex = 0;
             this.cbSolutions.SelectedIndexChanged += new System.EventHandler(this.cbSolutions_SelectedIndexChanged);
+            this.cbSolutions.KeyDown += new System.Windows.Forms.KeyEventHandler(this.cbSolutions_KeyDown);
+            this.cbSolutions.Leave += new System.EventHandler(this.cbSolutions_Leave);
             // 
             // pnComponent
             // 
@@ -424,13 +432,17 @@ namespace SolutionComponents
             // 
             // cbComponents
             // 
-            this.cbComponents.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbComponents.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
+            this.cbComponents.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
+            this.cbComponents.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDown;
             this.cbComponents.FormattingEnabled = true;
             this.cbComponents.Location = new System.Drawing.Point(125, 42);
             this.cbComponents.Name = "cbComponents";
             this.cbComponents.Size = new System.Drawing.Size(260, 21);
             this.cbComponents.TabIndex = 5;
             this.cbComponents.SelectedIndexChanged += new System.EventHandler(this.cbComponents_SelectedIndexChanged);
+            this.cbComponents.KeyDown += new System.Windows.Forms.KeyEventHandler(this.cbComponents_KeyDown);
+            this.cbComponents.Leave += new System.EventHandler(this.cbComponents_Leave);
             // 
             // lblComponent
             // 
@@ -443,13 +455,17 @@ namespace SolutionComponents
             // 
             // cbEntities
             // 
-            this.cbEntities.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbEntities.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
+            this.cbEntities.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
+            this.cbEntities.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDown;
             this.cbEntities.FormattingEnabled = true;
             this.cbEntities.Location = new System.Drawing.Point(510, 12);
             this.cbEntities.Name = "cbEntities";
             this.cbEntities.Size = new System.Drawing.Size(260, 21);
             this.cbEntities.TabIndex = 3;
             this.cbEntities.SelectedIndexChanged += new System.EventHandler(this.cbEntities_SelectedIndexChanged);
+            this.cbEntities.KeyDown += new System.Windows.Forms.KeyEventHandler(this.cbEntities_KeyDown);
+            this.cbEntities.Leave += new System.EventHandler(this.cbEntities_Leave);
             // 
             // lblEntity
             // 
@@ -462,13 +478,17 @@ namespace SolutionComponents
             // 
             // cbComponentTypes
             // 
-            this.cbComponentTypes.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbComponentTypes.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
+            this.cbComponentTypes.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
+            this.cbComponentTypes.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDown;
             this.cbComponentTypes.FormattingEnabled = true;
             this.cbComponentTypes.Location = new System.Drawing.Point(125, 12);
             this.cbComponentTypes.Name = "cbComponentTypes";
             this.cbComponentTypes.Size = new System.Drawing.Size(260, 21);
             this.cbComponentTypes.TabIndex = 1;
             this.cbComponentTypes.SelectedIndexChanged += new System.EventHandler(this.cbComponentTypes_SelectedIndexChanged);
+            this.cbComponentTypes.KeyDown += new System.Windows.Forms.KeyEventHandler(this.cbComponentTypes_KeyDown);
+            this.cbComponentTypes.Leave += new System.EventHandler(this.cbComponentTypes_Leave);
             // 
             // lblComponentType
             // 

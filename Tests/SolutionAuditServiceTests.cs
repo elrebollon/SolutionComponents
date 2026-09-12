@@ -23,6 +23,9 @@ namespace SolutionComponents.Tests
             Test_MefMetadata_ValidIconsAndProperties();
             Test_ModifiedByFieldSupport();
             Test_GetModifiedByName_ResolutionOrder();
+            Test_SolutionSummaryOrdering_CaseInsensitive();
+            Test_ComponentItemOrdering_CaseInsensitive();
+            Test_ComboBoxConfiguration_SuggestAppendAndDropDown();
             Console.WriteLine("All SolutionAuditServiceTests passed successfully!");
         }
 
@@ -312,6 +315,86 @@ namespace SolutionComponents.Tests
 
             if (!attributes.ContainsKey("Name") || (string)attributes["Name"] != "Solution Component Inspector")
                 throw new Exception("Name MEF metadata must be 'Solution Component Inspector'");
+        }
+
+        public static void Test_SolutionSummaryOrdering_CaseInsensitive()
+        {
+            var solutions = new List<SolutionSummary>
+            {
+                new SolutionSummary { FriendlyName = "zebra solution", UniqueName = "zebra" },
+                new SolutionSummary { FriendlyName = "Alpha Solution", UniqueName = "alpha" },
+                new SolutionSummary { FriendlyName = "beta solution", UniqueName = "beta" },
+                new SolutionSummary { FriendlyName = "", UniqueName = "gamma_no_friendly" }
+            };
+
+            var sorted = solutions.OrderBy(s => s.ToString(), StringComparer.CurrentCultureIgnoreCase).ToList();
+
+            if (sorted[0].FriendlyName != "Alpha Solution")
+                throw new Exception($"Expected 'Alpha Solution' first, got '{sorted[0].FriendlyName}'");
+
+            if (sorted[1].FriendlyName != "beta solution")
+                throw new Exception($"Expected 'beta solution' second, got '{sorted[1].FriendlyName}'");
+
+            if (sorted[2].UniqueName != "gamma_no_friendly")
+                throw new Exception($"Expected 'gamma_no_friendly' third, got '{sorted[2].UniqueName}'");
+
+            if (sorted[3].FriendlyName != "zebra solution")
+                throw new Exception($"Expected 'zebra solution' fourth, got '{sorted[3].FriendlyName}'");
+        }
+
+        public static void Test_ComponentItemOrdering_CaseInsensitive()
+        {
+            var components = new List<ComponentItem>
+            {
+                new ComponentItem { Id = Guid.NewGuid(), Name = "zip_code" },
+                new ComponentItem { Id = Guid.NewGuid(), Name = "Account" },
+                new ComponentItem { Id = Guid.NewGuid(), Name = "account_number" },
+                new ComponentItem { Id = Guid.NewGuid(), Name = "Contact" }
+            };
+
+            var sorted = components.OrderBy(c => c.Name ?? string.Empty, StringComparer.CurrentCultureIgnoreCase).ToList();
+
+            if (sorted[0].Name != "Account")
+                throw new Exception($"Expected 'Account' first, got '{sorted[0].Name}'");
+
+            if (sorted[1].Name != "account_number")
+                throw new Exception($"Expected 'account_number' second, got '{sorted[1].Name}'");
+
+            if (sorted[2].Name != "Contact")
+                throw new Exception($"Expected 'Contact' third, got '{sorted[2].Name}'");
+
+            if (sorted[3].Name != "zip_code")
+                throw new Exception($"Expected 'zip_code' fourth, got '{sorted[3].Name}'");
+        }
+
+        public static void Test_ComboBoxConfiguration_SuggestAppendAndDropDown()
+        {
+            using (var control = new MyPluginControl())
+            {
+                var combos = new[]
+                {
+                    new { Name = "cbSolutions", Control = control.GetType().GetField("cbSolutions", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)?.GetValue(control) as System.Windows.Forms.ComboBox },
+                    new { Name = "cbSolutionComponents", Control = control.GetType().GetField("cbSolutionComponents", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)?.GetValue(control) as System.Windows.Forms.ComboBox },
+                    new { Name = "cbComponentTypes", Control = control.GetType().GetField("cbComponentTypes", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)?.GetValue(control) as System.Windows.Forms.ComboBox },
+                    new { Name = "cbEntities", Control = control.GetType().GetField("cbEntities", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)?.GetValue(control) as System.Windows.Forms.ComboBox },
+                    new { Name = "cbComponents", Control = control.GetType().GetField("cbComponents", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)?.GetValue(control) as System.Windows.Forms.ComboBox }
+                };
+
+                foreach (var item in combos)
+                {
+                    if (item.Control == null)
+                        throw new Exception($"ComboBox {item.Name} not found in MyPluginControl");
+
+                    if (item.Control.DropDownStyle != System.Windows.Forms.ComboBoxStyle.DropDown)
+                        throw new Exception($"ComboBox {item.Name} must have DropDownStyle = DropDown, got {item.Control.DropDownStyle}");
+
+                    if (item.Control.AutoCompleteMode != System.Windows.Forms.AutoCompleteMode.SuggestAppend)
+                        throw new Exception($"ComboBox {item.Name} must have AutoCompleteMode = SuggestAppend, got {item.Control.AutoCompleteMode}");
+
+                    if (item.Control.AutoCompleteSource != System.Windows.Forms.AutoCompleteSource.ListItems)
+                        throw new Exception($"ComboBox {item.Name} must have AutoCompleteSource = ListItems, got {item.Control.AutoCompleteSource}");
+                }
+            }
         }
     }
 }

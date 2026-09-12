@@ -200,7 +200,7 @@ namespace SolutionComponents.Services
                 });
             }
 
-            return list;
+            return list.OrderBy(s => s.ToString(), StringComparer.CurrentCultureIgnoreCase).ToList();
         }
 
         private List<EntityMetadataSummary> _entitiesCache;
@@ -1122,7 +1122,7 @@ namespace SolutionComponents.Services
                 // Fallback generic
             }
 
-            return list;
+            return list.OrderBy(c => c.Name ?? string.Empty, StringComparer.CurrentCultureIgnoreCase).ToList();
         }
 
         private static Guid GetGuidAttribute(Entity entity, string attributeName)
