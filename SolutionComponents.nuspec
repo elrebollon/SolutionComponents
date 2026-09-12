@@ -4,8 +4,8 @@
     <id>SolutionComponents</id>
     <version>1.0.0</version>
     <title>Solution Component Inspector for XrmToolBox</title>
-    <authors>El Rebollon</authors>
-    <owners>El Rebollon</owners>
+    <authors>Alberto Palomo Alberto</authors>
+    <owners>Alberto Palomo Alberto</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <projectUrl>https://github.com/elrebollon/SolutionComponents</projectUrl>
     <description>A powerful XrmToolBox plugin to inspect solution component dependencies, identify cross-solution overlaps, and track component history across Dynamics 365 and Dataverse releases.</description>
