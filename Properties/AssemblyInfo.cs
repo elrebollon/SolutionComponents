@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("SolutionComponents")]
 [assembly: AssemblyDescription("Solution Component Inspector for XrmToolBox - Analyze solution component dependencies and historical releases in Dynamics 365 / Dataverse")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("El Rebollon")]
+[assembly: AssemblyCompany("Alberto Palomo Alberto")]
 [assembly: AssemblyProduct("SolutionComponents")]
 [assembly: AssemblyCopyright("Copyright © 2026")]
 [assembly: AssemblyTrademark("")]
