@@ -194,8 +194,8 @@ namespace SolutionComponents
             var distinctComponents = _currentOverlaps
                 .Select(o => o.ComponentName)
                 .Where(n => !string.IsNullOrEmpty(n))
-                .Distinct()
-                .OrderBy(n => n);
+                .Distinct(StringComparer.CurrentCultureIgnoreCase)
+                .OrderBy(n => n, StringComparer.CurrentCultureIgnoreCase);
 
             foreach (var compName in distinctComponents)
             {
@@ -219,7 +219,7 @@ namespace SolutionComponents
             }
             else
             {
-                var filtered = _currentOverlaps.Where(o => o.ComponentName == selected).ToList();
+                var filtered = _currentOverlaps.Where(o => string.Equals(o.ComponentName, selected, StringComparison.CurrentCultureIgnoreCase)).ToList();
                 DisplayOverlapsInGrid(filtered);
             }
         }
@@ -259,9 +259,9 @@ namespace SolutionComponents
                 .Where(kvp => !string.IsNullOrEmpty(kvp.Value.ComponentTypeName))
                 .GroupBy(kvp => !string.IsNullOrEmpty(kvp.Value.EntityName)
                     ? $"{kvp.Value.ComponentTypeName} ({kvp.Value.EntityName})"
-                    : kvp.Value.ComponentTypeName, StringComparer.OrdinalIgnoreCase)
+                    : kvp.Value.ComponentTypeName, StringComparer.CurrentCultureIgnoreCase)
                 .Select(g => new ComboBoxTypeItem(g.Key, g.First().Key))
-                .OrderBy(item => item.Name)
+                .OrderBy(item => item.Name, StringComparer.CurrentCultureIgnoreCase)
                 .ToList();
 
             foreach (var item in availableTypes)
@@ -477,6 +477,160 @@ namespace SolutionComponents
             public override string ToString()
             {
                 return Name;
+            }
+        }
+
+        #endregion
+
+        #region ComboBox AutoComplete & Search Helpers
+
+        private static bool TryCommitComboBoxSelection(ComboBox comboBox)
+        {
+            if (comboBox == null || comboBox.Items.Count == 0) return false;
+
+            if (comboBox.SelectedItem != null && string.Equals(comboBox.Text, comboBox.SelectedItem.ToString(), StringComparison.CurrentCultureIgnoreCase))
+            {
+                return false;
+            }
+
+            string text = comboBox.Text?.Trim();
+            if (string.IsNullOrEmpty(text)) return false;
+
+            // 1. Exact match
+            foreach (var item in comboBox.Items)
+            {
+                if (string.Equals(item.ToString(), text, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    comboBox.SelectedItem = item;
+                    return true;
+                }
+            }
+
+            // 2. Prefix match
+            foreach (var item in comboBox.Items)
+            {
+                if (item.ToString().StartsWith(text, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    comboBox.SelectedItem = item;
+                    return true;
+                }
+            }
+
+            // 3. Substring match
+            foreach (var item in comboBox.Items)
+            {
+                if (item.ToString().IndexOf(text, StringComparison.CurrentCultureIgnoreCase) >= 0)
+                {
+                    comboBox.SelectedItem = item;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private void cbSolutions_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+                if (TryCommitComboBoxSelection(cbSolutions))
+                {
+                    cbSolutions_SelectedIndexChanged(sender, EventArgs.Empty);
+                }
+            }
+        }
+
+        private void cbSolutions_Leave(object sender, EventArgs e)
+        {
+            if (TryCommitComboBoxSelection(cbSolutions))
+            {
+                cbSolutions_SelectedIndexChanged(sender, EventArgs.Empty);
+            }
+        }
+
+        private void cbSolutionComponents_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+                if (TryCommitComboBoxSelection(cbSolutionComponents))
+                {
+                    cbSolutionComponents_SelectedIndexChanged(sender, EventArgs.Empty);
+                }
+            }
+        }
+
+        private void cbSolutionComponents_Leave(object sender, EventArgs e)
+        {
+            if (TryCommitComboBoxSelection(cbSolutionComponents))
+            {
+                cbSolutionComponents_SelectedIndexChanged(sender, EventArgs.Empty);
+            }
+        }
+
+        private void cbComponentTypes_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+                if (TryCommitComboBoxSelection(cbComponentTypes))
+                {
+                    cbComponentTypes_SelectedIndexChanged(sender, EventArgs.Empty);
+                }
+            }
+        }
+
+        private void cbComponentTypes_Leave(object sender, EventArgs e)
+        {
+            if (TryCommitComboBoxSelection(cbComponentTypes))
+            {
+                cbComponentTypes_SelectedIndexChanged(sender, EventArgs.Empty);
+            }
+        }
+
+        private void cbEntities_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+                if (TryCommitComboBoxSelection(cbEntities))
+                {
+                    cbEntities_SelectedIndexChanged(sender, EventArgs.Empty);
+                }
+            }
+        }
+
+        private void cbEntities_Leave(object sender, EventArgs e)
+        {
+            if (TryCommitComboBoxSelection(cbEntities))
+            {
+                cbEntities_SelectedIndexChanged(sender, EventArgs.Empty);
+            }
+        }
+
+        private void cbComponents_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+                if (TryCommitComboBoxSelection(cbComponents))
+                {
+                    cbComponents_SelectedIndexChanged(sender, EventArgs.Empty);
+                }
+            }
+        }
+
+        private void cbComponents_Leave(object sender, EventArgs e)
+        {
+            if (TryCommitComboBoxSelection(cbComponents))
+            {
+                cbComponents_SelectedIndexChanged(sender, EventArgs.Empty);
             }
         }
 
