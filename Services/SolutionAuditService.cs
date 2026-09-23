@@ -11,116 +11,152 @@ namespace SolutionComponents.Services
 {
     public class SolutionAuditService
     {
-        public static readonly Dictionary<int, (string ComponentTypeName, string EntityName)> ComponentTypes = new Dictionary<int, (string, string)>
+        public static readonly Dictionary<int, ComponentTypeMetadata> ComponentTypes = new Dictionary<int, ComponentTypeMetadata>
         {
-            { 1, ("Entity", "entity") },
-            { 2, ("Entity field", "attribute") },
-            { 3, ("Relationship", "relationship") },
-            { 4, ("Attribute Picklist Value", "attributepicklistvalue") },
-            { 5, ("Attribute Lookup Value", "attributelookupvalue") },
-            { 6, ("View Attribute", "viewattribute") },
-            { 7, ("Localized Label", "localizedlabel") },
-            { 8, ("Relationship Extra Condition", "relationshipextracondition") },
-            { 9, ("Option Set / Choice", "optionset") },
-            { 10, ("Entity Relationship", "entityrelationship") },
-            { 11, ("Entity Relationship Role", "entityrelationshiprole") },
-            { 12, ("Entity Relationship Relationships", "entityrelationshiprelationships") },
-            { 13, ("Managed Property", "managedproperty") },
-            { 14, ("Entity Key", "entitykey") },
-            { 16, ("Privilege", "privilege") },
-            { 17, ("PrivilegeObjectTypeCode", "privilegeobjecttypecode") },
-            { 18, ("Index", "entityindex") },
-            { 20, ("Role", "role") },
-            { 21, ("Role Privilege", "roleprivileges") },
-            { 22, ("Display String", "displaystring") },
-            { 23, ("Display String Map", "displaystringmap") },
-            { 24, ("Form", "systemform") },
-            { 25, ("Organization", "organization") },
-            { 26, ("View", "savedquery") },
-            { 29, ("Workflow / Cloud Flow", "workflow") },
-            { 31, ("Report", "report") },
-            { 32, ("Report Entity", "reportentity") },
-            { 33, ("Report Category", "reportcategory") },
-            { 34, ("Report Visibility", "reportvisibility") },
-            { 35, ("Attachment", "attachment") },
-            { 36, ("Email Template", "template") },
-            { 37, ("Contract Template", "contracttemplate") },
-            { 38, ("KB Article Template", "kbarticletemplate") },
-            { 39, ("Mail Merge Template", "mailmergetemplate") },
-            { 44, ("Duplicate Rule", "duplicaterule") },
-            { 45, ("Duplicate Rule Condition", "duplicaterulecondition") },
-            { 46, ("Entity Map", "entitymap") },
-            { 47, ("Attribute Map", "attributemap") },
-            { 48, ("Ribbon Command", "ribboncommand") },
-            { 49, ("Ribbon Context Group", "ribboncontextgroup") },
-            { 50, ("Ribbon Customization", "ribboncustomization") },
-            { 52, ("Ribbon Rule", "ribbonrule") },
-            { 53, ("Ribbon Tab To Command Map", "ribbontabtocommandmap") },
-            { 55, ("Ribbon Diff", "ribbondiff") },
-            { 59, ("Charts", "savedqueryvisualization") },
-            { 60, ("System Form", "systemform") },
-            { 61, ("Web Resource", "webresource") },
-            { 62, ("Site Map", "sitemap") },
-            { 63, ("Connection Role", "connectionrole") },
-            { 64, ("Complex Control", "complexcontrol") },
-            { 65, ("Hierarchy Rule", "hierarchyrule") },
-            { 66, ("Custom Control", "customcontrol") },
-            { 68, ("Custom Control Default Config", "customcontroldefaultconfig") },
-            { 70, ("Field Security Profile", "fieldsecurityprofile") },
-            { 71, ("Field Permission", "fieldpermission") },
-            { 80, ("Model-Driven App", "appmodule") },
-            { 81, ("App Module Component", "appmodulecomponent") },
-            { 90, ("Plugin Type", "plugintype") },
-            { 91, ("Plugin Assembly", "pluginassembly") },
-            { 92, ("SDK Message Processing Step", "sdkmessageprocessingstep") },
-            { 93, ("SDK Message Processing Step Image", "sdkmessageprocessingstepimage") },
-            { 95, ("Service Endpoint", "serviceendpoint") },
-            { 150, ("Routing Rule", "routingrule") },
-            { 151, ("Routing Rule Item", "routingruleitem") },
-            { 152, ("SLA", "sla") },
-            { 153, ("SLA Item", "slaitem") },
-            { 154, ("Convert Rule", "convertrule") },
-            { 155, ("Convert Rule Item", "convertruleitem") },
-            { 161, ("Mobile Offline Profile", "mobileofflineprofile") },
-            { 162, ("Mobile Offline Profile Item", "mobileofflineprofileitem") },
-            { 165, ("Similarity Rule", "similarityrule") },
-            { 166, ("Data Source Mapping", "datasourcemapping") },
-            { 201, ("SDK Message", "sdkmessage") },
-            { 202, ("SDK Message Filter", "sdkmessagefilter") },
-            { 203, ("SDK Message Pair", "sdkmessagepair") },
-            { 204, ("SDK Message Request", "sdkmessagerequest") },
-            { 205, ("SDK Message Request Field", "sdkmessagerequestfield") },
-            { 206, ("SDK Message Response", "sdkmessageresponse") },
-            { 207, ("SDK Message Response Field", "sdkmessageresponsefield") },
-            { 208, ("Import Map", "importmap") },
-            { 210, ("WebWizard", "webwizard") },
-            { 300, ("Canvas App", "canvasapp") },
-            { 371, ("Connector", "connector") },
-            { 372, ("Connection Reference", "connectionreference") },
-            { 380, ("Environment Variable Definition", "environmentvariabledefinition") },
-            { 381, ("Environment Variable Value", "environmentvariablevalue") },
-            { 400, ("AI Project Type", "msdyn_aiprojecttype") },
-            { 401, ("AI Project", "msdyn_aiproject") },
-            { 402, ("AI Configuration", "msdyn_aiconfiguration") },
-            { 430, ("Entity Analytics Configuration", "entityanalyticsconfig") },
-            { 431, ("Attribute Image Configuration", "attributeimageconfig") },
-            { 432, ("Entity Image Configuration", "entityimageconfig") },
-            { 973, ("Copilot / Bot", "bot") },
-            { 974, ("Bot Component", "botcomponent") },
-            { 10020, ("Custom API", "customapi") },
-            { 10021, ("Custom API Request Parameter", "customapirequestparameter") },
-            { 10022, ("Custom API Response Property", "customapiresponseproperty") },
-            { 10040, ("Dataflow", "msdyn_dataflow") },
-            { 10060, ("Catalog", "catalog") },
-            { 10061, ("Catalog Assignment", "catalogassignment") },
-            { 10080, ("Plugin Package", "pluginpackage") },
-            { 10091, ("Plugin Package", "pluginpackage") },
-            { 10097, ("Desktop Flow", "workflow") },
-            { 10098, ("Connection Reference", "connectionreference") },
-            { 10110, ("Power Pages Site", "powerpagesite") },
-            { 10111, ("Power Pages Component", "powerpagescomponent") },
-            { 10200, ("AI Model / Prompt", "msdyn_aimodel") }
+            { 1, new ComponentTypeMetadata(1, "Entity", "entity", "entityid", "name", new[] { "logicalname" }, true) },
+            { 2, new ComponentTypeMetadata(2, "Entity field", "attribute", "attributeid", "name", new[] { "logicalname" }, true, "entityid") },
+            { 3, new ComponentTypeMetadata(3, "Relationship", "relationship", "relationshipid", "name", new[] { "schemaname" }, true) },
+            { 4, new ComponentTypeMetadata(4, "Attribute Picklist Value", "attributepicklistvalue", "attributepicklistvalueid", "value", null, true) },
+            { 5, new ComponentTypeMetadata(5, "Attribute Lookup Value", "attributelookupvalue", "attributelookupvalueid", "value", null, true) },
+            { 6, new ComponentTypeMetadata(6, "View Attribute", "viewattribute", "viewattributeid", "name", null, true) },
+            { 7, new ComponentTypeMetadata(7, "Localized Label", "localizedlabel", "localizedlabelid", "label", null, true) },
+            { 8, new ComponentTypeMetadata(8, "Relationship Extra Condition", "relationshipextracondition", "relationshipextraconditionid", "name", null, true) },
+            { 9, new ComponentTypeMetadata(9, "Option Set / Choice", "optionset", "optionsetid", "name", new[] { "displayname" }, true) },
+            { 10, new ComponentTypeMetadata(10, "Entity Relationship", "entityrelationship", "entityrelationshipid", "schemaname", null, true) },
+            { 11, new ComponentTypeMetadata(11, "Entity Relationship Role", "entityrelationshiprole", "entityrelationshiproleid", "name", null, true) },
+            { 12, new ComponentTypeMetadata(12, "Entity Relationship Relationships", "entityrelationshiprelationships", "entityrelationshiprelationshipsid", "name", null, true) },
+            { 13, new ComponentTypeMetadata(13, "Managed Property", "managedproperty", "managedpropertyid", "logicalname", null, true) },
+            { 14, new ComponentTypeMetadata(14, "Entity Key", "entitykey", "entitykeyid", "logicalname", new[] { "schemaname" }, true) },
+            { 16, new ComponentTypeMetadata(16, "Privilege", "privilege", "privilegeid", "name") },
+            { 17, new ComponentTypeMetadata(17, "PrivilegeObjectTypeCode", "privilegeobjecttypecode", "privilegeobjecttypecodeid", "privilegeobjecttypecodeid") },
+            { 18, new ComponentTypeMetadata(18, "Index", "entityindex", "indexid", "name", null, true) },
+            { 20, new ComponentTypeMetadata(20, "Role", "role", "roleid", "name") },
+            { 21, new ComponentTypeMetadata(21, "Role Privilege", "roleprivileges", "roleprivilegeid", "roleprivilegeid") },
+            { 22, new ComponentTypeMetadata(22, "Display String", "displaystring", "displaystringid", "customdisplaystring", new[] { "formatparameters" }) },
+            { 23, new ComponentTypeMetadata(23, "Display String Map", "displaystringmap", "displaystringmapid", "displaystringmapid") },
+            { 24, new ComponentTypeMetadata(24, "Form", "systemform", "formid", "name", new[] { "objecttypecode" }) },
+            { 25, new ComponentTypeMetadata(25, "Organization", "organization", "organizationid", "name") },
+            { 26, new ComponentTypeMetadata(26, "View", "savedquery", "savedqueryid", "name", new[] { "returnedtypecode" }) },
+            { 29, new ComponentTypeMetadata(29, "Workflow / Cloud Flow", "workflow", "workflowid", "name") },
+            { 31, new ComponentTypeMetadata(31, "Report", "report", "reportid", "name") },
+            { 32, new ComponentTypeMetadata(32, "Report Entity", "reportentity", "reportentityid", "reportentityid") },
+            { 33, new ComponentTypeMetadata(33, "Report Category", "reportcategory", "reportcategoryid", "name") },
+            { 34, new ComponentTypeMetadata(34, "Report Visibility", "reportvisibility", "reportvisibilityid", "reportvisibilityid") },
+            { 35, new ComponentTypeMetadata(35, "Attachment", "attachment", "attachmentid", "filename", new[] { "subject" }) },
+            { 36, new ComponentTypeMetadata(36, "Email Template", "template", "templateid", "title", new[] { "subject" }) },
+            { 37, new ComponentTypeMetadata(37, "Contract Template", "contracttemplate", "contracttemplateid", "name") },
+            { 38, new ComponentTypeMetadata(38, "KB Article Template", "kbarticletemplate", "kbarticletemplateid", "title") },
+            { 39, new ComponentTypeMetadata(39, "Mail Merge Template", "mailmergetemplate", "mailmergetemplateid", "name") },
+            { 44, new ComponentTypeMetadata(44, "Duplicate Rule", "duplicaterule", "duplicateruleid", "name") },
+            { 45, new ComponentTypeMetadata(45, "Duplicate Rule Condition", "duplicaterulecondition", "duplicateruleconditionid", "duplicateruleconditionid") },
+            { 46, new ComponentTypeMetadata(46, "Entity Map", "entitymap", "entitymapid", "sourceentityname", new[] { "targetentityname" }) },
+            { 47, new ComponentTypeMetadata(47, "Attribute Map", "attributemap", "attributemapid", "sourceattributename", new[] { "targetattributename" }) },
+            { 48, new ComponentTypeMetadata(48, "Ribbon Command", "ribboncommand", "ribboncommandid", "command") },
+            { 49, new ComponentTypeMetadata(49, "Ribbon Context Group", "ribboncontextgroup", "ribboncontextgroupid", "contextgroupid") },
+            { 50, new ComponentTypeMetadata(50, "Ribbon Customization", "ribboncustomization", "ribboncustomizationid", "entity") },
+            { 52, new ComponentTypeMetadata(52, "Ribbon Rule", "ribbonrule", "ribbonruleid", "ruleid") },
+            { 53, new ComponentTypeMetadata(53, "Ribbon Tab To Command Map", "ribbontabtocommandmap", "ribbontabtocommandmapid", "command") },
+            { 55, new ComponentTypeMetadata(55, "Ribbon Diff", "ribbondiff", "ribbondiffid", "diffid") },
+            { 59, new ComponentTypeMetadata(59, "Charts", "savedqueryvisualization", "savedqueryvisualizationid", "name", new[] { "primaryentitytypecode" }) },
+            { 60, new ComponentTypeMetadata(60, "System Form", "systemform", "formid", "name", new[] { "objecttypecode" }) },
+            { 61, new ComponentTypeMetadata(61, "Web Resource", "webresource", "webresourceid", "name", new[] { "displayname" }) },
+            { 62, new ComponentTypeMetadata(62, "Site Map", "sitemap", "sitemapid", "sitemapname", new[] { "sitemapnameunique" }) },
+            { 63, new ComponentTypeMetadata(63, "Connection Role", "connectionrole", "connectionroleid", "name") },
+            { 64, new ComponentTypeMetadata(64, "Complex Control", "complexcontrol", "complexcontrolid", "name") },
+            { 65, new ComponentTypeMetadata(65, "Hierarchy Rule", "hierarchyrule", "hierarchyruleid", "name", new[] { "primaryentityname" }) },
+            { 66, new ComponentTypeMetadata(66, "Custom Control", "customcontrol", "customcontrolid", "name", new[] { "manifest" }) },
+            { 68, new ComponentTypeMetadata(68, "Custom Control Default Config", "customcontroldefaultconfig", "customcontroldefaultconfigid", "customcontrolid") },
+            { 70, new ComponentTypeMetadata(70, "Field Security Profile", "fieldsecurityprofile", "fieldsecurityprofileid", "name") },
+            { 71, new ComponentTypeMetadata(71, "Field Permission", "fieldpermission", "fieldpermissionid", "attributelogicalname", new[] { "entityname" }) },
+            { 80, new ComponentTypeMetadata(80, "Model-Driven App", "appmodule", "appmoduleid", "name", new[] { "uniquename" }) },
+            { 81, new ComponentTypeMetadata(81, "App Module Component", "appmodulecomponent", "appmodulecomponentid", "appmodulecomponentid") },
+            { 90, new ComponentTypeMetadata(90, "Plugin Type", "plugintype", "plugintypeid", "name", new[] { "typename" }) },
+            { 91, new ComponentTypeMetadata(91, "Plugin Assembly", "pluginassembly", "pluginassemblyid", "name") },
+            { 92, new ComponentTypeMetadata(92, "SDK Message Processing Step", "sdkmessageprocessingstep", "sdkmessageprocessingstepid", "name") },
+            { 93, new ComponentTypeMetadata(93, "SDK Message Processing Step Image", "sdkmessageprocessingstepimage", "sdkmessageprocessingstepimageid", "name", new[] { "entityalias" }) },
+            { 95, new ComponentTypeMetadata(95, "Service Endpoint", "serviceendpoint", "serviceendpointid", "name") },
+            { 150, new ComponentTypeMetadata(150, "Routing Rule", "routingrule", "routingruleid", "name") },
+            { 151, new ComponentTypeMetadata(151, "Routing Rule Item", "routingruleitem", "routingruleitemid", "name") },
+            { 152, new ComponentTypeMetadata(152, "SLA", "sla", "slaid", "name") },
+            { 153, new ComponentTypeMetadata(153, "SLA Item", "slaitem", "slaitemid", "name") },
+            { 154, new ComponentTypeMetadata(154, "Convert Rule", "convertrule", "convertruleid", "name") },
+            { 155, new ComponentTypeMetadata(155, "Convert Rule Item", "convertruleitem", "convertruleitemid", "name") },
+            { 161, new ComponentTypeMetadata(161, "Mobile Offline Profile", "mobileofflineprofile", "mobileofflineprofileid", "name") },
+            { 162, new ComponentTypeMetadata(162, "Mobile Offline Profile Item", "mobileofflineprofileitem", "mobileofflineprofileitemid", "name") },
+            { 165, new ComponentTypeMetadata(165, "Similarity Rule", "similarityrule", "similarityruleid", "name") },
+            { 166, new ComponentTypeMetadata(166, "Data Source Mapping", "datasourcemapping", "datasourcemappingid", "datasourcemappingid") },
+            { 201, new ComponentTypeMetadata(201, "SDK Message", "sdkmessage", "sdkmessageid", "name") },
+            { 202, new ComponentTypeMetadata(202, "SDK Message Filter", "sdkmessagefilter", "sdkmessagefilterid", "primaryobjecttypecode") },
+            { 203, new ComponentTypeMetadata(203, "SDK Message Pair", "sdkmessagepair", "sdkmessagepairid", "sdkmessagepairid") },
+            { 204, new ComponentTypeMetadata(204, "SDK Message Request", "sdkmessagerequest", "sdkmessagerequestid", "name", new[] { "primaryobjecttypecode" }) },
+            { 205, new ComponentTypeMetadata(205, "SDK Message Request Field", "sdkmessagerequestfield", "sdkmessagerequestfieldid", "name") },
+            { 206, new ComponentTypeMetadata(206, "SDK Message Response", "sdkmessageresponse", "sdkmessageresponseid", "sdkmessageresponseid") },
+            { 207, new ComponentTypeMetadata(207, "SDK Message Response Field", "sdkmessageresponsefield", "sdkmessageresponsefieldid", "name") },
+            { 208, new ComponentTypeMetadata(208, "Import Map", "importmap", "importmapid", "name") },
+            { 210, new ComponentTypeMetadata(210, "WebWizard", "webwizard", "webwizardid", "name") },
+            { 300, new ComponentTypeMetadata(300, "Canvas App", "canvasapp", "canvasappid", "displayname", new[] { "name" }) },
+            { 371, new ComponentTypeMetadata(371, "Connector", "connector", "connectorid", "displayname", new[] { "name" }) },
+            { 372, new ComponentTypeMetadata(372, "Connection Reference", "connectionreference", "connectionreferenceid", "connectionreferencedisplayname", new[] { "connectionreferencename" }) },
+            { 380, new ComponentTypeMetadata(380, "Environment Variable Definition", "environmentvariabledefinition", "environmentvariabledefinitionid", "displayname", new[] { "schemaname" }) },
+            { 381, new ComponentTypeMetadata(381, "Environment Variable Value", "environmentvariablevalue", "environmentvariablevalueid", "value", null, false, "environmentvariabledefinitionid") },
+            { 400, new ComponentTypeMetadata(400, "AI Project Type", "msdyn_aiprojecttype", "msdyn_aiprojecttypeid", "msdyn_name") },
+            { 401, new ComponentTypeMetadata(401, "AI Project", "msdyn_aiproject", "msdyn_aiprojectid", "msdyn_name") },
+            { 402, new ComponentTypeMetadata(402, "AI Configuration", "msdyn_aiconfiguration", "msdyn_aiconfigurationid", "msdyn_name") },
+            { 430, new ComponentTypeMetadata(430, "Entity Analytics Configuration", "entityanalyticsconfig", "entityanalyticsconfigid", "entityanalyticsconfigid") },
+            { 431, new ComponentTypeMetadata(431, "Attribute Image Configuration", "attributeimageconfig", "attributeimageconfigid", "attributeimageconfigid") },
+            { 432, new ComponentTypeMetadata(432, "Entity Image Configuration", "entityimageconfig", "entityimageconfigid", "entityimageconfigid") },
+            { 973, new ComponentTypeMetadata(973, "Copilot / Bot", "bot", "botid", "name", new[] { "schemaname" }) },
+            { 974, new ComponentTypeMetadata(974, "Bot Component", "botcomponent", "botcomponentid", "name", new[] { "schemaname" }) },
+            { 10020, new ComponentTypeMetadata(10020, "Custom API", "customapi", "customapiid", "displayname", new[] { "uniquename", "name" }) },
+            { 10021, new ComponentTypeMetadata(10021, "Custom API Request Parameter", "customapirequestparameter", "customapirequestparameterid", "displayname", new[] { "uniquename", "name" }) },
+            { 10022, new ComponentTypeMetadata(10022, "Custom API Response Property", "customapiresponseproperty", "customapiresponsepropertyid", "displayname", new[] { "uniquename", "name" }) },
+            { 10040, new ComponentTypeMetadata(10040, "Dataflow", "msdyn_dataflow", "msdyn_dataflowid", "msdyn_name") },
+            { 10060, new ComponentTypeMetadata(10060, "Catalog", "catalog", "catalogid", "displayname", new[] { "uniquename", "name" }) },
+            { 10061, new ComponentTypeMetadata(10061, "Catalog Assignment", "catalogassignment", "catalogassignmentid", "name") },
+            { 10080, new ComponentTypeMetadata(10080, "Plugin Package", "pluginpackage", "pluginpackageid", "name") },
+            { 10091, new ComponentTypeMetadata(10091, "Plugin Package", "pluginpackage", "pluginpackageid", "name") },
+            { 10097, new ComponentTypeMetadata(10097, "Desktop Flow", "workflow", "workflowid", "name") },
+            { 10098, new ComponentTypeMetadata(10098, "Connection Reference", "connectionreference", "connectionreferenceid", "connectionreferencedisplayname", new[] { "connectionreferencename" }) },
+            { 10110, new ComponentTypeMetadata(10110, "Power Pages Site", "powerpagesite", "powerpagesiteid", "name") },
+            { 10111, new ComponentTypeMetadata(10111, "Power Pages Component", "powerpagescomponent", "powerpagescomponentid", "name") },
+            { 10200, new ComponentTypeMetadata(10200, "AI Model / Prompt", "msdyn_aimodel", "msdyn_aimodelid", "msdyn_name") }
         };
+
+        public static readonly Dictionary<int, string> WorkflowCategories = new Dictionary<int, string>
+        {
+            { 0, "Classic Workflow" },
+            { 1, "Dialog" },
+            { 2, "Business Rule" },
+            { 3, "Action" },
+            { 4, "Business Process Flow (BPF)" },
+            { 5, "Cloud Flow (Power Automate)" },
+            { 6, "Desktop Flow" },
+            { 7, "AI Flow" }
+        };
+
+        public static string FormatWorkflowName(string name, int category)
+        {
+            if (string.IsNullOrEmpty(name)) return name;
+
+            string prefix;
+            switch (category)
+            {
+                case 0: prefix = "[Classic Workflow]"; break;
+                case 1: prefix = "[Dialog]"; break;
+                case 2: prefix = "[Business Rule]"; break;
+                case 3: prefix = "[Action]"; break;
+                case 4: prefix = "[BPF]"; break;
+                case 5: prefix = "[Cloud Flow]"; break;
+                case 6: prefix = "[Desktop Flow]"; break;
+                case 7: prefix = "[AI Flow]"; break;
+                default: prefix = $"[Process {category}]"; break;
+            }
+
+            if (name.StartsWith(prefix + " ", StringComparison.OrdinalIgnoreCase) || name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                return name;
+
+            return $"{prefix} {name}";
+        }
 
         public static bool IsEntityDependentComponent(int componentType)
         {
@@ -322,8 +358,15 @@ namespace SolutionComponents.Services
         public (string ComponentTypeName, string EntityName) GetComponentTypeDetails(int componentType)
         {
             return ComponentTypes.ContainsKey(componentType)
-                ? ComponentTypes[componentType]
+                ? (ComponentTypes[componentType].TypeName, ComponentTypes[componentType].EntityLogicalName)
                 : ("Unknown", string.Empty);
+        }
+
+        public ComponentTypeMetadata GetComponentTypeMetadata(int componentType)
+        {
+            return ComponentTypes.ContainsKey(componentType)
+                ? ComponentTypes[componentType]
+                : null;
         }
 
         private Dictionary<Guid, (string DisplayName, string LogicalName)> _entityMetadataCache = null;
@@ -611,8 +654,12 @@ namespace SolutionComponents.Services
                 catch { }
             }
 
-            // 13. Generic CRM Table lookup
-            string targetEntity = !string.IsNullOrEmpty(entityLogicalName) ? entityLogicalName : GetComponentTypeDetails(componentType).EntityName;
+            // 13. Deterministic metadata resolution & CRM Table lookup
+            var meta = GetComponentTypeMetadata(componentType);
+            string targetEntity = !string.IsNullOrEmpty(entityLogicalName) 
+                ? entityLogicalName 
+                : (meta?.EntityLogicalName ?? GetComponentTypeDetails(componentType).EntityName);
+
             if (!string.IsNullOrEmpty(targetEntity) && targetEntity != "entity" && targetEntity != "attribute" && targetEntity != "relationship" && targetEntity != "entityrelationship" && targetEntity != "entitykey")
             {
                 try
@@ -620,11 +667,57 @@ namespace SolutionComponents.Services
                     Entity entity = service.Retrieve(targetEntity, objectId, new ColumnSet(true));
                     if (entity != null)
                     {
-                        foreach (var attr in new[] { "displayname", "name", "title", "subject", "friendlyname", "schemaname", "uniquename", "typename", "connectionreferencedisplayname", "connectionreferencename", "filename" })
+                        if (targetEntity == "workflow" || componentType == 29)
                         {
-                            if (entity.Contains(attr) && entity[attr] is string strVal && !string.IsNullOrEmpty(strVal))
+                            string wfName = entity.GetAttributeValue<string>("name");
+                            int cat = entity.Contains("category") && entity["category"] is OptionSetValue osv ? osv.Value : 0;
+                            return FormatWorkflowName(wfName ?? $"Workflow {objectId}", cat);
+                        }
+
+                        // 1. Try PrimaryNameAttribute from metadata
+                        if (meta != null && !string.IsNullOrEmpty(meta.PrimaryNameAttribute) && entity.Contains(meta.PrimaryNameAttribute))
+                        {
+                            var val = entity[meta.PrimaryNameAttribute];
+                            if (val is string str && !string.IsNullOrWhiteSpace(str))
+                                return str;
+                            if (val is EntityReference er && !string.IsNullOrWhiteSpace(er.Name))
+                                return er.Name;
+                        }
+
+                        // 2. Try FallbackNameAttributes from metadata
+                        if (meta != null && meta.FallbackNameAttributes != null)
+                        {
+                            foreach (var attr in meta.FallbackNameAttributes)
                             {
-                                return strVal;
+                                if (entity.Contains(attr))
+                                {
+                                    var val = entity[attr];
+                                    if (val is string str && !string.IsNullOrWhiteSpace(str))
+                                        return str;
+                                    if (val is EntityReference er && !string.IsNullOrWhiteSpace(er.Name))
+                                        return er.Name;
+                                }
+                            }
+                        }
+
+                        // 3. Try ParentEntityAttribute if present
+                        if (meta != null && !string.IsNullOrEmpty(meta.ParentEntityAttribute) && entity.Contains(meta.ParentEntityAttribute))
+                        {
+                            var val = entity[meta.ParentEntityAttribute];
+                            if (val is EntityReference er && !string.IsNullOrWhiteSpace(er.Name))
+                                return er.Name;
+                        }
+
+                        // 4. Common standard attributes
+                        foreach (var attr in new[] { "displayname", "name", "title", "subject", "friendlyname", "schemaname", "uniquename", "typename", "connectionreferencedisplayname", "connectionreferencename", "sitemapname", "sitemapnameunique", "filename", "msdyn_name", "value" })
+                        {
+                            if (entity.Contains(attr))
+                            {
+                                var val = entity[attr];
+                                if (val is string strVal && !string.IsNullOrWhiteSpace(strVal))
+                                {
+                                    return strVal;
+                                }
                             }
                         }
                     }
@@ -1013,24 +1106,12 @@ namespace SolutionComponents.Services
                 }
                 else if (componentType == 29) // Workflow / Cloud Flow
                 {
-                    var query = new QueryExpression("workflow")
+                    int? catFilter = null;
+                    if (!string.IsNullOrEmpty(entityLogicalName) && int.TryParse(entityLogicalName, out int parsedCat))
                     {
-                        ColumnSet = new ColumnSet("workflowid", "name", "category"),
-                        Orders = { new OrderExpression("name", OrderType.Ascending) }
-                    };
-                    query.Criteria.AddCondition("type", ConditionOperator.Equal, 1); // Definition
-                    var result = service.RetrieveMultiple(query);
-                    foreach (var e in result.Entities)
-                    {
-                        list.Add(new ComponentItem
-                        {
-                            Id = e.Id,
-                            Name = e.GetAttributeValue<string>("name") ?? "Unnamed Workflow",
-                            ComponentType = 29,
-                            ComponentTypeName = "Workflow / Flow",
-                            EntityLogicalName = null
-                        });
+                        catFilter = parsedCat;
                     }
+                    return GetWorkflowsByCategory(service, catFilter);
                 }
                 else if (componentType == 20) // Role (Filtrar por unidad de negocio principal y deduplicar por nombre)
                 {
@@ -1123,6 +1204,47 @@ namespace SolutionComponents.Services
             }
 
             return list.OrderBy(c => c.Name ?? string.Empty, StringComparer.CurrentCultureIgnoreCase).ToList();
+        }
+
+        public List<ComponentItem> GetWorkflowsByCategory(IOrganizationService service, int? category = null)
+        {
+            if (service == null) throw new ArgumentNullException(nameof(service));
+
+            var query = new QueryExpression("workflow")
+            {
+                ColumnSet = new ColumnSet("workflowid", "name", "category"),
+                Orders = { new OrderExpression("name", OrderType.Ascending) }
+            };
+            query.Criteria.AddCondition("type", ConditionOperator.Equal, 1); // Definition
+
+            if (category.HasValue)
+            {
+                query.Criteria.AddCondition("category", ConditionOperator.Equal, category.Value);
+            }
+
+            var result = service.RetrieveMultiple(query);
+            var list = new List<ComponentItem>();
+
+            if (result != null && result.Entities != null)
+            {
+                foreach (var e in result.Entities)
+                {
+                    string rawName = e.GetAttributeValue<string>("name") ?? "Unnamed Workflow";
+                    int cat = e.Contains("category") && e["category"] is OptionSetValue osv ? osv.Value : 0;
+                    string formattedName = FormatWorkflowName(rawName, cat);
+
+                    list.Add(new ComponentItem
+                    {
+                        Id = e.Id,
+                        Name = formattedName,
+                        ComponentType = 29,
+                        ComponentTypeName = "Workflow / Cloud Flow",
+                        EntityLogicalName = null
+                    });
+                }
+            }
+
+            return list.OrderBy(c => c.Name, StringComparer.CurrentCultureIgnoreCase).ToList();
         }
 
         private static Guid GetGuidAttribute(Entity entity, string attributeName)
@@ -1336,6 +1458,45 @@ namespace SolutionComponents.Services
             var overlaps = new List<SolutionOverlapItem>();
             var compNameCache = new Dictionary<Guid, string>();
             var userCache = new Dictionary<Guid, string>();
+
+            // Pre-populate component names using msdyn_solutioncomponentsummary if available in this Dataverse environment
+            try
+            {
+                var summaryQuery = new QueryExpression("msdyn_solutioncomponentsummary")
+                {
+                    ColumnSet = new ColumnSet("msdyn_objectid", "msdyn_displayname", "msdyn_name", "msdyn_componenttype", "msdyn_componenttypename", "msdyn_primaryentityname")
+                };
+                summaryQuery.Criteria.AddCondition("msdyn_solutionid", ConditionOperator.Equal, selectedSolutionId);
+                var summaryResults = service.RetrieveMultiple(summaryQuery);
+                if (summaryResults != null && summaryResults.Entities != null)
+                {
+                    foreach (var summary in summaryResults.Entities)
+                    {
+                        Guid objId = GetGuidAttribute(summary, "msdyn_objectid");
+                        if (objId != Guid.Empty)
+                        {
+                            string disp = summary.GetAttributeValue<string>("msdyn_displayname");
+                            string rawName = summary.GetAttributeValue<string>("msdyn_name");
+                            string finalName = !string.IsNullOrWhiteSpace(disp) ? disp : rawName;
+                            int typeCode = GetOptionSetAttribute(summary, "msdyn_componenttype");
+
+                            if (!string.IsNullOrWhiteSpace(finalName))
+                            {
+                                if (typeCode == 29)
+                                {
+                                    int cat = summary.Contains("msdyn_workflowcategory") && summary["msdyn_workflowcategory"] is OptionSetValue osv ? osv.Value : 0;
+                                    finalName = FormatWorkflowName(finalName, cat);
+                                }
+                                compNameCache[objId] = finalName;
+                            }
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                // Environment does not support msdyn_solutioncomponentsummary; fallback to individual metadata resolution (R5)
+            }
 
             foreach (var comp in solutionComponents.Entities)
             {

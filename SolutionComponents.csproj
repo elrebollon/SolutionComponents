@@ -169,6 +169,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\ComponentHistoryItem.cs" />
+    <Compile Include="Models\ComponentTypeMetadata.cs" />
     <Compile Include="Models\SolutionOverlapItem.cs" />
     <Compile Include="MyPlugin.cs" />
     <Compile Include="MyPluginControl.cs">

@@ -21,6 +21,7 @@ namespace SolutionComponents
         public MyPluginControl()
         {
             InitializeComponent();
+            PopulateComponentTypesDropDown();
         }
 
         private void MyPluginControl_Load(object sender, EventArgs e)
@@ -35,7 +36,10 @@ namespace SolutionComponents
                 LogInfo("Settings loaded successfully.");
             }
 
-            PopulateComponentTypesDropDown();
+            if (cbComponentTypes.Items.Count == 0)
+            {
+                PopulateComponentTypesDropDown();
+            }
 
             if (Service != null)
             {
@@ -290,22 +294,56 @@ namespace SolutionComponents
                 cbComponents.Items.Clear();
                 dgvComponentHistory.Rows.Clear();
 
-                if (isEntityDependent)
+                if (compType == 29) // Workflow / Cloud Flow
                 {
-                    cbEntities.Enabled = true;
+                    lblEntity.Text = "Process Category:";
                     lblEntity.Enabled = true;
+                    cbEntities.Enabled = true;
 
-                    if (!_entitiesLoaded && Service != null)
+                    cbEntities.Items.Clear();
+                    cbEntities.Items.Add(new ProcessCategoryItem(null, "[All process types]"));
+                    cbEntities.Items.Add(new ProcessCategoryItem(5, "Cloud Flow (Power Automate)"));
+                    cbEntities.Items.Add(new ProcessCategoryItem(0, "Classic Workflow"));
+                    cbEntities.Items.Add(new ProcessCategoryItem(4, "Business Process Flow (BPF)"));
+                    cbEntities.Items.Add(new ProcessCategoryItem(3, "Action"));
+                    cbEntities.Items.Add(new ProcessCategoryItem(2, "Business Rule"));
+                    cbEntities.Items.Add(new ProcessCategoryItem(6, "Desktop Flow"));
+                    cbEntities.Items.Add(new ProcessCategoryItem(7, "AI Flow"));
+                    cbEntities.Items.Add(new ProcessCategoryItem(1, "Dialog"));
+
+                    cbEntities.SelectedIndex = 0;
+                }
+                else if (isEntityDependent)
+                {
+                    lblEntity.Text = "Select Entity / Table:";
+                    lblEntity.Enabled = true;
+                    cbEntities.Enabled = true;
+
+                    if (_entitiesLoaded && (cbEntities.Items.Count == 0 || cbEntities.Items[0] is ProcessCategoryItem))
+                    {
+                        cbEntities.Items.Clear();
+                        foreach (var entity in _loadedEntities)
+                        {
+                            cbEntities.Items.Add(entity);
+                        }
+                        if (cbEntities.Items.Count > 0)
+                        {
+                            cbEntities.SelectedIndex = 0;
+                        }
+                    }
+                    else if (!_entitiesLoaded && Service != null)
                     {
                         LoadEntitiesAsync(() =>
                         {
-                            if (cbEntities.SelectedItem is EntityMetadataSummary ent)
+                            if (cbEntities.SelectedItem is EntityMetadataSummary loadedEnt)
                             {
-                                LoadComponentsForTypeAndEntityAsync(compType, ent.LogicalName);
+                                LoadComponentsForTypeAndEntityAsync(compType, loadedEnt.LogicalName);
                             }
                         });
+                        return;
                     }
-                    else if (cbEntities.SelectedItem is EntityMetadataSummary ent)
+
+                    if (cbEntities.SelectedItem is EntityMetadataSummary ent)
                     {
                         LoadComponentsForTypeAndEntityAsync(compType, ent.LogicalName);
                     }
@@ -316,6 +354,7 @@ namespace SolutionComponents
                 }
                 else
                 {
+                    lblEntity.Text = "Select Entity / Table:";
                     cbEntities.Enabled = false;
                     lblEntity.Enabled = false;
                     cbEntities.SelectedIndex = -1;
@@ -363,10 +402,56 @@ namespace SolutionComponents
 
         private void cbEntities_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (cbComponentTypes.SelectedItem is ComboBoxTypeItem selectedType && cbEntities.SelectedItem is EntityMetadataSummary selectedEntity)
+            if (cbComponentTypes.SelectedItem is ComboBoxTypeItem selectedType)
             {
-                LoadComponentsForTypeAndEntityAsync(selectedType.TypeCode, selectedEntity.LogicalName);
+                if (selectedType.TypeCode == 29)
+                {
+                    int? category = (cbEntities.SelectedItem as ProcessCategoryItem)?.Category;
+                    LoadWorkflowsAsync(category);
+                }
+                else if (cbEntities.SelectedItem is EntityMetadataSummary selectedEntity)
+                {
+                    LoadComponentsForTypeAndEntityAsync(selectedType.TypeCode, selectedEntity.LogicalName);
+                }
             }
+        }
+
+        private void LoadWorkflowsAsync(int? category)
+        {
+            if (Service == null) return;
+
+            WorkAsync(new WorkAsyncInfo
+            {
+                Message = "Loading workflows / cloud flows...",
+                Work = (worker, args) =>
+                {
+                    args.Result = _auditService.GetWorkflowsByCategory(Service, category);
+                },
+                PostWorkCallBack = (args) =>
+                {
+                    if (args.Error != null)
+                    {
+                        LogError("Error retrieving workflows", args.Error);
+                        MessageBox.Show($"Failed to load workflows: {args.Error.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    var components = args.Result as List<ComponentItem> ?? new List<ComponentItem>();
+                    cbComponents.Items.Clear();
+                    dgvComponentHistory.Rows.Clear();
+
+                    foreach (var comp in components)
+                    {
+                        cbComponents.Items.Add(comp);
+                    }
+
+                    lblComponentStatus.Text = $"{components.Count} workflow(s) found.";
+                    if (components.Count > 0)
+                    {
+                        cbComponents.SelectedIndex = 0;
+                    }
+                }
+            });
         }
 
         private void LoadComponentsForTypeAndEntityAsync(int componentType, string entityLogicalName)
