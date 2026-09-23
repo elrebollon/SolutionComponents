@@ -31,6 +31,7 @@ namespace SolutionComponents.Tests
             Test_GetWorkflowsByCategory_FilteringAndPrefixing();
             Test_GetComponentName_DeterministicMetadataResolution();
             Test_GetOverlappingSolutions_WithSummaryAndFallback();
+            Test_ResolveComponentTypes_WithGlobalLabelsAndSchemaNames();
             Test_MyPluginControl_ProcessCategoryDropdownSwitching();
             Console.WriteLine("All SolutionAuditServiceTests passed successfully!");
         }
@@ -568,15 +569,15 @@ namespace SolutionComponents.Tests
             if (!allWfs.Any(w => w.Name == "[Classic Workflow] Classic Notification"))
                 throw new Exception("Missing prefixed Classic Workflow");
 
-            // 2. Filtered by category 5 (Cloud Flow)
+            // 2. Filtered by category 5 (Cloud Flow) -> Redundant prefix omitted
             var cloudFlows = auditService.GetWorkflowsByCategory(fakeService, 5);
-            if (cloudFlows.Count != 1 || cloudFlows[0].Name != "[Cloud Flow] Automated Order Processing")
-                throw new Exception("Filtering by category 5 failed");
+            if (cloudFlows.Count != 1 || cloudFlows[0].Name != "Automated Order Processing")
+                throw new Exception($"Filtering by category 5 failed, got '{cloudFlows[0]?.Name}'");
 
-            // 3. Filtered by category 4 (BPF)
+            // 3. Filtered by category 4 (BPF) -> Redundant prefix omitted
             var bpfs = auditService.GetWorkflowsByCategory(fakeService, 4);
-            if (bpfs.Count != 1 || bpfs[0].Name != "[BPF] Lead Qualification")
-                throw new Exception("Filtering by category 4 failed");
+            if (bpfs.Count != 1 || bpfs[0].Name != "Lead Qualification")
+                throw new Exception($"Filtering by category 4 failed, got '{bpfs[0]?.Name}'");
         }
 
         public static void Test_GetComponentName_DeterministicMetadataResolution()
@@ -793,6 +794,97 @@ namespace SolutionComponents.Tests
                 throw new Exception($"Expected 1 fallback overlap, got {overlapsFallback.Count}");
             if (overlapsFallback[0].ComponentName != "Fallback Navigation Map")
                 throw new Exception($"Expected 'Fallback Navigation Map', got '{overlapsFallback[0].ComponentName}'");
+        }
+
+        public static void Test_ResolveComponentTypes_WithGlobalLabelsAndSchemaNames()
+        {
+            var auditService = new SolutionAuditService();
+            var solId = Guid.NewGuid();
+            var attrId = Guid.NewGuid();
+            var modernId = Guid.NewGuid();
+            var otherSolId = Guid.NewGuid();
+
+            var fakeService = new FakeOrganizationService
+            {
+                OnRetrieveMultiple = (query) =>
+                {
+                    var qe = query as Microsoft.Xrm.Sdk.Query.QueryExpression;
+                    var coll = new EntityCollection();
+
+                    if (qe != null && qe.EntityName == "msdyn_solutioncomponentsummary")
+                    {
+                        var s1 = new Entity("msdyn_solutioncomponentsummary");
+                        s1["msdyn_objectid"] = attrId;
+                        s1["msdyn_schemaname"] = "new_customerid";
+                        s1["msdyn_componenttype"] = new OptionSetValue(2);
+                        s1["msdyn_primaryentityname"] = "account";
+                        s1["msdyn_componenttypename"] = "Entity field";
+                        coll.Entities.Add(s1);
+
+                        var s2 = new Entity("msdyn_solutioncomponentsummary");
+                        s2["msdyn_objectid"] = modernId;
+                        s2["msdyn_name"] = "My Custom Connector Item";
+                        s2["msdyn_componenttype"] = new OptionSetValue(99999);
+                        s2["msdyn_componenttypename"] = "Special Cloud Connector";
+                        coll.Entities.Add(s2);
+
+                        return coll;
+                    }
+
+                    if (qe != null && qe.EntityName == "solutioncomponent")
+                    {
+                        bool isMain = qe.Criteria.Conditions.Any(c => c.AttributeName == "solutionid" && c.Operator == Microsoft.Xrm.Sdk.Query.ConditionOperator.Equal);
+                        if (isMain)
+                        {
+                            var sc1 = new Entity("solutioncomponent");
+                            sc1["objectid"] = attrId;
+                            sc1["componenttype"] = new OptionSetValue(2);
+                            sc1["solutionid"] = solId;
+                            coll.Entities.Add(sc1);
+
+                            var sc2 = new Entity("solutioncomponent");
+                            sc2["objectid"] = modernId;
+                            sc2["componenttype"] = new OptionSetValue(99999);
+                            sc2["solutionid"] = solId;
+                            coll.Entities.Add(sc2);
+
+                            return coll;
+                        }
+                        else
+                        {
+                            var sc = new Entity("solutioncomponent");
+                            sc["objectid"] = (Guid)qe.Criteria.Conditions.First(c => c.AttributeName == "objectid").Values[0];
+                            sc["solutionid"] = otherSolId;
+                            coll.Entities.Add(sc);
+                            return coll;
+                        }
+                    }
+
+                    if (qe != null && qe.EntityName == "solution")
+                    {
+                        var sol = new Entity("solution", otherSolId);
+                        sol["friendlyname"] = "Other Sol";
+                        sol["uniquename"] = "OtherSol";
+                        sol["version"] = "1.0.0.0";
+                        coll.Entities.Add(sol);
+                        return coll;
+                    }
+
+                    return coll;
+                }
+            };
+
+            var overlaps = auditService.GetOverlappingSolutions(fakeService, solId);
+            if (overlaps.Count != 2)
+                throw new Exception($"Expected 2 overlaps, got {overlaps.Count}");
+
+            var attrOverlap = overlaps.FirstOrDefault(o => o.ComponentId == attrId);
+            if (attrOverlap == null || attrOverlap.ComponentName != "new_customerid [account]")
+                throw new Exception($"Expected attribute 'new_customerid [account]', got '{attrOverlap?.ComponentName}'");
+
+            var modernOverlap = overlaps.FirstOrDefault(o => o.ComponentId == modernId);
+            if (modernOverlap == null || modernOverlap.ComponentType != "Special Cloud Connector")
+                throw new Exception($"Expected type 'Special Cloud Connector', got '{modernOverlap?.ComponentType}'");
         }
 
         public static void Test_MyPluginControl_ProcessCategoryDropdownSwitching()

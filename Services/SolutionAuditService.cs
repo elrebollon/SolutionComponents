@@ -5,6 +5,7 @@ using Microsoft.Xrm.Sdk.Query;
 using SolutionComponents.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace SolutionComponents.Services
@@ -27,6 +28,7 @@ namespace SolutionComponents.Services
             { 12, new ComponentTypeMetadata(12, "Entity Relationship Relationships", "entityrelationshiprelationships", "entityrelationshiprelationshipsid", "name", null, true) },
             { 13, new ComponentTypeMetadata(13, "Managed Property", "managedproperty", "managedpropertyid", "logicalname", null, true) },
             { 14, new ComponentTypeMetadata(14, "Entity Key", "entitykey", "entitykeyid", "logicalname", new[] { "schemaname" }, true) },
+            { 15, new ComponentTypeMetadata(15, "Relationship Role", "relationshiprole", "relationshiproleid", "name") },
             { 16, new ComponentTypeMetadata(16, "Privilege", "privilege", "privilegeid", "name") },
             { 17, new ComponentTypeMetadata(17, "PrivilegeObjectTypeCode", "privilegeobjecttypecode", "privilegeobjecttypecodeid", "privilegeobjecttypecodeid") },
             { 18, new ComponentTypeMetadata(18, "Index", "entityindex", "indexid", "name", null, true) },
@@ -68,12 +70,14 @@ namespace SolutionComponents.Services
             { 68, new ComponentTypeMetadata(68, "Custom Control Default Config", "customcontroldefaultconfig", "customcontroldefaultconfigid", "customcontrolid") },
             { 70, new ComponentTypeMetadata(70, "Field Security Profile", "fieldsecurityprofile", "fieldsecurityprofileid", "name") },
             { 71, new ComponentTypeMetadata(71, "Field Permission", "fieldpermission", "fieldpermissionid", "attributelogicalname", new[] { "entityname" }) },
+            { 72, new ComponentTypeMetadata(72, "Form Parameter", "formparameter", "formparameterid", "name") },
             { 80, new ComponentTypeMetadata(80, "Model-Driven App", "appmodule", "appmoduleid", "name", new[] { "uniquename" }) },
             { 81, new ComponentTypeMetadata(81, "App Module Component", "appmodulecomponent", "appmodulecomponentid", "appmodulecomponentid") },
             { 90, new ComponentTypeMetadata(90, "Plugin Type", "plugintype", "plugintypeid", "name", new[] { "typename" }) },
             { 91, new ComponentTypeMetadata(91, "Plugin Assembly", "pluginassembly", "pluginassemblyid", "name") },
             { 92, new ComponentTypeMetadata(92, "SDK Message Processing Step", "sdkmessageprocessingstep", "sdkmessageprocessingstepid", "name") },
             { 93, new ComponentTypeMetadata(93, "SDK Message Processing Step Image", "sdkmessageprocessingstepimage", "sdkmessageprocessingstepimageid", "name", new[] { "entityalias" }) },
+            { 94, new ComponentTypeMetadata(94, "Service Endpoint Filter", "serviceendpointfilter", "serviceendpointfilterid", "name") },
             { 95, new ComponentTypeMetadata(95, "Service Endpoint", "serviceendpoint", "serviceendpointid", "name") },
             { 150, new ComponentTypeMetadata(150, "Routing Rule", "routingrule", "routingruleid", "name") },
             { 151, new ComponentTypeMetadata(151, "Routing Rule Item", "routingruleitem", "routingruleitemid", "name") },
@@ -108,18 +112,22 @@ namespace SolutionComponents.Services
             { 973, new ComponentTypeMetadata(973, "Copilot / Bot", "bot", "botid", "name", new[] { "schemaname" }) },
             { 974, new ComponentTypeMetadata(974, "Bot Component", "botcomponent", "botcomponentid", "name", new[] { "schemaname" }) },
             { 10020, new ComponentTypeMetadata(10020, "Custom API", "customapi", "customapiid", "displayname", new[] { "uniquename", "name" }) },
+            { 10000, new ComponentTypeMetadata(10000, "Web Resource Dependency", "webresourcedependency", "webresourcedependencyid", "webresourcedependencyid") },
             { 10021, new ComponentTypeMetadata(10021, "Custom API Request Parameter", "customapirequestparameter", "customapirequestparameterid", "displayname", new[] { "uniquename", "name" }) },
             { 10022, new ComponentTypeMetadata(10022, "Custom API Response Property", "customapiresponseproperty", "customapiresponsepropertyid", "displayname", new[] { "uniquename", "name" }) },
             { 10040, new ComponentTypeMetadata(10040, "Dataflow", "msdyn_dataflow", "msdyn_dataflowid", "msdyn_name") },
             { 10060, new ComponentTypeMetadata(10060, "Catalog", "catalog", "catalogid", "displayname", new[] { "uniquename", "name" }) },
             { 10061, new ComponentTypeMetadata(10061, "Catalog Assignment", "catalogassignment", "catalogassignmentid", "name") },
             { 10080, new ComponentTypeMetadata(10080, "Plugin Package", "pluginpackage", "pluginpackageid", "name") },
+            { 10090, new ComponentTypeMetadata(10090, "Desktop Flow Binary", "workflow", "workflowid", "name") },
             { 10091, new ComponentTypeMetadata(10091, "Plugin Package", "pluginpackage", "pluginpackageid", "name") },
             { 10097, new ComponentTypeMetadata(10097, "Desktop Flow", "workflow", "workflowid", "name") },
             { 10098, new ComponentTypeMetadata(10098, "Connection Reference", "connectionreference", "connectionreferenceid", "connectionreferencedisplayname", new[] { "connectionreferencename" }) },
             { 10110, new ComponentTypeMetadata(10110, "Power Pages Site", "powerpagesite", "powerpagesiteid", "name") },
             { 10111, new ComponentTypeMetadata(10111, "Power Pages Component", "powerpagescomponent", "powerpagescomponentid", "name") },
-            { 10200, new ComponentTypeMetadata(10200, "AI Model / Prompt", "msdyn_aimodel", "msdyn_aimodelid", "msdyn_name") }
+            { 10200, new ComponentTypeMetadata(10200, "AI Model / Prompt", "msdyn_aimodel", "msdyn_aimodelid", "msdyn_name") },
+            { 10201, new ComponentTypeMetadata(10201, "AI Builder File", "msdyn_aifile", "msdyn_aifileid", "msdyn_name") },
+            { 10202, new ComponentTypeMetadata(10202, "AI Builder File Document", "msdyn_aifiledocument", "msdyn_aifiledocumentid", "msdyn_name") }
         };
 
         public static readonly Dictionary<int, string> WorkflowCategories = new Dictionary<int, string>
@@ -355,11 +363,51 @@ namespace SolutionComponents.Services
             }
         }
 
-        public (string ComponentTypeName, string EntityName) GetComponentTypeDetails(int componentType)
+        public static readonly Dictionary<int, string> GlobalComponentTypeLabels = new Dictionary<int, string>();
+
+        public static void EnsureGlobalComponentTypeLabels(IOrganizationService service)
         {
-            return ComponentTypes.ContainsKey(componentType)
-                ? (ComponentTypes[componentType].TypeName, ComponentTypes[componentType].EntityLogicalName)
-                : ("Unknown", string.Empty);
+            if (GlobalComponentTypeLabels.Count > 0 || service == null) return;
+            try
+            {
+                var req = new RetrieveOptionSetRequest { Name = "componenttype" };
+                var resp = (RetrieveOptionSetResponse)service.Execute(req);
+                if (resp?.OptionSetMetadata is OptionSetMetadata osMeta && osMeta.Options != null)
+                {
+                    foreach (var opt in osMeta.Options)
+                    {
+                        if (opt.Value.HasValue && !string.IsNullOrWhiteSpace(opt.Label?.UserLocalizedLabel?.Label))
+                        {
+                            GlobalComponentTypeLabels[opt.Value.Value] = opt.Label.UserLocalizedLabel.Label;
+                        }
+                    }
+                }
+            }
+            catch { }
+        }
+
+        public (string ComponentTypeName, string EntityName) GetComponentTypeDetails(int componentType, IOrganizationService service = null)
+        {
+            if (ComponentTypes.ContainsKey(componentType))
+            {
+                return (ComponentTypes[componentType].TypeName, ComponentTypes[componentType].EntityLogicalName);
+            }
+
+            if (GlobalComponentTypeLabels.TryGetValue(componentType, out string cachedLabel))
+            {
+                return (cachedLabel, string.Empty);
+            }
+
+            if (service != null)
+            {
+                EnsureGlobalComponentTypeLabels(service);
+                if (GlobalComponentTypeLabels.TryGetValue(componentType, out string foundLabel))
+                {
+                    return (foundLabel, string.Empty);
+                }
+            }
+
+            return ("Unknown", string.Empty);
         }
 
         public ComponentTypeMetadata GetComponentTypeMetadata(int componentType)
@@ -446,29 +494,33 @@ namespace SolutionComponents.Services
                 {
                     return cachedAttr;
                 }
-                try
+                if (!string.IsNullOrEmpty(entityLogicalName) && entityLogicalName != "attribute")
                 {
-                    var req = new RetrieveAttributeRequest
+                    try
                     {
-                        MetadataId = objectId,
-                        RetrieveAsIfPublished = true
-                    };
-                    var resp = (RetrieveAttributeResponse)service.Execute(req);
-                    if (resp?.AttributeMetadata != null)
-                    {
-                        string disp = resp.AttributeMetadata.DisplayName?.UserLocalizedLabel?.Label;
-                        string logName = resp.AttributeMetadata.LogicalName;
-                        string entityName = resp.AttributeMetadata.EntityLogicalName;
-                        string resolved = string.IsNullOrEmpty(disp) ? logName : $"{disp} ({logName})";
-                        if (!string.IsNullOrEmpty(entityName))
+                        var req = new RetrieveAttributeRequest
                         {
-                            resolved = $"{resolved} [{entityName}]";
+                            EntityLogicalName = entityLogicalName,
+                            MetadataId = objectId,
+                            RetrieveAsIfPublished = true
+                        };
+                        var resp = (RetrieveAttributeResponse)service.Execute(req);
+                        if (resp?.AttributeMetadata != null)
+                        {
+                            string disp = resp.AttributeMetadata.DisplayName?.UserLocalizedLabel?.Label;
+                            string logName = resp.AttributeMetadata.LogicalName;
+                            string entityName = resp.AttributeMetadata.EntityLogicalName ?? entityLogicalName;
+                            string resolved = string.IsNullOrEmpty(disp) ? logName : $"{disp} ({logName})";
+                            if (!string.IsNullOrEmpty(entityName))
+                            {
+                                resolved = $"{resolved} [{entityName}]";
+                            }
+                            if (_attributeMetadataCache != null) _attributeMetadataCache[objectId] = resolved;
+                            return resolved;
                         }
-                        if (_attributeMetadataCache != null) _attributeMetadataCache[objectId] = resolved;
-                        return resolved;
                     }
+                    catch { }
                 }
-                catch { }
             }
 
             // 3. Relationships (componentType 3 o 10)
@@ -725,7 +777,69 @@ namespace SolutionComponents.Services
                 catch { }
             }
 
+            // 14. Universal fallback: Query msdyn_solutioncomponentsummary by objectid
+            try
+            {
+                var sq = new QueryExpression("msdyn_solutioncomponentsummary")
+                {
+                    ColumnSet = new ColumnSet(
+                        "msdyn_displayname",
+                        "msdyn_name",
+                        "msdyn_schemaname",
+                        "msdyn_componentlogicalname",
+                        "msdyn_primaryentityname",
+                        "msdyn_componenttypename",
+                        "msdyn_componenttype"
+                    ),
+                    TopCount = 1
+                };
+                sq.Criteria.AddCondition("msdyn_objectid", ConditionOperator.Equal, objectId);
+                var sRes = service.RetrieveMultiple(sq);
+                if (sRes != null && sRes.Entities != null && sRes.Entities.Count > 0)
+                {
+                    var s = sRes.Entities[0];
+                    string n = s.GetAttributeValue<string>("msdyn_displayname")
+                        ?? s.GetAttributeValue<string>("msdyn_name")
+                        ?? s.GetAttributeValue<string>("msdyn_schemaname")
+                        ?? s.GetAttributeValue<string>("msdyn_componentlogicalname");
+
+                    if (!string.IsNullOrWhiteSpace(n))
+                    {
+                        string pEnt = s.GetAttributeValue<string>("msdyn_primaryentityname");
+                        int cType = GetOptionSetAttribute(s, "msdyn_componenttype");
+                        if (cType == 2 && !string.IsNullOrWhiteSpace(pEnt))
+                        {
+                            return $"{n} [{pEnt}]";
+                        }
+                        if (cType == 29)
+                        {
+                            int cat = s.Contains("msdyn_workflowcategory") && s["msdyn_workflowcategory"] is OptionSetValue osv ? osv.Value : 0;
+                            return FormatWorkflowName(n, cat);
+                        }
+                        return n;
+                    }
+                }
+            }
+            catch { }
+
+            LogUnresolvedComponent(objectId, componentType, targetEntity);
             return $"Unnamed ({objectId})";
+        }
+
+        private static void LogUnresolvedComponent(Guid objectId, int componentType, string entityName)
+        {
+            try
+            {
+                string dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".runtime");
+                if (!Directory.Exists(dir))
+                {
+                    Directory.CreateDirectory(dir);
+                }
+                string filePath = Path.Combine(dir, "unresolved_components.log");
+                string logLine = $"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss UTC}] ObjectId={objectId} | ComponentType={componentType} | EntityLogicalName={entityName}{Environment.NewLine}";
+                File.AppendAllText(filePath, logLine);
+            }
+            catch { }
         }
 
         public List<ComponentItem> GetComponentsByType(IOrganizationService service, int componentType, string entityLogicalName = null)
@@ -1231,7 +1345,7 @@ namespace SolutionComponents.Services
                 {
                     string rawName = e.GetAttributeValue<string>("name") ?? "Unnamed Workflow";
                     int cat = e.Contains("category") && e["category"] is OptionSetValue osv ? osv.Value : 0;
-                    string formattedName = FormatWorkflowName(rawName, cat);
+                    string formattedName = category.HasValue ? rawName : FormatWorkflowName(rawName, cat);
 
                     list.Add(new ComponentItem
                     {
@@ -1447,49 +1561,117 @@ namespace SolutionComponents.Services
 
             var compQuery = new QueryExpression("solutioncomponent")
             {
-                ColumnSet = new ColumnSet("componenttype", "objectid", "solutionid")
+                ColumnSet = new ColumnSet("componenttype", "objectid", "solutionid"),
+                PageInfo = new PagingInfo { PageNumber = 1, PagingCookie = null }
             };
             compQuery.Criteria.AddCondition("solutionid", ConditionOperator.Equal, selectedSolutionId);
 
-            var solutionComponents = service.RetrieveMultiple(compQuery);
-            if (solutionComponents == null || solutionComponents.Entities.Count == 0)
+            var solutionComponents = new List<Entity>();
+            while (true)
+            {
+                var resp = service.RetrieveMultiple(compQuery);
+                if (resp?.Entities != null)
+                {
+                    solutionComponents.AddRange(resp.Entities);
+                }
+                if (resp != null && resp.MoreRecords)
+                {
+                    compQuery.PageInfo.PageNumber++;
+                    compQuery.PageInfo.PagingCookie = resp.PagingCookie;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            if (solutionComponents.Count == 0)
                 return new List<SolutionOverlapItem>();
 
             var overlaps = new List<SolutionOverlapItem>();
             var compNameCache = new Dictionary<Guid, string>();
+            var compTypeCache = new Dictionary<Guid, string>();
             var userCache = new Dictionary<Guid, string>();
+
+            EnsureGlobalComponentTypeLabels(service);
 
             // Pre-populate component names using msdyn_solutioncomponentsummary if available in this Dataverse environment
             try
             {
                 var summaryQuery = new QueryExpression("msdyn_solutioncomponentsummary")
                 {
-                    ColumnSet = new ColumnSet("msdyn_objectid", "msdyn_displayname", "msdyn_name", "msdyn_componenttype", "msdyn_componenttypename", "msdyn_primaryentityname")
+                    ColumnSet = new ColumnSet(
+                        "msdyn_objectid",
+                        "msdyn_displayname",
+                        "msdyn_name",
+                        "msdyn_schemaname",
+                        "msdyn_componentlogicalname",
+                        "msdyn_componenttype",
+                        "msdyn_componenttypename",
+                        "msdyn_primaryentityname",
+                        "msdyn_workflowcategory"
+                    ),
+                    PageInfo = new PagingInfo { PageNumber = 1, PagingCookie = null }
                 };
                 summaryQuery.Criteria.AddCondition("msdyn_solutionid", ConditionOperator.Equal, selectedSolutionId);
-                var summaryResults = service.RetrieveMultiple(summaryQuery);
-                if (summaryResults != null && summaryResults.Entities != null)
-                {
-                    foreach (var summary in summaryResults.Entities)
-                    {
-                        Guid objId = GetGuidAttribute(summary, "msdyn_objectid");
-                        if (objId != Guid.Empty)
-                        {
-                            string disp = summary.GetAttributeValue<string>("msdyn_displayname");
-                            string rawName = summary.GetAttributeValue<string>("msdyn_name");
-                            string finalName = !string.IsNullOrWhiteSpace(disp) ? disp : rawName;
-                            int typeCode = GetOptionSetAttribute(summary, "msdyn_componenttype");
 
-                            if (!string.IsNullOrWhiteSpace(finalName))
+                while (true)
+                {
+                    var summaryResults = service.RetrieveMultiple(summaryQuery);
+                    if (summaryResults != null && summaryResults.Entities != null)
+                    {
+                        foreach (var summary in summaryResults.Entities)
+                        {
+                            Guid objId = GetGuidAttribute(summary, "msdyn_objectid");
+                            if (objId != Guid.Empty)
                             {
-                                if (typeCode == 29)
+                                string disp = summary.GetAttributeValue<string>("msdyn_displayname");
+                                string rawName = summary.GetAttributeValue<string>("msdyn_name");
+                                string schemaName = summary.GetAttributeValue<string>("msdyn_schemaname");
+                                string logicalName = summary.GetAttributeValue<string>("msdyn_componentlogicalname");
+                                string finalName = !string.IsNullOrWhiteSpace(disp) ? disp
+                                    : (!string.IsNullOrWhiteSpace(rawName) ? rawName
+                                    : (!string.IsNullOrWhiteSpace(schemaName) ? schemaName
+                                    : logicalName));
+
+                                int typeCode = GetOptionSetAttribute(summary, "msdyn_componenttype");
+                                string typeName = summary.GetAttributeValue<string>("msdyn_componenttypename");
+                                string primaryEnt = summary.GetAttributeValue<string>("msdyn_primaryentityname");
+
+                                if (!string.IsNullOrWhiteSpace(typeName))
                                 {
-                                    int cat = summary.Contains("msdyn_workflowcategory") && summary["msdyn_workflowcategory"] is OptionSetValue osv ? osv.Value : 0;
-                                    finalName = FormatWorkflowName(finalName, cat);
+                                    compTypeCache[objId] = typeName;
+                                    if (typeCode > 0)
+                                    {
+                                        GlobalComponentTypeLabels[typeCode] = typeName;
+                                    }
                                 }
-                                compNameCache[objId] = finalName;
+
+                                if (!string.IsNullOrWhiteSpace(finalName))
+                                {
+                                    if (typeCode == 2 && !string.IsNullOrWhiteSpace(primaryEnt))
+                                    {
+                                        finalName = $"{finalName} [{primaryEnt}]";
+                                    }
+                                    else if (typeCode == 29)
+                                    {
+                                        int cat = summary.Contains("msdyn_workflowcategory") && summary["msdyn_workflowcategory"] is OptionSetValue osv ? osv.Value : 0;
+                                        finalName = FormatWorkflowName(finalName, cat);
+                                    }
+                                    compNameCache[objId] = finalName;
+                                }
                             }
                         }
+                    }
+
+                    if (summaryResults != null && summaryResults.MoreRecords)
+                    {
+                        summaryQuery.PageInfo.PageNumber++;
+                        summaryQuery.PageInfo.PagingCookie = summaryResults.PagingCookie;
+                    }
+                    else
+                    {
+                        break;
                     }
                 }
             }
@@ -1498,16 +1680,33 @@ namespace SolutionComponents.Services
                 // Environment does not support msdyn_solutioncomponentsummary; fallback to individual metadata resolution (R5)
             }
 
-            foreach (var comp in solutionComponents.Entities)
+            foreach (var comp in solutionComponents)
             {
                 Guid objectId = GetGuidAttribute(comp, "objectid");
                 int compType = GetOptionSetAttribute(comp, "componenttype");
 
-                var details = GetComponentTypeDetails(compType);
+                var details = GetComponentTypeDetails(compType, service);
                 if (!compNameCache.TryGetValue(objectId, out string compName))
                 {
                     compName = GetComponentName(service, details.EntityName, objectId, compType);
                     compNameCache[objectId] = compName;
+                }
+
+                string displayCompType = details.ComponentTypeName;
+                if (string.IsNullOrEmpty(displayCompType) || displayCompType == "Unknown")
+                {
+                    if (compTypeCache.TryGetValue(objectId, out string summaryType) && !string.IsNullOrWhiteSpace(summaryType))
+                    {
+                        displayCompType = summaryType;
+                    }
+                    else if (GlobalComponentTypeLabels.TryGetValue(compType, out string globalLabel) && !string.IsNullOrWhiteSpace(globalLabel))
+                    {
+                        displayCompType = globalLabel;
+                    }
+                    else
+                    {
+                        displayCompType = $"Type {compType}";
+                    }
                 }
 
                 var relatedQuery = new QueryExpression("solutioncomponent")
@@ -1568,7 +1767,7 @@ namespace SolutionComponents.Services
                             overlaps.Add(new SolutionOverlapItem
                             {
                                 ComponentName = compName,
-                                ComponentType = details.ComponentTypeName,
+                                ComponentType = displayCompType,
                                 ComponentId = objectId,
                                 RelatedSolutionName = sol.GetAttributeValue<string>("friendlyname") ?? sol.GetAttributeValue<string>("uniquename"),
                                 RelatedSolutionUniqueName = sol.GetAttributeValue<string>("uniquename"),
