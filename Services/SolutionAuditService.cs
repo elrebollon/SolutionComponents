@@ -115,6 +115,11 @@ namespace SolutionComponents.Services
             { 10000, new ComponentTypeMetadata(10000, "Web Resource Dependency", "webresourcedependency", "webresourcedependencyid", "webresourcedependencyid") },
             { 10021, new ComponentTypeMetadata(10021, "Custom API Request Parameter", "customapirequestparameter", "customapirequestparameterid", "displayname", new[] { "uniquename", "name" }) },
             { 10022, new ComponentTypeMetadata(10022, "Custom API Response Property", "customapiresponseproperty", "customapiresponsepropertyid", "displayname", new[] { "uniquename", "name" }) },
+            { 10023, new ComponentTypeMetadata(10023, "Staged Entity Relationship", "stagedentityrelationship", "stagedentityrelationshipid", "name", new[] { "schemaname" }, true) },
+            { 10024, new ComponentTypeMetadata(10024, "Staged Entity Relationship Relationships", "stagedentityrelationshiprelationships", "stagedentityrelationshiprelationshipsid", "name", null, true) },
+            { 10025, new ComponentTypeMetadata(10025, "Staged Entity Relationship Role", "stagedentityrelationshiprole", "stagedentityrelationshiproleid", "name", null, true) },
+            { 10026, new ComponentTypeMetadata(10026, "Staged Metadata Async Operation", "stagedmetadataasyncoperation", "stagedmetadataasyncoperationid", "name", null, true) },
+            { 10027, new ComponentTypeMetadata(10027, "Staged Option Set", "stagedoptionset", "stagedoptionsetid", "name", new[] { "schemaname", "uniquename", "displayname" }, true) },
             { 10040, new ComponentTypeMetadata(10040, "Dataflow", "msdyn_dataflow", "msdyn_dataflowid", "msdyn_name") },
             { 10060, new ComponentTypeMetadata(10060, "Catalog", "catalog", "catalogid", "displayname", new[] { "uniquename", "name" }) },
             { 10061, new ComponentTypeMetadata(10061, "Catalog Assignment", "catalogassignment", "catalogassignmentid", "name") },
@@ -551,8 +556,8 @@ namespace SolutionComponents.Services
                 catch { }
             }
 
-            // 4. OptionSet / Choice (componentType 9)
-            if (componentType == 9 || entityLogicalName == "optionset")
+            // 4. OptionSet / Choice / Staged Option Set (componentType 9 o 10027)
+            if (componentType == 9 || componentType == 10027 || entityLogicalName == "optionset" || entityLogicalName == "stagedoptionset")
             {
                 try
                 {
@@ -565,7 +570,7 @@ namespace SolutionComponents.Services
                     if (resp?.OptionSetMetadata != null)
                     {
                         string disp = resp.OptionSetMetadata.DisplayName?.UserLocalizedLabel?.Label ?? resp.OptionSetMetadata.Name;
-                        return disp;
+                        return componentType == 10027 ? $"{disp} (Staged)" : disp;
                     }
                 }
                 catch { }

@@ -161,6 +161,10 @@ namespace SolutionComponents.Tests
             var bot = service.GetComponentTypeDetails(973);
             if (bot.ComponentTypeName != "Copilot / Bot")
                 throw new Exception($"Expected Copilot / Bot for type 973, got {bot.ComponentTypeName}");
+
+            var stagedOptionSet = service.GetComponentTypeDetails(10027);
+            if (stagedOptionSet.ComponentTypeName != "Staged Option Set" || stagedOptionSet.EntityName != "stagedoptionset")
+                throw new Exception($"Expected Staged Option Set/stagedoptionset for type 10027, got {stagedOptionSet.ComponentTypeName}/{stagedOptionSet.EntityName}");
         }
 
         public static void Test_ModifiedByFieldSupport()
@@ -624,6 +628,12 @@ namespace SolutionComponents.Tests
                         e["category"] = new OptionSetValue(5); // Cloud Flow
                         return e;
                     }
+                    if (entityName == "stagedoptionset")
+                    {
+                        var e = new Entity("stagedoptionset", targetId);
+                        e["name"] = "Lead Stage Options";
+                        return e;
+                    }
                     return null;
                 }
             };
@@ -659,6 +669,11 @@ namespace SolutionComponents.Tests
             string wfName = auditService.GetComponentName(fakeService, "workflow", id, 29);
             if (wfName != "[Cloud Flow] Sync Orders to ERP")
                 throw new Exception($"Expected '[Cloud Flow] Sync Orders to ERP', got '{wfName}'");
+
+            // Staged Option Set (10027)
+            string stagedName = auditService.GetComponentName(fakeService, "stagedoptionset", id, 10027);
+            if (stagedName != "Lead Stage Options")
+                throw new Exception($"Expected 'Lead Stage Options', got '{stagedName}'");
         }
 
         public static void Test_GetOverlappingSolutions_WithSummaryAndFallback()
