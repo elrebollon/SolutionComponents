@@ -195,12 +195,10 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
-      IF $(ConfigurationName) == Debug (
-      IF NOT EXIST Plugins mkdir Plugins
-      DEL $(TargetDir)Plugins\manifest.json
+      IF NOT EXIST "$(TargetDir)Plugins" mkdir "$(TargetDir)Plugins"
+      IF EXIST "$(TargetDir)Plugins\manifest.json" DEL "$(TargetDir)Plugins\manifest.json"
       xcopy "$(TargetDir)$(TargetFileName)" "$(TargetDir)Plugins\" /Y
       xcopy "$(TargetDir)$(TargetName).pdb" "$(TargetDir)Plugins\" /Y
-      )
     </PostBuildEvent>
   </PropertyGroup>
   <Import Project="packages\Microsoft.Web.WebView2.1.0.1343.22\build\Microsoft.Web.WebView2.targets" Condition="Exists('packages\Microsoft.Web.WebView2.1.0.1343.22\build\Microsoft.Web.WebView2.targets')" />

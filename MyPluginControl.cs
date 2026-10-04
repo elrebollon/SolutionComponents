@@ -7,11 +7,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using XrmToolBox.Extensibility;
+using XrmToolBox.Extensibility.Interfaces;
 
 namespace SolutionComponents
 {
-    public partial class MyPluginControl : PluginControlBase
+    public partial class MyPluginControl : PluginControlBase, IGitHubPlugin, IHelpPlugin
     {
+        public string RepositoryName => "SolutionComponents";
+        public string UserName => "elrebollon";
+        public string HelpUrl => "https://github.com/elrebollon/SolutionComponents#readme";
+
         private Settings mySettings;
         private readonly SolutionAuditService _auditService = new SolutionAuditService();
         private List<SolutionOverlapItem> _currentOverlaps = new List<SolutionOverlapItem>();

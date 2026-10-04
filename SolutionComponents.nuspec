@@ -7,6 +7,7 @@
     <authors>Alberto Palomo Alberto</authors>
     <owners>Alberto Palomo Alberto</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">MIT</license>
     <projectUrl>https://github.com/elrebollon/SolutionComponents</projectUrl>
     <description>A powerful XrmToolBox plugin to inspect solution component dependencies, identify cross-solution overlaps, and track component history across Dynamics 365 and Dataverse releases.</description>
     <summary>Inspect solution component dependencies and historical releases in Dynamics 365 / Dataverse.</summary>
@@ -15,7 +16,8 @@
       - Audit solution component overlaps across unmanaged/managed solutions (REC-1).
       - Trace hierarchical component history across past releases (REC-2).
       - Publisher filtering and multi-environment support.
-      - 100% English UI for community distribution.
+      - Integrated GitHub and Help support via XrmToolBox standard interfaces.
+      - 100% English UI for community distribution in XrmToolBox Tool Library.
     </releaseNotes>
     <copyright>Copyright 2026</copyright>
     <tags>XrmToolBox Plugins SolutionComponents Dynamics365 PowerApps Dataverse Dependencies</tags>
@@ -24,7 +26,7 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="bin\Debug\Plugins\SolutionComponents.dll" target="lib\net48\Plugins" />
-    <file src="bin\Debug\Plugins\SolutionComponents.pdb" target="lib\net48\Plugins" />
+    <file src="bin\Release\Plugins\SolutionComponents.dll" target="lib\net48\Plugins" />
+    <file src="bin\Release\Plugins\SolutionComponents.pdb" target="lib\net48\Plugins" />
   </files>
 </package>

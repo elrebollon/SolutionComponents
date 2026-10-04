@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
+using XrmToolBox.Extensibility.Interfaces;
 
 namespace SolutionComponents.Tests
 {
@@ -33,6 +34,7 @@ namespace SolutionComponents.Tests
             Test_GetOverlappingSolutions_WithSummaryAndFallback();
             Test_ResolveComponentTypes_WithGlobalLabelsAndSchemaNames();
             Test_MyPluginControl_ProcessCategoryDropdownSwitching();
+            Test_PluginControl_Implements_IGitHubPlugin_And_IHelpPlugin();
             Console.WriteLine("All SolutionAuditServiceTests passed successfully!");
         }
 
@@ -408,6 +410,7 @@ namespace SolutionComponents.Tests
             }
         }
 
+<<<<<<< HEAD
         public static void Test_ComponentTypeMetadata_StructuredCatalog()
         {
             var service = new SolutionAuditService();
@@ -973,6 +976,27 @@ namespace SolutionComponents.Tests
             public void Delete(string entityName, Guid id) { }
             public void Associate(string entityName, Guid entityId, Relationship relationship, EntityReferenceCollection relatedEntities) { }
             public void Disassociate(string entityName, Guid entityId, Relationship relationship, EntityReferenceCollection relatedEntities) { }
+        }
+
+        public static void Test_PluginControl_Implements_IGitHubPlugin_And_IHelpPlugin()
+        {
+            using (var control = new MyPluginControl())
+            {
+                if (!(control is IGitHubPlugin githubPlugin))
+                    throw new Exception("MyPluginControl must implement IGitHubPlugin");
+
+                if (githubPlugin.UserName != "elrebollon")
+                    throw new Exception($"Expected IGitHubPlugin.UserName 'elrebollon', got '{githubPlugin.UserName}'");
+
+                if (githubPlugin.RepositoryName != "SolutionComponents")
+                    throw new Exception($"Expected IGitHubPlugin.RepositoryName 'SolutionComponents', got '{githubPlugin.RepositoryName}'");
+
+                if (!(control is IHelpPlugin helpPlugin))
+                    throw new Exception("MyPluginControl must implement IHelpPlugin");
+
+                if (string.IsNullOrWhiteSpace(helpPlugin.HelpUrl) || !helpPlugin.HelpUrl.Contains("github.com/elrebollon/SolutionComponents"))
+                    throw new Exception($"Expected valid IHelpPlugin.HelpUrl pointing to GitHub repository, got '{helpPlugin.HelpUrl}'");
+            }
         }
     }
 }
