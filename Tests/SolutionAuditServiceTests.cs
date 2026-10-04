@@ -410,7 +410,6 @@ namespace SolutionComponents.Tests
             }
         }
 
-<<<<<<< HEAD
         public static void Test_ComponentTypeMetadata_StructuredCatalog()
         {
             var service = new SolutionAuditService();
