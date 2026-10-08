@@ -2,17 +2,22 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>SolutionComponents</id>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <title>Solution Component Inspector for XrmToolBox</title>
     <authors>Alberto Palomo Alberto</authors>
     <owners>Alberto Palomo Alberto</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <license type="expression">MIT</license>
+    <icon>icon.png</icon>
+    <iconUrl>https://raw.githubusercontent.com/elrebollon/SolutionComponents/main/icon.png</iconUrl>
     <readme>README.md</readme>
     <projectUrl>https://github.com/elrebollon/SolutionComponents</projectUrl>
     <description>A powerful XrmToolBox plugin to inspect solution component dependencies, identify cross-solution overlaps, and track component history across Dynamics 365 and Dataverse releases.</description>
     <summary>Inspect solution component dependencies and historical releases in Dynamics 365 / Dataverse.</summary>
     <releaseNotes>
+      1.0.1:
+      - Fixed package dependency targeting XrmToolBox for seamless Tool Library distribution and compatibility.
+      - Added official icon asset and metadata for XrmToolBox Plugins Store listing.
       1.0.0:
       - Audit solution component overlaps across unmanaged/managed solutions (REC-1).
       - Trace hierarchical component history across past releases (REC-2).
@@ -23,10 +28,11 @@
     <copyright>Copyright 2026</copyright>
     <tags>XrmToolBox Plugins SolutionComponents Dynamics365 PowerApps Dataverse Dependencies</tags>
     <dependencies>
-      <dependency id="XrmToolBoxPackage" version="1.2023.10.67" />
+      <dependency id="XrmToolBox" version="1.2023.10.67" />
     </dependencies>
   </metadata>
   <files>
+    <file src="icon.png" target="" />
     <file src="bin\Release\Plugins\SolutionComponents.dll" target="lib\net48\Plugins" />
     <file src="bin\Release\Plugins\SolutionComponents.pdb" target="lib\net48\Plugins" />
     <file src="README.md" target="" />
