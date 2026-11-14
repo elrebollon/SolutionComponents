@@ -33,9 +33,13 @@ namespace SolutionComponents
             this.tssSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.tsbRefresh = new System.Windows.Forms.ToolStripButton();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.rbSolutionFile = new System.Windows.Forms.RadioButton();
             this.rbComponent = new System.Windows.Forms.RadioButton();
             this.rbSolution = new System.Windows.Forms.RadioButton();
             this.pnSolution = new System.Windows.Forms.Panel();
+            this.btnBrowseSolutionFile = new System.Windows.Forms.Button();
+            this.txtSolutionFilePath = new System.Windows.Forms.TextBox();
+            this.lblSolutionFile = new System.Windows.Forms.Label();
             this.lblStatus = new System.Windows.Forms.Label();
             this.dgvRelatedSolutions = new System.Windows.Forms.DataGridView();
             this.colComponentName = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -111,22 +115,35 @@ namespace SolutionComponents
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.rbSolutionFile);
             this.groupBox1.Controls.Add(this.rbComponent);
             this.groupBox1.Controls.Add(this.rbSolution);
             this.groupBox1.Location = new System.Drawing.Point(10, 32);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(280, 65);
+            this.groupBox1.Size = new System.Drawing.Size(430, 65);
             this.groupBox1.TabIndex = 5;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Analysis Mode";
             // 
+            // rbSolutionFile
+            // 
+            this.rbSolutionFile.AutoSize = true;
+            this.rbSolutionFile.Location = new System.Drawing.Point(160, 28);
+            this.rbSolutionFile.Name = "rbSolutionFile";
+            this.rbSolutionFile.Size = new System.Drawing.Size(100, 17);
+            this.rbSolutionFile.TabIndex = 1;
+            this.rbSolutionFile.TabStop = true;
+            this.rbSolutionFile.Text = "By Solution File";
+            this.rbSolutionFile.UseVisualStyleBackColor = true;
+            this.rbSolutionFile.CheckedChanged += new System.EventHandler(this.rbMode_CheckedChanged);
+            // 
             // rbComponent
             // 
             this.rbComponent.AutoSize = true;
-            this.rbComponent.Location = new System.Drawing.Point(120, 28);
+            this.rbComponent.Location = new System.Drawing.Point(280, 28);
             this.rbComponent.Name = "rbComponent";
             this.rbComponent.Size = new System.Drawing.Size(96, 17);
-            this.rbComponent.TabIndex = 1;
+            this.rbComponent.TabIndex = 2;
             this.rbComponent.TabStop = true;
             this.rbComponent.Text = "By Component";
             this.rbComponent.UseVisualStyleBackColor = true;
@@ -138,10 +155,10 @@ namespace SolutionComponents
             this.rbSolution.Checked = true;
             this.rbSolution.Location = new System.Drawing.Point(16, 28);
             this.rbSolution.Name = "rbSolution";
-            this.rbSolution.Size = new System.Drawing.Size(78, 17);
+            this.rbSolution.Size = new System.Drawing.Size(126, 17);
             this.rbSolution.TabIndex = 0;
             this.rbSolution.TabStop = true;
-            this.rbSolution.Text = "By Solution";
+            this.rbSolution.Text = "By Installed Solution";
             this.rbSolution.UseVisualStyleBackColor = true;
             this.rbSolution.CheckedChanged += new System.EventHandler(this.rbMode_CheckedChanged);
             // 
@@ -150,6 +167,9 @@ namespace SolutionComponents
             this.pnSolution.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnSolution.Controls.Add(this.btnBrowseSolutionFile);
+            this.pnSolution.Controls.Add(this.txtSolutionFilePath);
+            this.pnSolution.Controls.Add(this.lblSolutionFile);
             this.pnSolution.Controls.Add(this.lblStatus);
             this.pnSolution.Controls.Add(this.dgvRelatedSolutions);
             this.pnSolution.Controls.Add(this.label2);
@@ -161,11 +181,41 @@ namespace SolutionComponents
             this.pnSolution.Size = new System.Drawing.Size(940, 555);
             this.pnSolution.TabIndex = 6;
             // 
+            // btnBrowseSolutionFile
+            // 
+            this.btnBrowseSolutionFile.Location = new System.Drawing.Point(400, 10);
+            this.btnBrowseSolutionFile.Name = "btnBrowseSolutionFile";
+            this.btnBrowseSolutionFile.Size = new System.Drawing.Size(75, 23);
+            this.btnBrowseSolutionFile.TabIndex = 8;
+            this.btnBrowseSolutionFile.Text = "Browse...";
+            this.btnBrowseSolutionFile.UseVisualStyleBackColor = true;
+            this.btnBrowseSolutionFile.Visible = false;
+            this.btnBrowseSolutionFile.Click += new System.EventHandler(this.btnBrowseSolutionFile_Click);
+            // 
+            // txtSolutionFilePath
+            // 
+            this.txtSolutionFilePath.Location = new System.Drawing.Point(125, 12);
+            this.txtSolutionFilePath.Name = "txtSolutionFilePath";
+            this.txtSolutionFilePath.ReadOnly = true;
+            this.txtSolutionFilePath.Size = new System.Drawing.Size(260, 20);
+            this.txtSolutionFilePath.TabIndex = 7;
+            this.txtSolutionFilePath.Visible = false;
+            // 
+            // lblSolutionFile
+            // 
+            this.lblSolutionFile.AutoSize = true;
+            this.lblSolutionFile.Location = new System.Drawing.Point(5, 15);
+            this.lblSolutionFile.Name = "lblSolutionFile";
+            this.lblSolutionFile.Size = new System.Drawing.Size(100, 13);
+            this.lblSolutionFile.TabIndex = 6;
+            this.lblSolutionFile.Text = "Select Solution File:";
+            this.lblSolutionFile.Visible = false;
+            // 
             // lblStatus
             // 
             this.lblStatus.AutoSize = true;
             this.lblStatus.ForeColor = System.Drawing.Color.DimGray;
-            this.lblStatus.Location = new System.Drawing.Point(400, 15);
+            this.lblStatus.Location = new System.Drawing.Point(490, 15);
             this.lblStatus.Name = "lblStatus";
             this.lblStatus.Size = new System.Drawing.Size(0, 13);
             this.lblStatus.TabIndex = 5;
@@ -531,9 +581,13 @@ namespace SolutionComponents
         private System.Windows.Forms.ToolStripButton tsbRefresh;
         private System.Windows.Forms.ToolStripSeparator tssSeparator1;
         private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.RadioButton rbSolutionFile;
         private System.Windows.Forms.RadioButton rbComponent;
         private System.Windows.Forms.RadioButton rbSolution;
         private System.Windows.Forms.Panel pnSolution;
+        private System.Windows.Forms.Label lblSolutionFile;
+        private System.Windows.Forms.TextBox txtSolutionFilePath;
+        private System.Windows.Forms.Button btnBrowseSolutionFile;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox cbSolutions;
         private System.Windows.Forms.Label label2;
