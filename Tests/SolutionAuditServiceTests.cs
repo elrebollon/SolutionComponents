@@ -35,6 +35,12 @@ namespace SolutionComponents.Tests
             Test_ResolveComponentTypes_WithGlobalLabelsAndSchemaNames();
             Test_MyPluginControl_ProcessCategoryDropdownSwitching();
             Test_PluginControl_Implements_IGitHubPlugin_And_IHelpPlugin();
+            Test_ParseSolutionFile_InvalidOrMissingSolutionXml_ThrowsException();
+            Test_ParseSolutionFile_ValidZipWithRootComponents_ExtractsComponentsCorrectly();
+            Test_GetOverlappingSolutionsForComponents_MatchesInSdk();
+            Test_GetOverlappingSolutionsForComponents_CleanComponent_ReturnsEmpty();
+            Test_PopulateComponentFilterComboBox_ListsAllComponentsIncludingClean();
+            Test_GetOverlappingSolutionsForComponents_ExcludedPublishersFilter();
             Console.WriteLine("All SolutionAuditServiceTests passed successfully!");
         }
 
@@ -996,6 +1002,314 @@ namespace SolutionComponents.Tests
                 if (string.IsNullOrWhiteSpace(helpPlugin.HelpUrl) || !helpPlugin.HelpUrl.Contains("github.com/elrebollon/SolutionComponents"))
                     throw new Exception($"Expected valid IHelpPlugin.HelpUrl pointing to GitHub repository, got '{helpPlugin.HelpUrl}'");
             }
+        }
+
+        public static void Test_ParseSolutionFile_InvalidOrMissingSolutionXml_ThrowsException()
+        {
+            var auditService = new SolutionAuditService();
+
+            // 1. Non-existent file
+            try
+            {
+                auditService.ParseSolutionFile("non_existent_file_path.zip");
+                throw new Exception("Expected FileNotFoundException or InvalidDataException for non-existent file");
+            }
+            catch (System.IO.FileNotFoundException) { }
+            catch (System.IO.InvalidDataException) { }
+
+            // 2. Corrupt or non-zip file
+            string tempNonZip = System.IO.Path.GetTempFileName();
+            try
+            {
+                System.IO.File.WriteAllText(tempNonZip, "This is not a zip file at all.");
+                try
+                {
+                    auditService.ParseSolutionFile(tempNonZip);
+                    throw new Exception("Expected InvalidDataException for non-zip file");
+                }
+                catch (System.IO.InvalidDataException) { }
+            }
+            finally
+            {
+                if (System.IO.File.Exists(tempNonZip)) System.IO.File.Delete(tempNonZip);
+            }
+
+            // 3. Zip without solution.xml
+            string tempZipNoXml = System.IO.Path.Combine(System.IO.Path.GetTempPath(), $"no_xml_{Guid.NewGuid()}.zip");
+            try
+            {
+                using (var archive = System.IO.Compression.ZipFile.Open(tempZipNoXml, System.IO.Compression.ZipArchiveMode.Create))
+                {
+                    var entry = archive.CreateEntry("dummy.txt");
+                    using (var writer = new System.IO.StreamWriter(entry.Open()))
+                    {
+                        writer.Write("hello world");
+                    }
+                }
+
+                try
+                {
+                    auditService.ParseSolutionFile(tempZipNoXml);
+                    throw new Exception("Expected InvalidDataException when solution.xml is missing");
+                }
+                catch (System.IO.InvalidDataException) { }
+            }
+            finally
+            {
+                if (System.IO.File.Exists(tempZipNoXml)) System.IO.File.Delete(tempZipNoXml);
+            }
+
+            // 4. Zip with invalid solution.xml (not ImportExportXml)
+            string tempZipBadXml = System.IO.Path.Combine(System.IO.Path.GetTempPath(), $"bad_xml_{Guid.NewGuid()}.zip");
+            try
+            {
+                using (var archive = System.IO.Compression.ZipFile.Open(tempZipBadXml, System.IO.Compression.ZipArchiveMode.Create))
+                {
+                    var entry = archive.CreateEntry("solution.xml");
+                    using (var writer = new System.IO.StreamWriter(entry.Open()))
+                    {
+                        writer.Write("<InvalidRoot><Foo>Bar</Foo></InvalidRoot>");
+                    }
+                }
+
+                try
+                {
+                    auditService.ParseSolutionFile(tempZipBadXml);
+                    throw new Exception("Expected InvalidDataException when root element is not ImportExportXml");
+                }
+                catch (System.IO.InvalidDataException) { }
+            }
+            finally
+            {
+                if (System.IO.File.Exists(tempZipBadXml)) System.IO.File.Delete(tempZipBadXml);
+            }
+        }
+
+        public static void Test_ParseSolutionFile_ValidZipWithRootComponents_ExtractsComponentsCorrectly()
+        {
+            var auditService = new SolutionAuditService();
+            string tempZip = System.IO.Path.Combine(System.IO.Path.GetTempPath(), $"valid_sol_{Guid.NewGuid()}.zip");
+
+            Guid id1 = Guid.NewGuid();
+            Guid id2 = Guid.NewGuid();
+            Guid id3 = Guid.NewGuid();
+
+            string xmlContent = $@"<ImportExportXml xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"">
+  <SolutionManifest>
+    <UniqueName>TestSolution</UniqueName>
+    <LocalizedNames>
+      <LocalizedName description=""Test Solution"" languagecode=""1033"" />
+    </LocalizedNames>
+    <Version>1.0.0.0</Version>
+    <RootComponents>
+      <RootComponent type=""1"" id=""{{{id1}}}"" schemaName=""account"" />
+      <RootComponent type=""29"" id=""{{{id2}}}"" schemaName=""MyCloudFlow"" />
+      <RootComponent type=""61"" id=""{{{id3}}}"" schemaName=""new_script.js"" />
+    </RootComponents>
+  </SolutionManifest>
+</ImportExportXml>";
+
+            try
+            {
+                using (var archive = System.IO.Compression.ZipFile.Open(tempZip, System.IO.Compression.ZipArchiveMode.Create))
+                {
+                    var entry = archive.CreateEntry("solution.xml");
+                    using (var writer = new System.IO.StreamWriter(entry.Open()))
+                    {
+                        writer.Write(xmlContent);
+                    }
+                }
+
+                var components = auditService.ParseSolutionFile(tempZip);
+                if (components == null || components.Count != 3)
+                    throw new Exception($"Expected 3 components, got {components?.Count}");
+
+                var c1 = components.FirstOrDefault(c => c.ObjectId == id1);
+                if (c1 == null || c1.ComponentType != 1 || c1.SchemaName != "account")
+                    throw new Exception("Component 1 (Entity) parsed incorrectly");
+
+                var c2 = components.FirstOrDefault(c => c.ObjectId == id2);
+                if (c2 == null || c2.ComponentType != 29 || c2.SchemaName != "MyCloudFlow")
+                    throw new Exception("Component 2 (Workflow) parsed incorrectly");
+
+                var c3 = components.FirstOrDefault(c => c.ObjectId == id3);
+                if (c3 == null || c3.ComponentType != 61 || c3.SchemaName != "new_script.js")
+                    throw new Exception("Component 3 (WebResource) parsed incorrectly");
+            }
+            finally
+            {
+                if (System.IO.File.Exists(tempZip)) System.IO.File.Delete(tempZip);
+            }
+        }
+
+        public static void Test_GetOverlappingSolutionsForComponents_MatchesInSdk()
+        {
+            var auditService = new SolutionAuditService();
+            Guid targetId = Guid.NewGuid();
+            Guid otherSolId = Guid.NewGuid();
+
+            var components = new List<LocalComponentItem>
+            {
+                new LocalComponentItem { ComponentType = 1, ObjectId = targetId, SchemaName = "account", DisplayName = "Account" }
+            };
+
+            var fakeService = new FakeOrganizationService
+            {
+                OnRetrieveMultiple = (query) =>
+                {
+                    var coll = new EntityCollection();
+                    var qe = query as Microsoft.Xrm.Sdk.Query.QueryExpression;
+
+                    if (qe != null && qe.EntityName == "solutioncomponent")
+                    {
+                        var sc = new Entity("solutioncomponent");
+                        sc["objectid"] = targetId;
+                        sc["componenttype"] = new OptionSetValue(1);
+                        sc["solutionid"] = otherSolId;
+                        coll.Entities.Add(sc);
+                        return coll;
+                    }
+
+                    if (qe != null && qe.EntityName == "solution")
+                    {
+                        var sol = new Entity("solution", otherSolId);
+                        sol["friendlyname"] = "Installed Solution";
+                        sol["uniquename"] = "InstalledSolution";
+                        sol["version"] = "2.0.0.0";
+                        coll.Entities.Add(sol);
+                        return coll;
+                    }
+
+                    return coll;
+                }
+            };
+
+            var overlaps = auditService.GetOverlappingSolutionsForComponents(fakeService, components, null, null);
+            if (overlaps.Count != 1)
+                throw new Exception($"Expected 1 overlap, got {overlaps.Count}");
+
+            if (overlaps[0].ComponentId != targetId || overlaps[0].RelatedSolutionName != "Installed Solution")
+                throw new Exception("Overlap item properties do not match expected values");
+        }
+
+        public static void Test_GetOverlappingSolutionsForComponents_CleanComponent_ReturnsEmpty()
+        {
+            var auditService = new SolutionAuditService();
+            Guid cleanId = Guid.NewGuid();
+
+            var components = new List<LocalComponentItem>
+            {
+                new LocalComponentItem { ComponentType = 29, ObjectId = cleanId, SchemaName = "CleanFlow", DisplayName = "Clean Flow" }
+            };
+
+            var fakeService = new FakeOrganizationService
+            {
+                OnRetrieveMultiple = (query) => new EntityCollection()
+            };
+
+            var overlaps = auditService.GetOverlappingSolutionsForComponents(fakeService, components, null, null);
+            if (overlaps.Count != 0)
+                throw new Exception($"Expected 0 overlaps for clean component, got {overlaps.Count}");
+        }
+
+        public static void Test_PopulateComponentFilterComboBox_ListsAllComponentsIncludingClean()
+        {
+            using (var control = new MyPluginControl())
+            {
+                var cbSolutionComponents = control.GetType().GetField("cbSolutionComponents", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)?.GetValue(control) as System.Windows.Forms.ComboBox;
+                if (cbSolutionComponents == null)
+                    throw new Exception("cbSolutionComponents not found");
+
+                var allItems = new List<string> { "CompA", "CleanCompB", "CompC" };
+                var method = control.GetType().GetMethod("PopulateComponentFilterComboBox", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance, null, new Type[] { typeof(IEnumerable<string>) }, null);
+                
+                if (method == null)
+                    throw new Exception("PopulateComponentFilterComboBox(IEnumerable<string>) method not found");
+
+                method.Invoke(control, new object[] { allItems });
+
+                if (cbSolutionComponents.Items.Count != 4) // "All components" + 3 items
+                    throw new Exception($"Expected 4 items in cbSolutionComponents, got {cbSolutionComponents.Items.Count}");
+
+                if (!cbSolutionComponents.Items.Contains("CleanCompB"))
+                    throw new Exception("cbSolutionComponents should contain clean component 'CleanCompB'");
+            }
+        }
+
+        public static void Test_GetOverlappingSolutionsForComponents_ExcludedPublishersFilter()
+        {
+            var auditService = new SolutionAuditService();
+            Guid targetId = Guid.NewGuid();
+            Guid solMicrosoftId = Guid.NewGuid();
+            Guid solPartnerId = Guid.NewGuid();
+
+            var components = new List<LocalComponentItem>
+            {
+                new LocalComponentItem { ComponentType = 1, ObjectId = targetId, SchemaName = "account", DisplayName = "Account" }
+            };
+
+            var fakeService = new FakeOrganizationService
+            {
+                OnRetrieveMultiple = (query) =>
+                {
+                    var coll = new EntityCollection();
+                    var qe = query as Microsoft.Xrm.Sdk.Query.QueryExpression;
+
+                    if (qe != null && qe.EntityName == "solutioncomponent")
+                    {
+                        var sc1 = new Entity("solutioncomponent");
+                        sc1["objectid"] = targetId;
+                        sc1["componenttype"] = new OptionSetValue(1);
+                        sc1["solutionid"] = solMicrosoftId;
+                        coll.Entities.Add(sc1);
+
+                        var sc2 = new Entity("solutioncomponent");
+                        sc2["objectid"] = targetId;
+                        sc2["componenttype"] = new OptionSetValue(1);
+                        sc2["solutionid"] = solPartnerId;
+                        coll.Entities.Add(sc2);
+
+                        return coll;
+                    }
+
+                    if (qe != null && qe.EntityName == "solution")
+                    {
+                        var cond = qe.Criteria.Conditions.FirstOrDefault(c => c.AttributeName == "solutionid");
+                        Guid sId = cond != null && cond.Values.Count > 0 ? (Guid)cond.Values[0] : Guid.Empty;
+
+                        if (sId == solMicrosoftId)
+                        {
+                            var sol1 = new Entity("solution", solMicrosoftId);
+                            sol1["friendlyname"] = "System Solution";
+                            sol1["uniquename"] = "SystemSolution";
+                            sol1["version"] = "1.0.0.0";
+                            sol1.FormattedValues["publisherid"] = "Microsoft";
+                            coll.Entities.Add(sol1);
+                        }
+                        else
+                        {
+                            var sol2 = new Entity("solution", solPartnerId);
+                            sol2["friendlyname"] = "Partner Solution";
+                            sol2["uniquename"] = "PartnerSolution";
+                            sol2["version"] = "1.0.0.0";
+                            sol2.FormattedValues["publisherid"] = "Contoso";
+                            coll.Entities.Add(sol2);
+                        }
+                        return coll;
+                    }
+
+                    return coll;
+                }
+            };
+
+            var excluded = new List<string> { "Microsoft" };
+            var overlaps = auditService.GetOverlappingSolutionsForComponents(fakeService, components, null, excluded);
+
+            if (overlaps.Count != 1)
+                throw new Exception($"Expected 1 overlap after excluding Microsoft, got {overlaps.Count}");
+
+            if (overlaps[0].PublisherName != "Contoso")
+                throw new Exception($"Expected publisher 'Contoso', got '{overlaps[0].PublisherName}'");
         }
     }
 }

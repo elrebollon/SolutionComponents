@@ -123,6 +123,8 @@
       <Private>True</Private>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -170,6 +172,7 @@
   <ItemGroup>
     <Compile Include="Models\ComponentHistoryItem.cs" />
     <Compile Include="Models\ComponentTypeMetadata.cs" />
+    <Compile Include="Models\LocalComponentItem.cs" />
     <Compile Include="Models\SolutionOverlapItem.cs" />
     <Compile Include="MyPlugin.cs" />
     <Compile Include="MyPluginControl.cs">

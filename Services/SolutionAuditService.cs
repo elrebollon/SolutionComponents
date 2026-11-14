@@ -6,7 +6,9 @@ using SolutionComponents.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
+using System.Xml.Linq;
 
 namespace SolutionComponents.Services
 {
@@ -1556,42 +1558,137 @@ namespace SolutionComponents.Services
                 .ToList();
         }
 
-        public List<SolutionOverlapItem> GetOverlappingSolutions(
+        public List<LocalComponentItem> ParseSolutionFile(string filePath)
+        {
+            if (string.IsNullOrWhiteSpace(filePath))
+                throw new ArgumentException("File path cannot be empty", nameof(filePath));
+
+            if (!File.Exists(filePath))
+                throw new FileNotFoundException("Solution file not found", filePath);
+
+            ZipArchive archive = null;
+            FileStream stream = null;
+            try
+            {
+                stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                archive = new ZipArchive(stream, ZipArchiveMode.Read, false);
+            }
+            catch (InvalidDataException)
+            {
+                stream?.Dispose();
+                throw;
+            }
+            catch (Exception ex)
+            {
+                stream?.Dispose();
+                throw new InvalidDataException("The file is not a valid zip archive.", ex);
+            }
+
+            using (archive)
+            {
+                var entry = archive.GetEntry("solution.xml");
+                if (entry == null)
+                {
+                    // Check case-insensitive
+                    entry = archive.Entries.FirstOrDefault(e => string.Equals(e.FullName, "solution.xml", StringComparison.OrdinalIgnoreCase));
+                }
+
+                if (entry == null)
+                {
+                    throw new InvalidDataException("Package does not contain solution.xml.");
+                }
+
+                XDocument doc;
+                try
+                {
+                    using (var entryStream = entry.Open())
+                    {
+                        doc = XDocument.Load(entryStream);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new InvalidDataException("solution.xml is not valid XML.", ex);
+                }
+
+                var root = doc.Root;
+                if (root == null || !string.Equals(root.Name.LocalName, "ImportExportXml", StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new InvalidDataException("solution.xml does not have an ImportExportXml root element.");
+                }
+
+                var manifest = root.Elements().FirstOrDefault(e => string.Equals(e.Name.LocalName, "SolutionManifest", StringComparison.OrdinalIgnoreCase));
+                if (manifest == null)
+                {
+                    throw new InvalidDataException("solution.xml does not contain a SolutionManifest element.");
+                }
+
+                var rootComponentsElement = manifest.Elements().FirstOrDefault(e => string.Equals(e.Name.LocalName, "RootComponents", StringComparison.OrdinalIgnoreCase));
+                var components = new List<LocalComponentItem>();
+
+                if (rootComponentsElement != null)
+                {
+                    foreach (var rc in rootComponentsElement.Elements().Where(e => string.Equals(e.Name.LocalName, "RootComponent", StringComparison.OrdinalIgnoreCase)))
+                    {
+                        var typeAttr = rc.Attribute("type");
+                        var idAttr = rc.Attribute("id");
+                        var schemaAttr = rc.Attribute("schemaName");
+
+                        int compType = 0;
+                        if (typeAttr != null && int.TryParse(typeAttr.Value, out int parsedType))
+                        {
+                            compType = parsedType;
+                        }
+
+                        Guid objId = Guid.Empty;
+                        if (idAttr != null)
+                        {
+                            string rawId = idAttr.Value.Trim('{', '}');
+                            Guid.TryParse(rawId, out objId);
+                        }
+
+                        string schemaName = schemaAttr?.Value;
+                        string displayName = null;
+
+                        var details = GetComponentTypeDetails(compType);
+                        if (!string.IsNullOrWhiteSpace(schemaName))
+                        {
+                            displayName = schemaName;
+                        }
+                        else if (details.ComponentTypeName != "Unknown")
+                        {
+                            displayName = $"{details.ComponentTypeName} {objId}";
+                        }
+                        else
+                        {
+                            displayName = objId != Guid.Empty ? objId.ToString() : "Unknown";
+                        }
+
+                        components.Add(new LocalComponentItem
+                        {
+                            ComponentType = compType,
+                            ObjectId = objId,
+                            SchemaName = schemaName,
+                            DisplayName = displayName
+                        });
+                    }
+                }
+
+                return components;
+            }
+        }
+
+        public List<SolutionOverlapItem> GetOverlappingSolutionsForComponents(
             IOrganizationService service,
-            Guid selectedSolutionId,
+            IEnumerable<LocalComponentItem> components,
+            Guid? excludedSolutionId = null,
             IEnumerable<string> excludedPublishers = null)
         {
             if (service == null) throw new ArgumentNullException(nameof(service));
-            if (selectedSolutionId == Guid.Empty) return new List<SolutionOverlapItem>();
+            if (components == null) return new List<SolutionOverlapItem>();
 
-            var compQuery = new QueryExpression("solutioncomponent")
-            {
-                ColumnSet = new ColumnSet("componenttype", "objectid", "solutionid"),
-                PageInfo = new PagingInfo { PageNumber = 1, PagingCookie = null }
-            };
-            compQuery.Criteria.AddCondition("solutionid", ConditionOperator.Equal, selectedSolutionId);
-
-            var solutionComponents = new List<Entity>();
-            while (true)
-            {
-                var resp = service.RetrieveMultiple(compQuery);
-                if (resp?.Entities != null)
-                {
-                    solutionComponents.AddRange(resp.Entities);
-                }
-                if (resp != null && resp.MoreRecords)
-                {
-                    compQuery.PageInfo.PageNumber++;
-                    compQuery.PageInfo.PagingCookie = resp.PagingCookie;
-                }
-                else
-                {
-                    break;
-                }
-            }
-
-            if (solutionComponents.Count == 0)
-                return new List<SolutionOverlapItem>();
+            var compList = components.Where(c => c != null && c.ObjectId != Guid.Empty).ToList();
+            if (compList.Count == 0) return new List<SolutionOverlapItem>();
 
             var overlaps = new List<SolutionOverlapItem>();
             var compNameCache = new Dictionary<Guid, string>();
@@ -1600,30 +1697,51 @@ namespace SolutionComponents.Services
 
             EnsureGlobalComponentTypeLabels(service);
 
-            // Pre-populate component names using msdyn_solutioncomponentsummary if available in this Dataverse environment
+            // Populate known names/types from input LocalComponentItems
+            foreach (var c in compList)
+            {
+                if (!string.IsNullOrWhiteSpace(c.DisplayName))
+                {
+                    compNameCache[c.ObjectId] = c.DisplayName;
+                }
+                else if (!string.IsNullOrWhiteSpace(c.SchemaName))
+                {
+                    compNameCache[c.ObjectId] = c.SchemaName;
+                }
+
+                var details = GetComponentTypeDetails(c.ComponentType, service);
+                if (details.ComponentTypeName != "Unknown")
+                {
+                    compTypeCache[c.ObjectId] = details.ComponentTypeName;
+                }
+            }
+
+            // Pre-populate component names using msdyn_solutioncomponentsummary if available
             try
             {
-                var summaryQuery = new QueryExpression("msdyn_solutioncomponentsummary")
+                var objIds = compList.Select(c => (object)c.ObjectId).Distinct().ToArray();
+                // Query in chunks of 50 to avoid query limits
+                for (int i = 0; i < objIds.Length; i += 50)
                 {
-                    ColumnSet = new ColumnSet(
-                        "msdyn_objectid",
-                        "msdyn_displayname",
-                        "msdyn_name",
-                        "msdyn_schemaname",
-                        "msdyn_componentlogicalname",
-                        "msdyn_componenttype",
-                        "msdyn_componenttypename",
-                        "msdyn_primaryentityname",
-                        "msdyn_workflowcategory"
-                    ),
-                    PageInfo = new PagingInfo { PageNumber = 1, PagingCookie = null }
-                };
-                summaryQuery.Criteria.AddCondition("msdyn_solutionid", ConditionOperator.Equal, selectedSolutionId);
+                    var chunk = objIds.Skip(i).Take(50).ToArray();
+                    var summaryQuery = new QueryExpression("msdyn_solutioncomponentsummary")
+                    {
+                        ColumnSet = new ColumnSet(
+                            "msdyn_objectid",
+                            "msdyn_displayname",
+                            "msdyn_name",
+                            "msdyn_schemaname",
+                            "msdyn_componentlogicalname",
+                            "msdyn_componenttype",
+                            "msdyn_componenttypename",
+                            "msdyn_primaryentityname",
+                            "msdyn_workflowcategory"
+                        )
+                    };
+                    summaryQuery.Criteria.AddCondition("msdyn_objectid", ConditionOperator.In, chunk);
 
-                while (true)
-                {
                     var summaryResults = service.RetrieveMultiple(summaryQuery);
-                    if (summaryResults != null && summaryResults.Entities != null)
+                    if (summaryResults?.Entities != null)
                     {
                         foreach (var summary in summaryResults.Entities)
                         {
@@ -1668,49 +1786,43 @@ namespace SolutionComponents.Services
                             }
                         }
                     }
-
-                    if (summaryResults != null && summaryResults.MoreRecords)
-                    {
-                        summaryQuery.PageInfo.PageNumber++;
-                        summaryQuery.PageInfo.PagingCookie = summaryResults.PagingCookie;
-                    }
-                    else
-                    {
-                        break;
-                    }
                 }
             }
             catch
             {
-                // Environment does not support msdyn_solutioncomponentsummary; fallback to individual metadata resolution (R5)
+                // Environment does not support msdyn_solutioncomponentsummary; fallback
             }
 
-            foreach (var comp in solutionComponents)
+            foreach (var comp in compList)
             {
-                Guid objectId = GetGuidAttribute(comp, "objectid");
-                int compType = GetOptionSetAttribute(comp, "componenttype");
+                Guid objectId = comp.ObjectId;
+                int compType = comp.ComponentType;
 
                 var details = GetComponentTypeDetails(compType, service);
-                if (!compNameCache.TryGetValue(objectId, out string compName))
+                if (!compNameCache.TryGetValue(objectId, out string compName) || string.IsNullOrWhiteSpace(compName))
                 {
                     compName = GetComponentName(service, details.EntityName, objectId, compType);
                     compNameCache[objectId] = compName;
                 }
 
-                string displayCompType = details.ComponentTypeName;
-                if (string.IsNullOrEmpty(displayCompType) || displayCompType == "Unknown")
+                string displayCompType = null;
+                if (compTypeCache.TryGetValue(objectId, out string cachedType) && !string.IsNullOrWhiteSpace(cachedType))
                 {
-                    if (compTypeCache.TryGetValue(objectId, out string summaryType) && !string.IsNullOrWhiteSpace(summaryType))
+                    displayCompType = cachedType;
+                }
+                else
+                {
+                    displayCompType = details.ComponentTypeName;
+                    if (string.IsNullOrEmpty(displayCompType) || displayCompType == "Unknown")
                     {
-                        displayCompType = summaryType;
-                    }
-                    else if (GlobalComponentTypeLabels.TryGetValue(compType, out string globalLabel) && !string.IsNullOrWhiteSpace(globalLabel))
-                    {
-                        displayCompType = globalLabel;
-                    }
-                    else
-                    {
-                        displayCompType = $"Type {compType}";
+                        if (GlobalComponentTypeLabels.TryGetValue(compType, out string globalLabel) && !string.IsNullOrWhiteSpace(globalLabel))
+                        {
+                            displayCompType = globalLabel;
+                        }
+                        else
+                        {
+                            displayCompType = $"Type {compType}";
+                        }
                     }
                 }
 
@@ -1719,7 +1831,10 @@ namespace SolutionComponents.Services
                     ColumnSet = new ColumnSet("solutionid")
                 };
                 relatedQuery.Criteria.AddCondition("objectid", ConditionOperator.Equal, objectId);
-                relatedQuery.Criteria.AddCondition("solutionid", ConditionOperator.NotEqual, selectedSolutionId);
+                if (excludedSolutionId.HasValue && excludedSolutionId.Value != Guid.Empty)
+                {
+                    relatedQuery.Criteria.AddCondition("solutionid", ConditionOperator.NotEqual, excludedSolutionId.Value);
+                }
 
                 var relatedResult = service.RetrieveMultiple(relatedQuery);
                 if (relatedResult == null || relatedResult.Entities.Count == 0)
@@ -1728,6 +1843,8 @@ namespace SolutionComponents.Services
                 foreach (var relComp in relatedResult.Entities)
                 {
                     Guid otherSolutionId = GetGuidAttribute(relComp, "solutionid");
+                    if (excludedSolutionId.HasValue && otherSolutionId == excludedSolutionId.Value)
+                        continue;
 
                     try
                     {
@@ -1794,6 +1911,191 @@ namespace SolutionComponents.Services
             }
 
             return FilterByExcludedPublishers(overlaps, excludedPublishers);
+        }
+
+        public List<SolutionOverlapItem> GetOverlappingSolutions(
+            IOrganizationService service,
+            Guid selectedSolutionId,
+            IEnumerable<string> excludedPublishers = null)
+        {
+            if (service == null) throw new ArgumentNullException(nameof(service));
+            if (selectedSolutionId == Guid.Empty) return new List<SolutionOverlapItem>();
+
+            var compQuery = new QueryExpression("solutioncomponent")
+            {
+                ColumnSet = new ColumnSet("componenttype", "objectid", "solutionid"),
+                PageInfo = new PagingInfo { PageNumber = 1, PagingCookie = null }
+            };
+            compQuery.Criteria.AddCondition("solutionid", ConditionOperator.Equal, selectedSolutionId);
+
+            var solutionComponents = new List<Entity>();
+            while (true)
+            {
+                var resp = service.RetrieveMultiple(compQuery);
+                if (resp?.Entities != null)
+                {
+                    solutionComponents.AddRange(resp.Entities);
+                }
+                if (resp != null && resp.MoreRecords)
+                {
+                    compQuery.PageInfo.PageNumber++;
+                    compQuery.PageInfo.PagingCookie = resp.PagingCookie;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            if (solutionComponents.Count == 0)
+                return new List<SolutionOverlapItem>();
+
+            var localComponents = new List<LocalComponentItem>();
+            foreach (var sc in solutionComponents)
+            {
+                Guid objId = GetGuidAttribute(sc, "objectid");
+                int cType = GetOptionSetAttribute(sc, "componenttype");
+                localComponents.Add(new LocalComponentItem
+                {
+                    ObjectId = objId,
+                    ComponentType = cType
+                });
+            }
+
+            return GetOverlappingSolutionsForComponents(service, localComponents, selectedSolutionId, excludedPublishers);
+        }
+
+        public List<LocalComponentItem> GetComponentsForSolution(IOrganizationService service, Guid solutionId)
+        {
+            if (service == null) throw new ArgumentNullException(nameof(service));
+            if (solutionId == Guid.Empty) return new List<LocalComponentItem>();
+
+            var compQuery = new QueryExpression("solutioncomponent")
+            {
+                ColumnSet = new ColumnSet("componenttype", "objectid", "solutionid"),
+                PageInfo = new PagingInfo { PageNumber = 1, PagingCookie = null }
+            };
+            compQuery.Criteria.AddCondition("solutionid", ConditionOperator.Equal, solutionId);
+
+            var solutionComponents = new List<Entity>();
+            while (true)
+            {
+                var resp = service.RetrieveMultiple(compQuery);
+                if (resp?.Entities != null)
+                {
+                    solutionComponents.AddRange(resp.Entities);
+                }
+                if (resp != null && resp.MoreRecords)
+                {
+                    compQuery.PageInfo.PageNumber++;
+                    compQuery.PageInfo.PagingCookie = resp.PagingCookie;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            var list = new List<LocalComponentItem>();
+            if (solutionComponents.Count == 0) return list;
+
+            var compNameCache = new Dictionary<Guid, string>();
+            EnsureGlobalComponentTypeLabels(service);
+
+            try
+            {
+                var summaryQuery = new QueryExpression("msdyn_solutioncomponentsummary")
+                {
+                    ColumnSet = new ColumnSet(
+                        "msdyn_objectid",
+                        "msdyn_displayname",
+                        "msdyn_name",
+                        "msdyn_schemaname",
+                        "msdyn_componentlogicalname",
+                        "msdyn_componenttype",
+                        "msdyn_primaryentityname",
+                        "msdyn_workflowcategory"
+                    ),
+                    PageInfo = new PagingInfo { PageNumber = 1, PagingCookie = null }
+                };
+                summaryQuery.Criteria.AddCondition("msdyn_solutionid", ConditionOperator.Equal, solutionId);
+
+                while (true)
+                {
+                    var summaryResults = service.RetrieveMultiple(summaryQuery);
+                    if (summaryResults?.Entities != null)
+                    {
+                        foreach (var summary in summaryResults.Entities)
+                        {
+                            Guid objId = GetGuidAttribute(summary, "msdyn_objectid");
+                            if (objId != Guid.Empty)
+                            {
+                                string disp = summary.GetAttributeValue<string>("msdyn_displayname");
+                                string rawName = summary.GetAttributeValue<string>("msdyn_name");
+                                string schemaName = summary.GetAttributeValue<string>("msdyn_schemaname");
+                                string logicalName = summary.GetAttributeValue<string>("msdyn_componentlogicalname");
+                                string finalName = !string.IsNullOrWhiteSpace(disp) ? disp
+                                    : (!string.IsNullOrWhiteSpace(rawName) ? rawName
+                                    : (!string.IsNullOrWhiteSpace(schemaName) ? schemaName
+                                    : logicalName));
+
+                                int typeCode = GetOptionSetAttribute(summary, "msdyn_componenttype");
+                                string primaryEnt = summary.GetAttributeValue<string>("msdyn_primaryentityname");
+
+                                if (!string.IsNullOrWhiteSpace(finalName))
+                                {
+                                    if (typeCode == 2 && !string.IsNullOrWhiteSpace(primaryEnt))
+                                    {
+                                        finalName = $"{finalName} [{primaryEnt}]";
+                                    }
+                                    else if (typeCode == 29)
+                                    {
+                                        int cat = summary.Contains("msdyn_workflowcategory") && summary["msdyn_workflowcategory"] is OptionSetValue osv ? osv.Value : 0;
+                                        finalName = FormatWorkflowName(finalName, cat);
+                                    }
+                                    compNameCache[objId] = finalName;
+                                }
+                            }
+                        }
+                    }
+
+                    if (summaryResults != null && summaryResults.MoreRecords)
+                    {
+                        summaryQuery.PageInfo.PageNumber++;
+                        summaryQuery.PageInfo.PagingCookie = summaryResults.PagingCookie;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+            catch
+            {
+                // Fallback
+            }
+
+            foreach (var sc in solutionComponents)
+            {
+                Guid objId = GetGuidAttribute(sc, "objectid");
+                int cType = GetOptionSetAttribute(sc, "componenttype");
+
+                if (!compNameCache.TryGetValue(objId, out string cName) || string.IsNullOrWhiteSpace(cName))
+                {
+                    var details = GetComponentTypeDetails(cType, service);
+                    cName = GetComponentName(service, details.EntityName, objId, cType);
+                    compNameCache[objId] = cName;
+                }
+
+                list.Add(new LocalComponentItem
+                {
+                    ObjectId = objId,
+                    ComponentType = cType,
+                    DisplayName = cName
+                });
+            }
+
+            return list.OrderBy(c => c.DisplayName, StringComparer.CurrentCultureIgnoreCase).ToList();
         }
 
         public static List<SolutionOverlapItem> FilterByExcludedPublishers(

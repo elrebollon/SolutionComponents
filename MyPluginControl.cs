@@ -20,6 +20,7 @@ namespace SolutionComponents
         private Settings mySettings;
         private readonly SolutionAuditService _auditService = new SolutionAuditService();
         private List<SolutionOverlapItem> _currentOverlaps = new List<SolutionOverlapItem>();
+        private List<LocalComponentItem> _currentSolutionComponents = new List<LocalComponentItem>();
         private List<EntityMetadataSummary> _loadedEntities = new List<EntityMetadataSummary>();
         private bool _entitiesLoaded = false;
 
@@ -71,6 +72,13 @@ namespace SolutionComponents
                 {
                     LoadSolutionsAsync();
                 }
+                else if (rbSolutionFile.Checked)
+                {
+                    if (!string.IsNullOrWhiteSpace(txtSolutionFilePath.Text) && System.IO.File.Exists(txtSolutionFilePath.Text))
+                    {
+                        ProcessSolutionFileAsync(txtSolutionFilePath.Text);
+                    }
+                }
                 else
                 {
                     HandleComponentTypeChanged();
@@ -83,6 +91,13 @@ namespace SolutionComponents
             if (rbSolution.Checked)
             {
                 ExecuteMethod(LoadSolutionsAsync);
+            }
+            else if (rbSolutionFile.Checked)
+            {
+                if (!string.IsNullOrWhiteSpace(txtSolutionFilePath.Text) && System.IO.File.Exists(txtSolutionFilePath.Text))
+                {
+                    ExecuteMethod(() => ProcessSolutionFileAsync(txtSolutionFilePath.Text));
+                }
             }
             else
             {
@@ -101,10 +116,28 @@ namespace SolutionComponents
             {
                 pnSolution.Visible = true;
                 pnComponent.Visible = false;
+
+                label1.Visible = true;
+                cbSolutions.Visible = true;
+                lblSolutionFile.Visible = false;
+                txtSolutionFilePath.Visible = false;
+                btnBrowseSolutionFile.Visible = false;
+
                 if (cbSolutions.Items.Count == 0 && Service != null)
                 {
                     LoadSolutionsAsync();
                 }
+            }
+            else if (rbSolutionFile.Checked)
+            {
+                pnSolution.Visible = true;
+                pnComponent.Visible = false;
+
+                label1.Visible = false;
+                cbSolutions.Visible = false;
+                lblSolutionFile.Visible = true;
+                txtSolutionFilePath.Visible = true;
+                btnBrowseSolutionFile.Visible = true;
             }
             else if (rbComponent.Checked)
             {
@@ -175,7 +208,9 @@ namespace SolutionComponents
                 Message = "Auditing solution component overlaps...",
                 Work = (worker, args) =>
                 {
-                    args.Result = _auditService.GetOverlappingSolutions(Service, solutionId, excludedPublishers);
+                    var comps = _auditService.GetComponentsForSolution(Service, solutionId);
+                    var overlaps = _auditService.GetOverlappingSolutions(Service, solutionId, excludedPublishers);
+                    args.Result = new Tuple<List<LocalComponentItem>, List<SolutionOverlapItem>>(comps, overlaps);
                 },
                 PostWorkCallBack = (args) =>
                 {
@@ -186,8 +221,18 @@ namespace SolutionComponents
                         return;
                     }
 
-                    _currentOverlaps = args.Result as List<SolutionOverlapItem> ?? new List<SolutionOverlapItem>();
-                    PopulateComponentFilterComboBox();
+                    var result = args.Result as Tuple<List<LocalComponentItem>, List<SolutionOverlapItem>>;
+                    _currentSolutionComponents = result?.Item1 ?? new List<LocalComponentItem>();
+                    _currentOverlaps = result?.Item2 ?? new List<SolutionOverlapItem>();
+
+                    var allComponentNames = _currentSolutionComponents
+                        .Select(c => c.ToString())
+                        .Concat(_currentOverlaps.Select(o => o.ComponentName))
+                        .Where(n => !string.IsNullOrEmpty(n))
+                        .Distinct(StringComparer.CurrentCultureIgnoreCase)
+                        .OrderBy(n => n, StringComparer.CurrentCultureIgnoreCase);
+
+                    PopulateComponentFilterComboBox(allComponentNames);
                     DisplayOverlapsInGrid(_currentOverlaps);
 
                     lblStatus.Text = $"{_currentOverlaps.Count} overlap(s) detected.";
@@ -195,16 +240,90 @@ namespace SolutionComponents
             });
         }
 
-        private void PopulateComponentFilterComboBox()
+        private void btnBrowseSolutionFile_Click(object sender, EventArgs e)
+        {
+            using (var ofd = new OpenFileDialog())
+            {
+                ofd.Filter = "Solution Package (*.zip)|*.zip|All Files (*.*)|*.*";
+                ofd.Title = "Select Solution File";
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    txtSolutionFilePath.Text = ofd.FileName;
+                    ProcessSolutionFileAsync(ofd.FileName);
+                }
+            }
+        }
+
+        private void ProcessSolutionFileAsync(string filePath)
+        {
+            if (string.IsNullOrWhiteSpace(filePath) || !System.IO.File.Exists(filePath))
+            {
+                MessageBox.Show("Please select a valid solution file.", "Invalid File", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            List<LocalComponentItem> components;
+            try
+            {
+                components = _auditService.ParseSolutionFile(filePath);
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to parse solution file {filePath}", ex);
+                MessageBox.Show($"Failed to parse solution file: {ex.Message}", "Invalid Solution Package", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            _currentSolutionComponents = components;
+            var excludedPublishers = mySettings?.ExcludedPublishers ?? new List<string>();
+
+            WorkAsync(new WorkAsyncInfo
+            {
+                Message = "Auditing solution file overlaps in Dataverse...",
+                Work = (worker, args) =>
+                {
+                    args.Result = _auditService.GetOverlappingSolutionsForComponents(Service, components, null, excludedPublishers);
+                },
+                PostWorkCallBack = (args) =>
+                {
+                    if (args.Error != null)
+                    {
+                        LogError($"Error auditing overlaps for solution file {filePath}", args.Error);
+                        MessageBox.Show($"Failed to audit solution file overlaps: {args.Error.Message}", "Audit Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    _currentOverlaps = args.Result as List<SolutionOverlapItem> ?? new List<SolutionOverlapItem>();
+
+                    var allComponentNames = _currentSolutionComponents
+                        .Select(c => c.ToString())
+                        .Concat(_currentOverlaps.Select(o => o.ComponentName))
+                        .Where(n => !string.IsNullOrEmpty(n))
+                        .Distinct(StringComparer.CurrentCultureIgnoreCase)
+                        .OrderBy(n => n, StringComparer.CurrentCultureIgnoreCase);
+
+                    PopulateComponentFilterComboBox(allComponentNames);
+                    DisplayOverlapsInGrid(_currentOverlaps);
+
+                    lblStatus.Text = $"{_currentOverlaps.Count} overlap(s) detected.";
+                }
+            });
+        }
+
+        private void PopulateComponentFilterComboBox(IEnumerable<string> componentNames = null)
         {
             cbSolutionComponents.Items.Clear();
             cbSolutionComponents.Items.Add("All components");
 
-            var distinctComponents = _currentOverlaps
-                .Select(o => o.ComponentName)
-                .Where(n => !string.IsNullOrEmpty(n))
-                .Distinct(StringComparer.CurrentCultureIgnoreCase)
-                .OrderBy(n => n, StringComparer.CurrentCultureIgnoreCase);
+            IEnumerable<string> distinctComponents = componentNames;
+            if (distinctComponents == null)
+            {
+                distinctComponents = _currentOverlaps
+                    .Select(o => o.ComponentName)
+                    .Where(n => !string.IsNullOrEmpty(n))
+                    .Distinct(StringComparer.CurrentCultureIgnoreCase)
+                    .OrderBy(n => n, StringComparer.CurrentCultureIgnoreCase);
+            }
 
             foreach (var compName in distinctComponents)
             {
@@ -225,11 +344,13 @@ namespace SolutionComponents
             if (selected == "All components" || string.IsNullOrEmpty(selected))
             {
                 DisplayOverlapsInGrid(_currentOverlaps);
+                lblStatus.Text = $"{_currentOverlaps.Count} overlap(s) detected.";
             }
             else
             {
                 var filtered = _currentOverlaps.Where(o => string.Equals(o.ComponentName, selected, StringComparison.CurrentCultureIgnoreCase)).ToList();
                 DisplayOverlapsInGrid(filtered);
+                lblStatus.Text = $"{filtered.Count} overlap(s) detected.";
             }
         }
 
